@@ -68,10 +68,14 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 .cert-banner{margin:0 0 12px;padding:12px;border-radius:14px;font-weight:700}.cert-banner.training{background:#eef1ff;color:#304eb8}.cert-banner.cert{background:#fff4d7;color:#8a5a00}.cert-banner.done{background:#e6f7ed;color:#11693d}
 @media(max-width:700px){.timer-widget{right:10px;bottom:10px;width:240px}.advanced-filters{grid-template-columns:1fr 1fr}}
 
+
+.cloudbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cloud-user{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 9px}.cloud-user img{width:28px;height:28px;border-radius:50%}.cloud-state{font-size:11px;color:var(--muted)}.sync-dot{width:9px;height:9px;border-radius:50%;background:#999}.sync-dot.ok{background:#24a866}.sync-dot.busy{background:#e7a320}.sync-dot.err{background:#d94b58}
+.login-screen{position:fixed;inset:0;background:linear-gradient(140deg,#10172a,#283866);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}.login-card{width:min(460px,100%);background:#fff;border-radius:24px;padding:28px;box-shadow:0 25px 80px rgba(0,0,0,.32);text-align:center}.login-card p{color:var(--muted);line-height:1.5}.google-btn{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:800;cursor:pointer}
+.timer-toggle{position:absolute;right:8px;top:7px;border:0;background:#33415f;color:#fff;border-radius:8px;width:29px;height:29px;cursor:pointer;font-weight:900}.timer-widget{transition:.2s;padding-top:39px}.timer-widget.collapsed{width:190px;padding:9px 42px 9px 12px;cursor:pointer}.timer-widget.collapsed .timer-buttons,.timer-widget.collapsed .timer-mini{display:none}.timer-widget.collapsed .timer-top{display:block}.timer-widget.collapsed .timer-clock{font-size:20px}.timer-widget.collapsed .timer-rate{white-space:nowrap}.timer-widget.collapsed .timer-toggle{top:50%;transform:translateY(-50%)}
 </style>
 </head>
 <body>
-<section class="language-screen" id="languageScreen">
+<section class="login-screen" id="loginScreen"><div class="login-card"><h1>Language Master</h1><p>Inicia sesión con la misma cuenta en el móvil y el ordenador para sincronizar módulos, progreso, sellos, cronómetro e historial.</p><button class="google-btn" id="googleLoginBtn">Continuar con Google</button><p id="loginMessage" style="font-size:13px"></p></div></section><section class="language-screen hidden" id="languageScreen">
  <div class="language-panel">
   <h1>Elige el idioma que quieres estudiar</h1>
   <p class="subtitle">Los idiomas aparecen al importar archivos DATA.</p>
@@ -98,7 +102,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 <main>
 <div class="topbar">
  <div><h1 id="pageTitle">Panel de aprendizaje</h1><p class="subtitle" id="pageSubtitle">Estudia hasta dominar cada tarjeta sin fallos.</p></div>
- <div class="actions"><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
+ <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
 </div>
 
 <section id="inicio" class="section active">
@@ -153,7 +157,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  <div class="modal-actions"><button class="btn" id="cancelSetupBtn">Cancelar</button><button class="btn primary" id="beginDeckBtn">Empezar mazo</button></div>
 </div></div>
 
-<div class="timer-widget" id="timerWidget">
+<div class="timer-widget" id="timerWidget"><button class="timer-toggle" id="timerToggleBtn" title="Minimizar o ampliar">−</button>
  <div class="timer-top"><div><div class="timer-clock" id="timerClock">00:00</div><div class="timer-rate" id="timerRate">0,00 dominadas/min</div></div><span id="timerState">Preparado</span></div>
  <div class="timer-mini"><div><b id="timerMastered">0</b>dominadas</div><div><b id="timerReviewed">0</b>revisadas</div></div>
  <div class="timer-buttons"><button class="timer-start" id="timerStartBtn">Iniciar</button><button class="timer-stop" id="timerStopBtn">Finalizar</button><button class="timer-history" id="timerHistoryBtn">Historial</button></div>
@@ -191,7 +195,7 @@ function validatePack(p){
  for(const c of p.cards){if(!c.id||!c.front||!c.back)throw new Error("Alguna tarjeta no tiene id, front o back");if(ids.has(c.id))throw new Error(`ID repetido: ${c.id}`);ids.add(c.id);c.sentence_front=c.sentence_front||c.front;c.sentence_back=c.sentence_back||c.back}
  return p;
 }
-async function importFiles(fileList){const files=[...fileList];if(!files.length)return;let ok=0,errors=[];for(const f of files){try{const p=validatePack(JSON.parse(await f.text()));await putPack(p);ok++}catch(e){errors.push(`${f.name}: ${e.message}`)}}await loadPacks();refreshAfterDataChange();if(ok)toast(`${ok} módulo${ok===1?"":"s"} importado${ok===1?"":"s"}`);if(errors.length)alert("No se pudieron importar:\n\n"+errors.join("\n"))}
+async function importFiles(fileList){const files=[...fileList];if(!files.length)return;let ok=0,errors=[];for(const f of files){try{const p=validatePack(JSON.parse(await f.text()));await putPack(p);ok++}catch(e){errors.push(`${f.name}: ${e.message}`)}}await loadPacks();refreshAfterDataChange();if(ok){toast(`${ok} módulo${ok===1?"":"s"} importado${ok===1?"":"s"}`);window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));}if(errors.length)alert("No se pudieron importar:\n\n"+errors.join("\n"))}
 
 function languages(){const m=new Map();for(const p of packs)if(!m.has(p.language_id))m.set(p.language_id,{id:p.language_id,name:p.language_name,native:p.native_name,flag:p.flag});return[...m.values()]}
 function renderLanguageScreen(){const a=languages();$("languageGrid").innerHTML=a.map(l=>`<button class="language-card" data-language="${l.id}"><span>${l.flag||"🌍"}</span><strong>${l.name}</strong><br><small>${l.native||""}</small></button>`).join("");$("noLanguages").classList.toggle("hidden",a.length>0);document.querySelectorAll("[data-language]").forEach(b=>b.onclick=()=>selectLanguage(b.dataset.language))}
@@ -210,7 +214,7 @@ function migrateState(){
  }
  saveRaw();
 }
-function saveRaw(){try{localStorage.setItem(progressKey(),JSON.stringify(state))}catch(e){}}
+function saveRaw(){try{localStorage.setItem(progressKey(),JSON.stringify(state))}catch(e){} if(selectedLanguage)window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"progress",language:selectedLanguage}}))}
 function save(){saveRaw();renderStats()}
 function cardKey(c){return`${c.pack_id}::${c.id}`}
 function miniState(c){const k=cardKey(c);return state.cards[k]||(state.cards[k]={miniStreak:0,miniMastered:false,attempts:0,fails:0,last:0})}
@@ -373,7 +377,7 @@ for(const id of ["deckSearch","statusFilter","cefrFilter","typeFilter","difficul
 
 /* Cronómetro */
 function loadTimer(){try{timer={...timer,...JSON.parse(localStorage.getItem(TIMER_KEY)||"{}")}}catch(e){}timer.history=Array.isArray(timer.history)?timer.history:[]}
-function saveTimer(){try{localStorage.setItem(TIMER_KEY,JSON.stringify(timer))}catch(e){}}
+function saveTimer(){try{localStorage.setItem(TIMER_KEY,JSON.stringify(timer))}catch(e){} window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"timer"}}))}
 function elapsedSeconds(){return Math.max(0,Math.floor((timer.elapsedBefore||0)+(timer.running?(Date.now()-timer.startedAt)/1000:0)))}
 function renderTimer(){
  const sec=elapsedSeconds(),min=Math.floor(sec/60),s=sec%60,rate=sec?timer.mastered/(sec/60):0;
@@ -394,10 +398,35 @@ function renderTimerHistory(){
  $("timerSummary").innerHTML=`<b>Media acumulada: ${fmtNum(avg)} palabras dominadas/min</b><p>${totalMastered} palabras dominadas en ${Math.round(totalSec/60)} minutos registrados. Las sesiones de “Todas juntas” aparecen como revisadas, no dominadas.</p>`;
  $("timerHistoryBody").innerHTML=timer.history.map(x=>`<tr><td>${new Date(x.date).toLocaleString("es-ES")}</td><td>${Math.floor(x.seconds/60)}:${String(x.seconds%60).padStart(2,"0")}</td><td>${x.mastered}</td><td>${x.reviewed}</td><td>${fmtNum(x.rate)}</td></tr>`).join("")||'<tr><td colspan="5">Todavía no hay sesiones guardadas.</td></tr>'
 }
+
+const TIMER_UI_KEY="language_master_timer_ui_v1";
+function loadTimerUI(){try{const x=JSON.parse(localStorage.getItem(TIMER_UI_KEY)||"{}");$("timerWidget").classList.toggle("collapsed",!!x.collapsed);$("timerToggleBtn").textContent=x.collapsed?"+":"−"}catch(e){}}
+function toggleTimerUI(e){if(e)e.stopPropagation();const w=$("timerWidget"),c=!w.classList.contains("collapsed");w.classList.toggle("collapsed",c);$("timerToggleBtn").textContent=c?"+":"−";localStorage.setItem(TIMER_UI_KEY,JSON.stringify({collapsed:c}));window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"settings"}}))}
+$("timerToggleBtn").onclick=toggleTimerUI;$("timerWidget").addEventListener("click",e=>{if($("timerWidget").classList.contains("collapsed")&&e.target.id!=="timerToggleBtn")toggleTimerUI(e)});
+window.LMBridge={
+ getPacks:()=>packs,
+ replacePacks:async arr=>{for(const p of arr)await putPack(p);await loadPacks();refreshAfterDataChange()},
+ getProgress:lang=>{try{return JSON.parse(localStorage.getItem(`language_master_progress_${lang}_v1`)||"null")}catch(e){return null}},
+ setProgress:(lang,data)=>{localStorage.setItem(`language_master_progress_${lang}_v1`,JSON.stringify(data));if(selectedLanguage===lang){state=data;migrateState();renderAll()}},
+ progressLanguages:()=>Object.keys(localStorage).filter(k=>k.startsWith("language_master_progress_")&&k.endsWith("_v1")).map(k=>k.slice(25,-3)),
+ getTimer:()=>timer,setTimer:data=>{timer={...timer,...data,running:false,startedAt:0};localStorage.setItem(TIMER_KEY,JSON.stringify(timer));renderTimer();renderTimerHistory()},
+ getSettings:()=>{try{return JSON.parse(localStorage.getItem(TIMER_UI_KEY)||"{}")}catch(e){return{}}},setSettings:x=>{localStorage.setItem(TIMER_UI_KEY,JSON.stringify(x||{}));loadTimerUI()}
+};
 $("timerStartBtn").onclick=startPauseTimer;$("timerStopBtn").onclick=finishTimer;$("timerHistoryBtn").onclick=()=>{if(selectedLanguage){go("progreso");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}else toast("Primero elige un idioma")};
 
-(async()=>{loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
+(async()=>{loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
 
 </script>
-</body>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,collection,getDocs,onSnapshot}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyDEWokiLIvAZmz78vFQ9pczW2eruUU6hWE",authDomain:"language-master-ad3eb.firebaseapp.com",projectId:"language-master-ad3eb",storageBucket:"language-master-ad3eb.firebasestorage.app",messagingSenderId:"657765473612",appId:"1:657765473612:web:7c2633b43d0cef6dc083e9",measurementId:"G-V6WK0RXQE6"};
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();await setPersistence(auth,browserLocalPersistence);let user=null,unsubs=[],busy=false,timerId=null;const $=id=>document.getElementById(id),mobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);function status(c,t){$("syncDot").className="sync-dot "+c;$("syncText").textContent=t}async function login(){try{mobile()?await signInWithRedirect(auth,provider):await signInWithPopup(auth,provider)}catch(e){$("loginMessage").textContent=e.message}}$("googleLoginBtn").onclick=login;$("logoutBtn").onclick=()=>signOut(auth);try{await getRedirectResult(auth)}catch(e){$("loginMessage").textContent=e.message}
+const root=()=>collection(db,"users",user.uid,"sync"),ref=id=>doc(db,"users",user.uid,"sync",id);async function pushAll(){if(!user)return;status("busy","Guardando…");const langs=window.LMBridge.progressLanguages(),progress={};for(const l of langs)progress[l]=window.LMBridge.getProgress(l);await setDoc(ref("state"),{packs:window.LMBridge.getPacks(),progress,timer:window.LMBridge.getTimer(),settings:window.LMBridge.getSettings(),updatedAt:Date.now()});status("ok","Guardado en la nube")}
+async function firstMerge(){status("busy","Combinando datos…");const snap=await getDocs(root()),d=snap.docs.find(x=>x.id==="state")?.data();if(d){if(d.packs?.length)await window.LMBridge.replacePacks(d.packs);if(d.progress)for(const[l,p]of Object.entries(d.progress))if(!window.LMBridge.getProgress(l))window.LMBridge.setProgress(l,p);if(d.timer&&!(window.LMBridge.getTimer().history||[]).length)window.LMBridge.setTimer(d.timer);if(d.settings)window.LMBridge.setSettings(d.settings)}await pushAll()}
+function listen(){unsubs.forEach(f=>f());unsubs=[onSnapshot(ref("state"),async s=>{if(!s.exists()||busy)return;const d=s.data();busy=true;try{if(d.packs?.length)await window.LMBridge.replacePacks(d.packs);if(d.progress)for(const[l,p]of Object.entries(d.progress))window.LMBridge.setProgress(l,p);if(d.timer)window.LMBridge.setTimer(d.timer);if(d.settings)window.LMBridge.setSettings(d.settings);status("ok","Sincronizado")}finally{busy=false}})]}
+window.addEventListener("lm-local-change",()=>{if(!user||busy)return;clearTimeout(timerId);timerId=setTimeout(pushAll,900)});$("forceSyncBtn").onclick=pushAll;
+onAuthStateChanged(auth,async u=>{user=u;if(!u){unsubs.forEach(f=>f());$("loginScreen").classList.remove("hidden");$("languageScreen").classList.add("hidden");$("app").classList.add("hidden");return}$("loginScreen").classList.add("hidden");$("languageScreen").classList.remove("hidden");$("cloudUser").classList.remove("hidden");$("userName").textContent=u.displayName||u.email;$("userPhoto").src=u.photoURL||"";await firstMerge();listen()});
+</script></body>
 </html>
