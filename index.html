@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V5.1 · Progreso por tarjeta</title>
+<title>Language Master V5.2 · Generación automática con IA</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -234,6 +234,15 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  body.card-focus-mode main{padding-top:6px!important}
 }
 
+
+/* V5.2 · generación automática de bloques mediante n8n */
+.generator-status{min-height:260px!important;white-space:pre-wrap}
+.generator-actions .btn[disabled],.generator-form input[disabled],.generator-form select[disabled],.generator-form textarea[disabled]{opacity:.62;cursor:not-allowed}
+.generator-live{display:flex;align-items:center;gap:9px;background:#eef1ff;color:#304eb8;border-radius:13px;padding:11px 13px;font-size:13px;font-weight:750;margin-top:12px}
+.generator-live.error{background:#fdecee;color:#9d2835}.generator-live.done{background:#e8f7ee;color:#12663b}
+.generator-spinner{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:lmspin .7s linear infinite}
+@keyframes lmspin{to{transform:rotate(360deg)}}
+
 </style>
 </head>
 <body>
@@ -241,10 +250,10 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 <section class="generator-screen" id="generatorScreen">
  <div class="generator-shell">
   <div class="generator-head">
-   <div><h1>Generar nuevos bloques DATA</h1><p>Crea un prompt para pedir a cualquier ChatGPT hasta cinco archivos JSON de 50 palabras, listos para importar.</p></div>
+   <div><h1>Generar e instalar nuevos bloques DATA</h1><p>La app enviará cada tema a tu workflow de n8n, Gemini creará el JSON y Language Master lo instalará automáticamente.</p></div>
    <button class="btn" id="closeGeneratorBtn">✕ Cerrar</button>
   </div>
-  <div class="generator-tip">El generador no crea el vocabulario dentro de esta app: prepara una instrucción completa. La copias en ChatGPT, descargas los JSON que genere y después los importas mediante <b>Importar DATA</b>.</div>
+  <div class="generator-tip">Completa los datos y pulsa <b>Generar e instalar bloques</b>. No tendrás que copiar prompts, descargar archivos ni importarlos manualmente. Los módulos se guardarán en la app y se sincronizarán con Firebase mediante tu sistema actual.</div>
   <div class="generator-form" style="margin-top:16px">
    <div class="generator-field">
     <label for="genLanguage">Idioma que quieres aprender</label>
@@ -289,14 +298,13 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
     <textarea id="genExtra" placeholder="Ej.: vocabulario centrado en negocios, evitar palabras demasiado básicas, usar registro cotidiano…"></textarea>
    </div>
    <div class="generator-field full">
-    <label for="generatedPrompt">Prompt generado</label>
-    <textarea class="prompt-output" id="generatedPrompt" readonly placeholder="Pulsa «Generar prompt»"></textarea>
+    <label for="generatedPrompt">Estado de la generación</label>
+    <textarea class="prompt-output generator-status" id="generatedPrompt" readonly placeholder="Aquí aparecerá el progreso de cada bloque."></textarea>
    </div>
   </div>
+  <div id="generatorLive" class="generator-live hidden"></div>
   <div class="generator-actions">
-   <button class="btn primary" id="generatePromptBtn">Generar prompt</button>
-   <button class="btn" id="copyPromptBtn">Copiar prompt</button>
-   <button class="btn" id="downloadPromptBtn">Descargar .txt</button>
+   <button class="btn primary" id="generatePromptBtn">Generar e instalar bloques</button>
   </div>
  </div>
 </section>
@@ -1081,18 +1089,27 @@ window.LMBridge={
 $("timerStartBtn").onclick=startPauseTimer;$("timerStopBtn").onclick=finishTimer;$("timerHistoryBtn").onclick=()=>{if(selectedLanguage){go("progreso");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}else toast("Primero elige un idioma")};
 
 
-/* ---------- GENERADOR DE BLOQUES ---------- */
+/* ---------- GENERADOR AUTOMÁTICO DE BLOQUES ---------- */
 const GENERATOR_PREFS_KEY="language_master_generator_prefs_v1";
+const N8N_GENERATE_URL="https://n8n.srv1863570.hstgr.cloud/webhook/language-master-generar";
 const languageAliases={
  fr:"fr|Francés|Français|🇫🇷",en:"en|Inglés|English|🇬🇧",de:"de|Alemán|Deutsch|🇩🇪",
  it:"it|Italiano|Italiano|🇮🇹",pt:"pt|Portugués|Português|🇵🇹",ca:"ca|Catalán|Català|🏳️",
  nl:"nl|Neerlandés|Nederlands|🇳🇱",ja:"ja|Japonés|日本語|🇯🇵",ko:"ko|Coreano|한국어|🇰🇷",
  zh:"zh|Chino mandarín|中文|🇨🇳",ar:"ar|Árabe|العربية|🌍",ru:"ru|Ruso|Русский|🇷🇺"
 };
+let generatorBusy=false;
+
 function renderThemeInputs(){
  const n=Number($("genCount").value)||1,root=$("genThemes"),old=[...root.querySelectorAll("input")].map(x=>x.value);
  root.innerHTML="";
- for(let i=0;i<n;i++){const input=document.createElement("input");input.className="gen-theme";input.placeholder=`Tema del bloque ${i+1}, por ejemplo: Viajes y aeropuerto`;input.value=old[i]||"";root.appendChild(input)}
+ for(let i=0;i<n;i++){
+  const input=document.createElement("input");
+  input.className="gen-theme";
+  input.placeholder=`Tema del bloque ${i+1}, por ejemplo: Viajes y aeropuerto`;
+  input.value=old[i]||"";
+  root.appendChild(input)
+ }
  saveGeneratorPrefs();
 }
 function saveGeneratorPrefs(){
@@ -1102,8 +1119,12 @@ function loadGeneratorPrefs(){
  try{
   const p=JSON.parse(localStorage.getItem(GENERATOR_PREFS_KEY)||"{}");
   if(p.language&&[...$("genLanguage").options].some(o=>o.value===p.language))$("genLanguage").value=p.language;
-  if(p.count)$("genCount").value=p.count;if(p.level)$("genLevel").value=p.level;if(p.start)$("genStartNumber").value=p.start;if(p.extra)$("genExtra").value=p.extra;
-  renderThemeInputs();(p.themes||[]).forEach((v,i)=>{const x=document.querySelectorAll(".gen-theme")[i];if(x)x.value=v})
+  if(p.count)$("genCount").value=p.count;
+  if(p.level)$("genLevel").value=p.level;
+  if(p.start)$("genStartNumber").value=p.start;
+  if(p.extra)$("genExtra").value=p.extra;
+  renderThemeInputs();
+  (p.themes||[]).forEach((v,i)=>{const x=document.querySelectorAll(".gen-theme")[i];if(x)x.value=v})
  }catch(e){renderThemeInputs()}
  toggleCustomLanguage();
 }
@@ -1112,114 +1133,172 @@ function openGenerator(prefillCurrent=true){
  if(prefillCurrent&&selectedLanguage&&languageAliases[selectedLanguage])$("genLanguage").value=languageAliases[selectedLanguage];
  toggleCustomLanguage();renderThemeInputs();$("generatorScreen").classList.add("active");document.body.style.overflow="hidden"
 }
-function closeGenerator(){$("generatorScreen").classList.remove("active");document.body.style.overflow=""}
+function closeGenerator(){if(generatorBusy){toast("Espera a que termine la generación");return}$("generatorScreen").classList.remove("active");document.body.style.overflow=""}
 function getLanguageData(){
- if($("genLanguage").value!=="other"){const [code,name,native,flag]=$("genLanguage").value.split("|");return{code,name,native,flag}}
+ if($("genLanguage").value!=="other"){
+  const [code,name,native,flag]=$("genLanguage").value.split("|");return{code,name,native,flag}
+ }
  const parts=$("genCustomLanguage").value.split("|").map(x=>x.trim());
  return{code:parts[1]||"xx",name:parts[0]||"Idioma personalizado",native:parts[2]||parts[0]||"Idioma",flag:parts[3]||"🌍"}
 }
 function slugify(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,45)||"vocabulario"}
-function generatePrompt(){
- const lang=getLanguageData(),count=Number($("genCount").value),start=Math.max(1,Number($("genStartNumber").value)||1),level=$("genLevel").value;
- const themes=[...document.querySelectorAll(".gen-theme")].map((x,i)=>x.value.trim()||`Tema útil ${i+1}`),extra=$("genExtra").value.trim();
- const blocks=themes.map((theme,i)=>`- Bloque ${start+i}: «${theme}»; nombre de archivo: ${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}_DATA_v2.json`).join("\n");
- const ids=themes.map((theme,i)=>`${lang.code.toUpperCase()}_${String(start+i).padStart(3,"0")}_${slugify(theme).toUpperCase().slice(0,12)}_001`).join(", ");
- const prompt=`Quiero que generes ${count} archivo${count===1?"":"s"} JSON independiente${count===1?"":"s"} para importarlos directamente en mi aplicación Language Master.
-
-IDIOMA OBJETIVO
-- Código: ${lang.code}
-- Nombre en español: ${lang.name}
-- Nombre nativo: ${lang.native}
-- Bandera: ${lang.flag}
-- Las traducciones y explicaciones deben estar en español.
-- Nivel aproximado: ${level}.
-
-BLOQUES QUE DEBES CREAR
-${blocks}
-
-REQUISITOS DE CONTENIDO
-1. Cada archivo debe contener exactamente 50 tarjetas.
-2. Las 50 entradas deben ser útiles, naturales y claramente relacionadas con el tema indicado.
-3. No repitas ninguna palabra o expresión entre los ${count} bloques.
-4. Prioriza vocabulario real y frecuente apropiado para el nivel ${level}.
-5. Cada tarjeta debe incluir DOS ejemplos naturales y diferentes. Cada frase del idioma objetivo debe contener exactamente la palabra o expresión de "front" de forma visible y natural.
-6. La traducción española de cada ejemplo debe transmitir el mismo significado natural, no una traducción artificial palabra por palabra.
-7. Comprueba ortografía, tildes, género, artículos y uso real antes de entregar los archivos.
-8. No uses frases genéricas repetidas cambiando solamente la palabra.
-${extra?`9. Instrucciones adicionales: ${extra}\n`:""}
-FORMATO OBLIGATORIO
-Cada archivo debe ser JSON válido, codificado en UTF-8 y seguir exactamente esta estructura:
-
-{
-  "schema_version": "2.0",
-  "pack_id": "${lang.code}_${String(start).padStart(3,"0")}_tema_sin_espacios",
-  "language_id": "${lang.code}",
-  "language_name": "${lang.name}",
-  "native_name": "${lang.native}",
-  "flag": "${lang.flag}",
-  "version": 1,
-  "type": "vocabulary",
-  "category": "Nombre exacto del tema",
-  "title": "Nombre exacto del tema",
-  "description": "50 palabras útiles del tema, con dos ejemplos naturales por tarjeta.",
-  "source": {
-    "name": "generated_for_language_master",
-    "category_order": ${start}
-  },
-  "cards": [
-    {
-      "id": "${ids.split(", ")[0]}",
-      "front": "palabra o expresión en ${lang.name}",
-      "back": "traducción principal al español",
-      "sentence_front": "primer ejemplo en ${lang.name}",
-      "sentence_back": "traducción natural del primer ejemplo",
-      "pronunciation": "guía breve y legible de pronunciación o cadena vacía si no puede darse con fiabilidad",
-      "ipa": "transcripción IPA fiable o cadena vacía",
-      "examples": [
-        {"${lang.code}": "primer ejemplo en ${lang.name}", "es": "traducción natural"},
-        {"${lang.code}": "segundo ejemplo en ${lang.name}", "es": "traducción natural"}
-      ],
-      "grammar": {
-        "type": "nom/verbe/adjectif/adverbe/expression u otra categoría adecuada",
-        "gender": "masculin/féminin/null según corresponda",
-        "plural": "forma plural o null"
-      },
-      "learning": {
-        "cefr": "${level}",
-        "difficulty": 1,
-        "frequency": 5
-      },
-      "tags": ["tema", "subtema"],
-      "audio": null,
-      "notes": ""
-    }
-  ]
+function generatorLog(line,reset=false){
+ const box=$("generatedPrompt");
+ if(reset)box.value="";
+ box.value+=(box.value?"\n":"")+line;
+ box.scrollTop=box.scrollHeight;
 }
-
-REGLAS TÉCNICAS IMPORTANTES
-- "pack_id" debe ser único en cada archivo y seguir: ${lang.code}_NNN_tema_en_snake_case.
-- Los ID de tarjetas deben ser globalmente únicos y contener idioma, número de bloque y contador 001-050.
-- Ejemplos de ID válidos: ${ids}.
-- "sentence_front" y "sentence_back" deben ser exactamente el primer elemento de "examples".
-- Para máxima compatibilidad, además de la clave "${lang.code}" dentro de examples, incluye también "fr" cuando el idioma sea francés. En cualquier otro idioma usa solo "${lang.code}" y "es".
-- No añadas comentarios dentro del JSON.
-- Los campos "pronunciation" e "ipa" son opcionales: si no puedes rellenarlos con fiabilidad usa una cadena vacía, nunca inventes.
-- No dejes campos obligatorios vacíos.
-- Valida que cada archivo tenga exactamente 50 objetos dentro de "cards".
-- Entrégame los ${count} archivos como archivos descargables separados, no como un único JSON.
-- Si tu interfaz no permite adjuntar archivos, muestra cada JSON completo en un bloque de código separado, indicando claramente el nombre exacto del archivo.
-- No resumas ni omitas tarjetas. No pongas “continúa” ni puntos suspensivos.
-- Antes de entregar, revisa que todos los JSON sean válidos y que no haya comas finales ni IDs duplicados.`;
- $("generatedPrompt").value=prompt;saveGeneratorPrefs();toast("Prompt generado")
+function setGeneratorLive(text,type="busy"){
+ const el=$("generatorLive");
+ if(!text){el.className="generator-live hidden";el.innerHTML="";return}
+ el.className=`generator-live ${type==="error"?"error":type==="done"?"done":""}`;
+ el.innerHTML=(type==="busy"?'<span class="generator-spinner"></span>':'')+`<span>${esc(text)}</span>`;
 }
-async function copyGeneratedPrompt(){
- if(!$("generatedPrompt").value)generatePrompt();
- try{await navigator.clipboard.writeText($("generatedPrompt").value);toast("Prompt copiado")}catch(e){$("generatedPrompt").select();document.execCommand("copy");toast("Prompt copiado")}
+function setGeneratorBusy(busy){
+ generatorBusy=busy;
+ $("generatePromptBtn").disabled=busy;
+ $("generatePromptBtn").textContent=busy?"Generando bloques…":"Generar e instalar bloques";
+ ["genLanguage","genCount","genCustomLanguage","genLevel","genStartNumber","genExtra"].forEach(id=>{const el=$(id);if(el)el.disabled=busy});
+ document.querySelectorAll(".gen-theme").forEach(el=>el.disabled=busy);
+ $("closeGeneratorBtn").disabled=busy;
 }
-function downloadGeneratedPrompt(){
- if(!$("generatedPrompt").value)generatePrompt();
- const lang=getLanguageData(),blob=new Blob([$("generatedPrompt").value],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");
- a.href=URL.createObjectURL(blob);a.download=`prompt_${lang.code}_${$("genCount").value}_bloques_language_master.txt`;a.click();URL.revokeObjectURL(a.href)
+function normalizeTerm(s){return normalize(String(s||"")).replace(/\s*\/\s*.*/,"")}
+function stripJsonFences(s){
+ return String(s||"").trim().replace(/^\uFEFF/,"").replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/i,"").trim();
+}
+function parseGeneratedResponse(raw){
+ let value=stripJsonFences(raw);
+ let parsed;
+ try{parsed=JSON.parse(value)}catch(e){throw new Error("n8n respondió con un contenido que no es JSON válido")}
+ for(let i=0;i<3&&typeof parsed==="string";i++)parsed=JSON.parse(stripJsonFences(parsed));
+ if(parsed?.content?.parts?.[0]?.text)parsed=JSON.parse(stripJsonFences(parsed.content.parts[0].text));
+ if(parsed?.data&&typeof parsed.data==="object"&&!Array.isArray(parsed.data))parsed=parsed.data;
+ return parsed;
+}
+function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level}){
+ if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error("Gemini no devolvió un objeto de módulo");
+ const nnn=String(blockNumber).padStart(3,"0"),prefix=`${lang.code.toUpperCase()}_${nnn}`;
+ const cards=Array.isArray(raw.cards)?raw.cards:[];
+ if(cards.length!==50)throw new Error(`El bloque contiene ${cards.length} tarjetas en vez de 50`);
+ const pack={
+  ...raw,
+  schema_version:raw.schema_version||"2.0",
+  pack_id:`${lang.code}_${nnn}_${slugify(theme)}`,
+  language_id:lang.code,
+  language_name:lang.name,
+  native_name:lang.native,
+  flag:lang.flag,
+  version:Number(raw.version)||2,
+  type:"vocabulary",
+  category:theme,
+  title:theme,
+  description:raw.description||`50 palabras útiles sobre ${theme}, generadas automáticamente con IA.`,
+  source:{...(raw.source||{}),name:"n8n_gemini_language_master",category_order:blockNumber},
+  cards:cards.map((c,i)=>{
+   const ex=Array.isArray(c.examples)?c.examples:[];
+   const normalizedExamples=ex.map(x=>{
+    const target=x?.[lang.code]??x?.target??x?.native??x?.fr??x?.en??x?.de??x?.it??x?.pt??x?.ca??x?.nl??x?.ja??x?.ko??x?.zh??x?.ar??x?.ru??"";
+    return{[lang.code]:String(target||""),es:String(x?.es??x?.spanish??"")}
+   }).filter(x=>x[lang.code]||x.es);
+   const front=String(c.front??c.term??"").trim(),back=String(c.back??c.translation??"").trim();
+   const sentenceFront=String(c.sentence_front??normalizedExamples[0]?.[lang.code]??front).trim();
+   const sentenceBack=String(c.sentence_back??normalizedExamples[0]?.es??back).trim();
+   if(!normalizedExamples.length)normalizedExamples.push({[lang.code]:sentenceFront,es:sentenceBack});
+   normalizedExamples[0]={[lang.code]:sentenceFront,es:sentenceBack};
+   return{
+    ...c,
+    id:`${prefix}_${String(i+1).padStart(3,"0")}`,
+    front,back,
+    sentence_front:sentenceFront,
+    sentence_back:sentenceBack,
+    pronunciation:String(c.pronunciation||""),
+    ipa:String(c.ipa||""),
+    examples:normalizedExamples.slice(0,2),
+    grammar:{type:c.grammar?.type||"expression",gender:c.grammar?.gender??null,plural:c.grammar?.plural??null},
+    learning:{cefr:c.learning?.cefr||level,difficulty:Math.min(5,Math.max(1,Number(c.learning?.difficulty)||3)),frequency:Math.min(5,Math.max(1,Number(c.learning?.frequency)||4))},
+    tags:Array.isArray(c.tags)?c.tags:[slugify(theme)],audio:c.audio??null,notes:String(c.notes||"")
+   }
+  })
+ };
+ return validatePack(pack);
+}
+async function requestGeneratedBlock(payload){
+ const body=new URLSearchParams();
+ body.set("idiomaCodigo",payload.lang.code);
+ body.set("idiomaNombre",payload.lang.name);
+ body.set("idiomaNativo",payload.lang.native);
+ body.set("bandera",payload.lang.flag);
+ body.set("tema",payload.theme);
+ body.set("numeroBloque",String(payload.blockNumber));
+ body.set("numeroTarjetas","50");
+ body.set("nivel",payload.level);
+ body.set("instrucciones",payload.instructions||"");
+ let response;
+ try{
+  response=await fetch(N8N_GENERATE_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8","Accept":"application/json"},body:body.toString()});
+ }catch(e){throw new Error("No se pudo conectar con n8n. Comprueba que el workflow esté publicado y que el encabezado CORS esté configurado")}
+ const raw=await response.text();
+ if(!response.ok)throw new Error(`n8n devolvió el error ${response.status}: ${raw.slice(0,240)}`);
+ return parseGeneratedResponse(raw);
+}
+function findDuplicateTerms(pack,forbidden){
+ const seen=new Set(),dupes=new Set();
+ for(const card of pack.cards){
+  const key=normalizeTerm(card.front);
+  if(!key||seen.has(key)||forbidden.has(key))dupes.add(card.front||"entrada vacía");
+  seen.add(key);
+ }
+ return[...dupes];
+}
+async function generateAndInstallBlocks(){
+ if(generatorBusy)return;
+ saveGeneratorPrefs();
+ const lang=getLanguageData(),count=Number($("genCount").value)||1,start=Math.max(1,Number($("genStartNumber").value)||1),level=$("genLevel").value;
+ const themes=[...document.querySelectorAll(".gen-theme")].map(x=>x.value.trim());
+ const extra=$("genExtra").value.trim();
+ if($("genLanguage").value==="other"&&(!$("genCustomLanguage").value.includes("|")||lang.code==="xx")){alert("Escribe el idioma personalizado como: Nombre | código | nombre nativo | bandera");return}
+ if(themes.length!==count||themes.some(x=>!x)){alert("Completa el tema de todos los bloques antes de generar.");return}
+ const plannedIds=themes.map((theme,i)=>`${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}`);
+ const replacing=packs.filter(p=>plannedIds.includes(p.pack_id));
+ if(replacing.length&&!confirm(`Se sustituirán ${replacing.length} módulo${replacing.length===1?"":"s"} con el mismo ID. El progreso asociado a sus tarjetas se conservará cuando coincidan los IDs. ¿Continuar?`))return;
+ const forbidden=new Set();
+ for(const p of packs){
+  if(p.language_id!==lang.code||plannedIds.includes(p.pack_id))continue;
+  for(const c of p.cards||[]){const key=normalizeTerm(c.front);if(key)forbidden.add(key)}
+ }
+ setGeneratorBusy(true);generatorLog(`Generación iniciada: ${count} bloque${count===1?"":"s"} de 50 tarjetas.`,true);setGeneratorLive("Conectando con n8n y Gemini…");
+ const generated=[];
+ try{
+  for(let i=0;i<count;i++){
+   const theme=themes[i],blockNumber=start+i;
+   generatorLog(`\n[${i+1}/${count}] Generando bloque ${String(blockNumber).padStart(3,"0")}: ${theme}`);
+   setGeneratorLive(`Generando ${i+1} de ${count}: ${theme}. Puede tardar un poco…`);
+   let pack=null,duplicateList=[],attempt=0;
+   while(attempt<3){
+    attempt++;
+    const avoidText=duplicateList.length?`\nReintento obligatorio: no uses estas entradas porque ya están repetidas: ${duplicateList.join(", ")}. Sustitúyelas por vocabulario diferente.`:"";
+    const instructions=[extra,"No repitas ninguna entrada dentro del bloque ni respecto a los términos que se indiquen como prohibidos.",avoidText].filter(Boolean).join("\n");
+    const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,instructions});
+    pack=normalizeGeneratedPack(raw,{lang,theme,blockNumber,level});
+    duplicateList=findDuplicateTerms(pack,forbidden);
+    if(!duplicateList.length)break;
+    generatorLog(`  Se detectaron ${duplicateList.length} repeticiones. Reintentando automáticamente (${attempt}/3)…`);
+   }
+   if(duplicateList.length)throw new Error(`El bloque «${theme}» sigue conteniendo entradas repetidas tras 3 intentos: ${duplicateList.slice(0,8).join(", ")}`);
+   await putPack(pack);
+   generated.push(pack);
+   for(const c of pack.cards){const key=normalizeTerm(c.front);if(key)forbidden.add(key)}
+   generatorLog(`  ✓ Instalado: ${pack.pack_id} · ${pack.cards.length} tarjetas`);
+  }
+  await loadPacks();
+  refreshAfterDataChange();
+  window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
+  generatorLog(`\n✓ Proceso terminado. ${generated.length} módulo${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"} y enviado${generated.length===1?"":"s"} al sistema de sincronización de Firebase.`);
+  setGeneratorLive(`${generated.length} bloque${generated.length===1?"":"s"} generado${generated.length===1?"":"s"} e instalado${generated.length===1?"":"s"} correctamente.`,"done");
+  toast(`${generated.length} bloque${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"}`);
+ }catch(e){
+  console.error(e);generatorLog(`\n✕ ERROR: ${e.message}`);setGeneratorLive(e.message,"error");alert("No se pudo completar la generación:\n\n"+e.message)
+ }finally{setGeneratorBusy(false)}
 }
 $("homeGenerateBtn").onclick=()=>openGenerator(false);
 $("openGeneratorNav").onclick=()=>openGenerator(true);
@@ -1229,7 +1308,7 @@ $("genLanguage").onchange=()=>{toggleCustomLanguage();saveGeneratorPrefs()};
 $("genCount").onchange=renderThemeInputs;
 $("genLevel").onchange=saveGeneratorPrefs;$("genStartNumber").oninput=saveGeneratorPrefs;$("genExtra").oninput=saveGeneratorPrefs;
 $("genThemes").addEventListener("input",saveGeneratorPrefs);
-$("generatePromptBtn").onclick=generatePrompt;$("copyPromptBtn").onclick=copyGeneratedPrompt;$("downloadPromptBtn").onclick=downloadGeneratedPrompt;
+$("generatePromptBtn").onclick=generateAndInstallBlocks;
 $("generatorScreen").addEventListener("click",e=>{if(e.target===$("generatorScreen"))closeGenerator()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("generatorScreen").classList.contains("active"))closeGenerator()});
 loadGeneratorPrefs();
