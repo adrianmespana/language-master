@@ -235,7 +235,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 }
 
 
-/* V5.2 · generación automática de bloques mediante n8n */
+/* V5.3 · generación rápida sin repeticiones mediante n8n */
 .generator-status{min-height:260px!important;white-space:pre-wrap}
 .generator-actions .btn[disabled],.generator-form input[disabled],.generator-form select[disabled],.generator-form textarea[disabled]{opacity:.62;cursor:not-allowed}
 .generator-live{display:flex;align-items:center;gap:9px;background:#eef1ff;color:#304eb8;border-radius:13px;padding:11px 13px;font-size:13px;font-weight:750;margin-top:12px}
@@ -253,7 +253,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
    <div><h1>Generar e instalar nuevos bloques DATA</h1><p>La app enviará cada tema a tu workflow de n8n, Gemini creará el JSON y Language Master lo instalará automáticamente.</p></div>
    <button class="btn" id="closeGeneratorBtn">✕ Cerrar</button>
   </div>
-  <div class="generator-tip">Completa los datos y pulsa <b>Generar e instalar bloques</b>. No tendrás que copiar prompts, descargar archivos ni importarlos manualmente. Los módulos se guardarán en la app y se sincronizarán con Firebase mediante tu sistema actual.</div>
+  <div class="generator-tip">Completa los datos y pulsa <b>Generar e instalar bloques</b>. Antes de generar, la app enviará a Gemini todas las entradas ya instaladas para excluirlas. Si aun así aparece alguna coincidencia, conservará las tarjetas válidas y generará únicamente las sustitutas necesarias, sin repetir el bloque completo.</div>
   <div class="generator-form" style="margin-top:16px">
    <div class="generator-field">
     <label for="genLanguage">Idioma que quieres aprender</label>
@@ -1162,7 +1162,26 @@ function setGeneratorBusy(busy){
  document.querySelectorAll(".gen-theme").forEach(el=>el.disabled=busy);
  $("closeGeneratorBtn").disabled=busy;
 }
-function normalizeTerm(s){return normalize(String(s||"")).replace(/\s*\/\s*.*/,"")}
+function normalizeTerm(s,langCode=""){
+ let key=normalize(String(s||"").replace(/\([^)]*\)/g," "));
+ if(langCode==="en")key=key.replace(/^to\s+/,"");
+ return key
+}
+function termKeys(s,langCode=""){
+ const raw=String(s||"").trim();
+ const parts=[raw,...raw.split(/\s*(?:\/|\||;)\s*/g)];
+ const keys=new Set();
+ for(const part of parts){
+  let key=normalizeTerm(part,langCode);
+  if(key)keys.add(key)
+ }
+ return[...keys]
+}
+function addForbiddenCard(card,langCode,keySet,labelSet){
+ const label=String(card?.front||"").trim();
+ if(label)labelSet.add(label);
+ for(const key of termKeys(label,langCode))keySet.add(key)
+}
 function stripJsonFences(s){
  return String(s||"").trim().replace(/^\uFEFF/,"").replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/i,"").trim();
 }
@@ -1175,11 +1194,11 @@ function parseGeneratedResponse(raw){
  if(parsed?.data&&typeof parsed.data==="object"&&!Array.isArray(parsed.data))parsed=parsed.data;
  return parsed;
 }
-function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level}){
+function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level,expectedCount=50}){
  if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error("Gemini no devolvió un objeto de módulo");
  const nnn=String(blockNumber).padStart(3,"0"),prefix=`${lang.code.toUpperCase()}_${nnn}`;
  const cards=Array.isArray(raw.cards)?raw.cards:[];
- if(cards.length!==50)throw new Error(`El bloque contiene ${cards.length} tarjetas en vez de 50`);
+ if(cards.length!==expectedCount)throw new Error(`Gemini devolvió ${cards.length} tarjetas en vez de ${expectedCount}`);
  const pack={
   ...raw,
   schema_version:raw.schema_version||"2.0",
@@ -1192,7 +1211,7 @@ function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level}){
   type:"vocabulary",
   category:theme,
   title:theme,
-  description:raw.description||`50 palabras útiles sobre ${theme}, generadas automáticamente con IA.`,
+  description:raw.description||`${expectedCount} palabras útiles sobre ${theme}, generadas automáticamente con IA.`,
   source:{...(raw.source||{}),name:"n8n_gemini_language_master",category_order:blockNumber},
   cards:cards.map((c,i)=>{
    const ex=Array.isArray(c.examples)?c.examples:[];
@@ -1220,7 +1239,17 @@ function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level}){
    }
   })
  };
- return validatePack(pack);
+ return pack
+}
+function buildNoRepeatInstructions({extra,forbiddenLabels,needed,theme,isRepair}){
+ const terms=[...forbiddenLabels].filter(Boolean).sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
+ return[
+  extra,
+  "REGLA CRÍTICA DE UNICIDAD: ninguna entrada de front puede coincidir con otra del resultado ni con ninguna entrada de la lista prohibida. Considera iguales mayúsculas, minúsculas, tildes, variantes escritas con «to» en inglés y alternativas separadas por «/».",
+  `Genera exactamente ${needed} tarjeta${needed===1?"":"s"} nueva${needed===1?"":"s"} sobre «${theme}». ${isRepair?"Son sustituciones: no vuelvas a generar las tarjetas ya aceptadas.":"Revisa toda la lista antes de responder."}`,
+  `LISTA EXHAUSTIVA DE ENTRADAS PROHIBIDAS (${terms.length}). No uses ninguna ni una variante equivalente:`,
+  JSON.stringify(terms)
+ ].filter(Boolean).join("\n\n")
 }
 async function requestGeneratedBlock(payload){
  const body=new URLSearchParams();
@@ -1230,7 +1259,7 @@ async function requestGeneratedBlock(payload){
  body.set("bandera",payload.lang.flag);
  body.set("tema",payload.theme);
  body.set("numeroBloque",String(payload.blockNumber));
- body.set("numeroTarjetas","50");
+ body.set("numeroTarjetas",String(payload.cardCount||50));
  body.set("nivel",payload.level);
  body.set("instrucciones",payload.instructions||"");
  let response;
@@ -1241,14 +1270,52 @@ async function requestGeneratedBlock(payload){
  if(!response.ok)throw new Error(`n8n devolvió el error ${response.status}: ${raw.slice(0,240)}`);
  return parseGeneratedResponse(raw);
 }
-function findDuplicateTerms(pack,forbidden){
- const seen=new Set(),dupes=new Set();
+function reviewCandidateCards(pack,forbiddenKeys,langCode){
+ const localSeen=new Set(),valid=[],rejected=[];
  for(const card of pack.cards){
-  const key=normalizeTerm(card.front);
-  if(!key||seen.has(key)||forbidden.has(key))dupes.add(card.front||"entrada vacía");
-  seen.add(key);
+  const keys=termKeys(card.front,langCode);
+  let reason="";
+  if(!keys.length)reason="entrada vacía";
+  else if(keys.some(k=>forbiddenKeys.has(k)))reason="ya existe";
+  else if(keys.some(k=>localSeen.has(k)))reason="repetida en la respuesta";
+  if(reason){
+   rejected.push({front:card.front||"entrada vacía",reason});
+   continue
+  }
+  valid.push(card);
+  for(const key of keys)localSeen.add(key)
  }
- return[...dupes];
+ return{valid,rejected}
+}
+async function buildUniquePack({lang,theme,blockNumber,level,extra,baseForbiddenKeys,baseForbiddenLabels}){
+ const target=50,accepted=[];
+ const workingKeys=new Set(baseForbiddenKeys),workingLabels=new Set(baseForbiddenLabels);
+ let template=null,lastRejected=[],calls=0;
+ while(accepted.length<target&&calls<4){
+  const needed=target-accepted.length,isRepair=accepted.length>0;
+  const instructions=buildNoRepeatInstructions({extra,forbiddenLabels:workingLabels,needed,theme,isRepair});
+  calls++;
+  if(isRepair)generatorLog(`  Generando solo ${needed} sustitución${needed===1?"":"es"}; se conservan ${accepted.length} tarjetas válidas…`);
+  const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,cardCount:needed,instructions});
+  const candidate=normalizeGeneratedPack(raw,{lang,theme,blockNumber,level,expectedCount:needed});
+  if(!template)template=candidate;
+  const review=reviewCandidateCards(candidate,workingKeys,lang.code);
+  lastRejected=review.rejected;
+  for(const card of review.valid){
+   accepted.push(card);
+   addForbiddenCard(card,lang.code,workingKeys,workingLabels)
+  }
+  if(review.rejected.length){
+   const sample=review.rejected.slice(0,5).map(x=>x.front).join(", ");
+   generatorLog(`  ${review.rejected.length} entrada${review.rejected.length===1?"":"s"} descartada${review.rejected.length===1?"":"s"} (${sample}${review.rejected.length>5?", …":""}).`);
+  }
+ }
+ if(accepted.length!==target){
+  const sample=lastRejected.slice(0,8).map(x=>x.front).join(", ");
+  throw new Error(`No se pudieron completar 50 entradas únicas para «${theme}» tras generar únicamente las sustituciones necesarias${sample?`: ${sample}`:""}`)
+ }
+ const finalRaw={...(template||{}),cards:accepted.slice(0,target)};
+ return validatePack(normalizeGeneratedPack(finalRaw,{lang,theme,blockNumber,level,expectedCount:target}))
 }
 async function generateAndInstallBlocks(){
  if(generatorBusy)return;
@@ -1261,40 +1328,37 @@ async function generateAndInstallBlocks(){
  const plannedIds=themes.map((theme,i)=>`${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}`);
  const replacing=packs.filter(p=>plannedIds.includes(p.pack_id));
  if(replacing.length&&!confirm(`Se sustituirán ${replacing.length} módulo${replacing.length===1?"":"s"} con el mismo ID. El progreso asociado a sus tarjetas se conservará cuando coincidan los IDs. ¿Continuar?`))return;
- const forbidden=new Set();
+
+ const forbiddenKeys=new Set(),forbiddenLabels=new Set();
  for(const p of packs){
   if(p.language_id!==lang.code||plannedIds.includes(p.pack_id))continue;
-  for(const c of p.cards||[]){const key=normalizeTerm(c.front);if(key)forbidden.add(key)}
+  for(const c of p.cards||[])addForbiddenCard(c,lang.code,forbiddenKeys,forbiddenLabels)
  }
- setGeneratorBusy(true);generatorLog(`Generación iniciada: ${count} bloque${count===1?"":"s"} de 50 tarjetas.`,true);setGeneratorLive("Conectando con n8n y Gemini…");
+
+ setGeneratorBusy(true);
+ generatorLog(`Generación iniciada: ${count} bloque${count===1?"":"s"} de 50 tarjetas.\nSe han enviado ${forbiddenLabels.size} entradas ya instaladas a la lista de exclusión desde el primer intento.`,true);
+ setGeneratorLive("Conectando con n8n y Gemini…");
  const generated=[];
  try{
   for(let i=0;i<count;i++){
    const theme=themes[i],blockNumber=start+i;
    generatorLog(`\n[${i+1}/${count}] Generando bloque ${String(blockNumber).padStart(3,"0")}: ${theme}`);
-   setGeneratorLive(`Generando ${i+1} de ${count}: ${theme}. Puede tardar un poco…`);
-   let pack=null,duplicateList=[],attempt=0;
-   while(attempt<3){
-    attempt++;
-    const avoidText=duplicateList.length?`\nReintento obligatorio: no uses estas entradas porque ya están repetidas: ${duplicateList.join(", ")}. Sustitúyelas por vocabulario diferente.`:"";
-    const instructions=[extra,"No repitas ninguna entrada dentro del bloque ni respecto a los términos que se indiquen como prohibidos.",avoidText].filter(Boolean).join("\n");
-    const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,instructions});
-    pack=normalizeGeneratedPack(raw,{lang,theme,blockNumber,level});
-    duplicateList=findDuplicateTerms(pack,forbidden);
-    if(!duplicateList.length)break;
-    generatorLog(`  Se detectaron ${duplicateList.length} repeticiones. Reintentando automáticamente (${attempt}/3)…`);
-   }
-   if(duplicateList.length)throw new Error(`El bloque «${theme}» sigue conteniendo entradas repetidas tras 3 intentos: ${duplicateList.slice(0,8).join(", ")}`);
+   setGeneratorLive(`Generando ${i+1} de ${count}: ${theme}. Gemini ya conoce todas las entradas prohibidas…`);
+   const pack=await buildUniquePack({
+    lang,theme,blockNumber,level,extra,
+    baseForbiddenKeys:forbiddenKeys,
+    baseForbiddenLabels:forbiddenLabels
+   });
    await putPack(pack);
    generated.push(pack);
-   for(const c of pack.cards){const key=normalizeTerm(c.front);if(key)forbidden.add(key)}
-   generatorLog(`  ✓ Instalado: ${pack.pack_id} · ${pack.cards.length} tarjetas`);
+   for(const c of pack.cards)addForbiddenCard(c,lang.code,forbiddenKeys,forbiddenLabels);
+   generatorLog(`  ✓ Instalado: ${pack.pack_id} · 50/50 tarjetas únicas`);
   }
   await loadPacks();
   refreshAfterDataChange();
   window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
-  generatorLog(`\n✓ Proceso terminado. ${generated.length} módulo${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"} y enviado${generated.length===1?"":"s"} al sistema de sincronización de Firebase.`);
-  setGeneratorLive(`${generated.length} bloque${generated.length===1?"":"s"} generado${generated.length===1?"":"s"} e instalado${generated.length===1?"":"s"} correctamente.`,"done");
+  generatorLog(`\n✓ Proceso terminado. ${generated.length} módulo${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"} sin repeticiones y enviado${generated.length===1?"":"s"} al sistema de sincronización de Firebase.`);
+  setGeneratorLive(`${generated.length} bloque${generated.length===1?"":"s"} generado${generated.length===1?"":"s"} e instalado${generated.length===1?"":"s"} sin repeticiones.`,"done");
   toast(`${generated.length} bloque${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"}`);
  }catch(e){
   console.error(e);generatorLog(`\n✕ ERROR: ${e.message}`);setGeneratorLive(e.message,"error");alert("No se pudo completar la generación:\n\n"+e.message)
