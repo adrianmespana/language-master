@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Language Master V4.5 · Audio y móvil</title>
+<style>
+:root{
+ --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
+ --primary:#3559e0;--primary2:#6d5dfc;--good:#17854c;--bad:#c83d4b;--warn:#b47600;
+ --shadow:0 12px 36px rgba(27,39,75,.10);--radius:20px
+}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text)}
+button,select,input{font:inherit}.hidden{display:none!important}
+.language-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(140deg,#10172a,#283866)}
+.language-panel{width:min(820px,100%);background:white;border-radius:26px;padding:25px;box-shadow:0 24px 80px rgba(0,0,0,.28)}
+.language-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.language-card{border:2px solid var(--line);background:white;padding:20px;border-radius:18px;text-align:left;cursor:pointer}
+.language-card:hover{border-color:var(--primary);transform:translateY(-2px)}.language-card strong{font-size:21px}.language-card span{font-size:30px;margin-right:10px}
+.empty-home{border:2px dashed var(--line);padding:24px;border-radius:18px;text-align:center;color:var(--muted);margin-top:18px}
+.app{min-height:100vh;display:grid;grid-template-columns:270px 1fr}
+aside{background:#10172a;color:white;padding:22px 18px;position:sticky;top:0;height:100vh;overflow:auto}
+.brand{font-weight:800;font-size:21px;line-height:1.15;margin:2px 8px 24px}.brand small{display:block;font-size:12px;color:#aeb8d0;font-weight:500;margin-top:7px}
+.navbtn{width:100%;border:0;background:transparent;color:#cfd7ea;text-align:left;padding:12px 13px;border-radius:12px;margin:4px 0;cursor:pointer}
+.navbtn:hover,.navbtn.active{background:#24304f;color:white}.navbtn span{float:right;background:#344263;padding:1px 7px;border-radius:999px;font-size:11px}
+.aside-note{font-size:12px;color:#9faccc;line-height:1.5;margin:22px 8px}
+main{padding:26px;max-width:1250px;width:100%;margin:auto}.topbar{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:22px}
+h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:white;padding:10px 14px;border-radius:12px;cursor:pointer;font-weight:650}.btn.primary{background:var(--primary);color:white;border-color:var(--primary)}
+.btn.danger{color:var(--bad);border-color:#f0c5ca}.btn.small{padding:7px 10px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.stat strong{display:block;font-size:28px}.stat small{color:var(--muted)}.progress{height:9px;background:#edf0f7;border-radius:99px;overflow:hidden;margin-top:13px}.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--primary2));width:0}
+.section{display:none}.section.active{display:block}.section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:26px 0 14px}.section-head h2{margin:0}.section-head p{color:var(--muted);margin:5px 0 0}
+.deck-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}.category-group{grid-column:1/-1;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.category-group h3{margin:0 0 5px}.category-group>p{margin:0 0 14px;color:var(--muted);font-size:13px}.subdeck-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.subdeck{box-shadow:none;background:#f8f9fd}.subdeck.all{background:#eef1ff;border-color:#cbd3ff}.deck{cursor:pointer;transition:.15s}.deck:hover{transform:translateY(-2px)}
+.deck h3{margin:0 0 7px}.deck p{color:var(--muted);font-size:13px}.deck .meta{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:12px}
+.study{display:grid;grid-template-columns:1fr 300px;gap:18px}.flash{min-height:360px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;cursor:pointer;user-select:none}
+.flash .label{font-size:12px;letter-spacing:.11em;text-transform:uppercase;color:var(--muted)}.flash .front{font-size:42px;font-weight:800;margin:24px 0 12px}.flash .back{font-size:25px;color:var(--primary);font-weight:750;display:none}
+.flash.flipped .back{display:block}.flash .example{max-width:720px;font-size:17px;line-height:1.55;color:var(--muted);margin-top:4px}
+.flash .example mark{background:#fff0a8;color:var(--text);padding:1px 5px;border-radius:6px;font-weight:800}.flash .back-example{display:none;color:#53617d;margin-top:10px}.flash.flipped .back-example{display:block}
+.flash .hint{color:var(--muted);margin-top:22px;font-size:13px}.rate{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}
+.rate button{border:0;padding:13px 8px;border-radius:12px;color:white;font-weight:800;cursor:pointer}.bad{background:var(--bad)}.warn{background:var(--warn)}.good{background:var(--good)}
+.sidebox h3{margin-top:0}.sidebox .big{font-size:30px;font-weight:800}.sidebox p{color:var(--muted);font-size:13px;line-height:1.5}.minirow{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)}
+.answer-box{display:none;margin-top:12px;background:white;border:1px solid var(--line);border-radius:16px;padding:14px}.answer-box.active{display:block}.answer-row{display:flex;gap:9px}
+.answer-row input{flex:1;min-width:0;border:2px solid var(--line);border-radius:12px;padding:13px;font-size:17px}.answer-result{display:none;margin-top:11px;padding:12px;border-radius:12px;font-weight:700;line-height:1.4}
+.answer-result.ok{display:block;background:#e8f7ee;color:#12663b}.answer-result.no{display:block;background:#fdecee;color:#9d2835}.answer-actions{display:none;gap:9px;margin-top:10px}.answer-actions.active{display:flex}
+.modalback{display:none;position:fixed;inset:0;background:rgba(8,13,28,.66);z-index:50;padding:18px;align-items:center;justify-content:center}.modalback.active{display:flex}
+.modal{background:white;width:min(560px,100%);border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.3)}.choice{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.choice label{display:block;border:2px solid var(--line);border-radius:12px;padding:12px;cursor:pointer}.choicegroup{margin:16px 0}.choicegroup>strong{display:block;margin-bottom:8px}.modal-actions{display:flex;justify-content:flex-end;gap:9px;margin-top:20px}
+.toast{position:fixed;right:20px;bottom:20px;background:#12192c;color:white;padding:12px 16px;border-radius:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1}
+.data-row{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:13px 0}.data-row:last-child{border:0}.data-meta{color:var(--muted);font-size:13px;margin-top:4px}
+.import-zone{border:2px dashed #b8c2db;border-radius:18px;padding:22px;text-align:center;background:#fafbff;margin-bottom:16px}
+@media(max-width:950px){.app{grid-template-columns:1fr}aside{position:relative;height:auto}.grid{grid-template-columns:1fr 1fr}.deck-grid{grid-template-columns:1fr 1fr}.study{grid-template-columns:1fr}}
+@media(max-width:600px){main{padding:16px}.grid,.deck-grid,.language-grid,.subdeck-grid,.choice{grid-template-columns:1fr}.front{font-size:34px!important}.topbar{align-items:flex-start;flex-direction:column}.rate{grid-template-columns:1fr}.data-row{align-items:flex-start;flex-direction:column}}
+
+/* Cronómetro permanente */
+.timer-widget{position:fixed;right:16px;bottom:16px;z-index:70;width:270px;background:#10172a;color:white;border-radius:18px;padding:13px;box-shadow:0 16px 45px rgba(0,0,0,.28)}
+.timer-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.timer-clock{font-size:25px;font-weight:850;font-variant-numeric:tabular-nums}.timer-rate{font-size:12px;color:#bfc9df;margin-top:2px}
+.timer-buttons{display:flex;gap:6px;margin-top:9px}.timer-buttons button{flex:1;border:0;border-radius:10px;padding:8px 6px;font-weight:750;cursor:pointer}
+.timer-start{background:#39b872;color:white}.timer-stop{background:#f0a526;color:#1e2433}.timer-history{background:#33415f;color:white}
+.timer-mini{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:9px}.timer-mini div{background:#202c49;border-radius:9px;padding:7px;text-align:center;font-size:11px;color:#bfc9df}.timer-mini b{display:block;color:white;font-size:16px}
+.seal{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800}.seal.ok{background:#e6f7ed;color:#11693d}.seal.no{background:#f1f3f8;color:#68748a}.seal.ready{background:#fff4d7;color:#8a5a00}
+.deck-status{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.meta-panel{margin-top:14px;padding-top:13px;border-top:1px solid var(--line)}.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;font-size:12px}.meta-chip{background:#f2f4fa;border-radius:9px;padding:7px}.tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.tag{background:#e9edff;color:#304eb8;padding:4px 7px;border-radius:999px;font-size:11px}
+.advanced-filters{display:grid;grid-template-columns:repeat(6,minmax(130px,1fr));gap:8px;margin-bottom:14px}.advanced-filters input,.advanced-filters select{border:1px solid var(--line);background:white;padding:10px;border-radius:11px;min-width:0}
+.history-table{width:100%;border-collapse:collapse}.history-table th,.history-table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px}.history-table th{background:#f1f3f8}
+.cert-banner{margin:0 0 12px;padding:12px;border-radius:14px;font-weight:700}.cert-banner.training{background:#eef1ff;color:#304eb8}.cert-banner.cert{background:#fff4d7;color:#8a5a00}.cert-banner.done{background:#e6f7ed;color:#11693d}
+@media(max-width:700px){.timer-widget{right:10px;bottom:10px;width:240px}.advanced-filters{grid-template-columns:1fr 1fr}}
+
+
+.cloudbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.cloud-user{display:flex;align-items:center;gap:7px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:6px 9px}.cloud-user img{width:28px;height:28px;border-radius:50%}.cloud-state{font-size:11px;color:var(--muted)}.sync-dot{width:9px;height:9px;border-radius:50%;background:#999}.sync-dot.ok{background:#24a866}.sync-dot.busy{background:#e7a320}.sync-dot.err{background:#d94b58}
+.login-screen{position:fixed;inset:0;background:linear-gradient(140deg,#10172a,#283866);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}.login-card{width:min(460px,100%);background:#fff;border-radius:24px;padding:28px;box-shadow:0 25px 80px rgba(0,0,0,.32);text-align:center}.login-card p{color:var(--muted);line-height:1.5}.google-btn{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:800;cursor:pointer}
+.timer-toggle{position:absolute;right:8px;top:7px;border:0;background:#33415f;color:#fff;border-radius:8px;width:29px;height:29px;cursor:pointer;font-weight:900}.timer-widget{transition:.2s;padding-top:39px}.timer-widget.collapsed{width:190px;padding:9px 42px 9px 12px;cursor:pointer}.timer-widget.collapsed .timer-buttons,.timer-widget.collapsed .timer-mini{display:none}.timer-widget.collapsed .timer-top{display:block}.timer-widget.collapsed .timer-clock{font-size:20px}.timer-widget.collapsed .timer-rate{white-space:nowrap}.timer-widget.collapsed .timer-toggle{top:50%;transform:translateY(-50%)}
+
+/* Generador de bloques */
+.generator-screen{position:fixed;inset:0;z-index:180;background:linear-gradient(140deg,#10172a,#283866);padding:18px;overflow:auto;display:none}
+.generator-screen.active{display:block}
+.generator-shell{width:min(920px,100%);margin:20px auto;background:white;border-radius:24px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.34)}
+.generator-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
+.generator-head h1{margin:0 0 6px}.generator-head p{margin:0;color:var(--muted)}
+.generator-form{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.generator-field{display:flex;flex-direction:column;gap:6px}.generator-field.full{grid-column:1/-1}
+.generator-field label{font-weight:750;font-size:13px}
+.generator-field input,.generator-field select,.generator-field textarea{border:1px solid var(--line);border-radius:12px;padding:11px 12px;background:white;width:100%}
+.generator-field textarea{min-height:92px;resize:vertical}
+.theme-list{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.prompt-output{min-height:360px!important;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.45;background:#111827!important;color:#eaf0ff!important}
+.generator-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.generator-tip{background:#eef1ff;color:#304eb8;border-radius:13px;padding:12px;font-size:13px;line-height:1.45}
+@media(max-width:700px){.generator-form,.theme-list{grid-template-columns:1fr}.generator-head{flex-direction:column}.generator-shell{padding:17px;margin:0 auto}}
+
+
+/* V4.4 · categorías plegables, pronunciación y flujo continuo */
+.category-group{padding:0;overflow:hidden}
+.category-toggle{width:100%;border:0;background:#fff;color:var(--text);padding:16px 18px;cursor:pointer;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.category-toggle:hover{background:#fafbff}
+.category-toggle-main{min-width:0;flex:1}
+.category-toggle-title{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.category-toggle-title h3{margin:0;font-size:18px}
+.category-toggle-summary{color:var(--muted);font-size:13px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.category-chevron{font-size:22px;transition:transform .18s;flex:0 0 auto;color:var(--muted)}
+.category-group.expanded .category-chevron{transform:rotate(180deg)}
+.category-content{padding:0 16px 16px;border-top:1px solid var(--line)}
+.category-group.collapsed .category-content{display:none}
+.category-content>p{margin:13px 0;color:var(--muted);font-size:13px}
+.category-content .deck-status{margin-bottom:13px}
+
+.pronunciation-box{display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;min-height:36px;margin:-2px 0 8px}
+.pronunciation-box.hidden-pronunciation{visibility:hidden}
+.pronunciation-btn{border:1px solid #cbd3ff;background:#eef1ff;color:#304eb8;border-radius:999px;padding:7px 12px;font-weight:800;cursor:pointer}
+.pronunciation-btn:hover{transform:translateY(-1px)}
+.pronunciation-text{font-size:14px;color:var(--muted)}
+.pronunciation-text b{color:var(--text)}
+
+.answer-row.session-finished input{display:none}
+.answer-row.session-finished .btn{flex:1}
+.session-end-actions{display:none;gap:9px;margin-top:10px}
+.session-end-actions.active{display:flex}
+.session-end-actions .btn{flex:1}
+.session-complete-message{margin-top:10px;padding:12px;border-radius:12px;background:#e8f7ee;color:#12663b;font-weight:750;line-height:1.45}
+#retryBtn{display:none!important}
+@media(max-width:600px){
+ .category-toggle{padding:14px}
+ .category-toggle-summary{white-space:normal}
+ .session-end-actions{flex-direction:column}
+}
+
+
+/* V4.5 · audio automático, teclado móvil y dominio auditivo */
+.pronunciation-switch{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:800;color:var(--muted)}
+.switch{position:relative;display:inline-block;width:48px;height:27px;flex:0 0 auto}
+.switch input{opacity:0;width:0;height:0}
+.switch-slider{position:absolute;inset:0;background:#c8cedb;border-radius:999px;cursor:pointer;transition:.2s}
+.switch-slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 2px 7px rgba(0,0,0,.23)}
+.switch input:checked + .switch-slider{background:var(--primary)}
+.switch input:checked + .switch-slider:before{transform:translateX(21px)}
+.audio-mode-note{background:#eef1ff;color:#304eb8;border-radius:12px;padding:10px;font-size:13px;line-height:1.4;margin-top:10px}
+
+.mobile-prompt-bar{display:none;background:#fff;border:2px solid #9bcfff;border-radius:16px;padding:11px 14px;margin-bottom:9px;box-shadow:0 9px 24px rgba(27,39,75,.13)}
+.mobile-prompt-label{font-size:11px;letter-spacing:.09em;color:var(--muted);text-transform:uppercase}
+.mobile-prompt-word{font-size:24px;font-weight:850;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mobile-prompt-example{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+
+.track-status{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.track-chip{border-radius:999px;padding:4px 8px;font-size:11px;font-weight:800;background:#f1f3f8;color:#68748a}
+.track-chip.ok{background:#e6f7ed;color:#11693d}
+.track-chip.ready{background:#fff4d7;color:#8a5a00}
+
+@media(max-width:700px){
+ body.keyboard-active .section-head,
+ body.keyboard-active #certBanner,
+ body.keyboard-active #flashcard,
+ body.keyboard-active .sidebox{display:none!important}
+ body.keyboard-active .study{display:block}
+ body.keyboard-active main{padding-top:8px}
+ body.keyboard-active #answerBox{margin-top:0}
+ body.keyboard-active .mobile-prompt-bar{display:block;position:sticky;top:6px;z-index:45}
+ body.keyboard-active .answer-box{border-radius:14px}
+ body.keyboard-active .answer-row input{font-size:19px}
+ .pronunciation-box{gap:7px}
+ .pronunciation-switch{width:100%;justify-content:center}
+}
+
+</style>
+</head>
+<body>
+
+<section class="generator-screen" id="generatorScreen">
+ <div class="generator-shell">
+  <div class="generator-head">
+   <div><h1>Generar nuevos bloques DATA</h1><p>Crea un prompt para pedir a cualquier ChatGPT hasta cinco archivos JSON de 50 palabras, listos para importar.</p></div>
+   <button class="btn" id="closeGeneratorBtn">✕ Cerrar</button>
+  </div>
+  <div class="generator-tip">El generador no crea el vocabulario dentro de esta app: prepara una instrucción completa. La copias en ChatGPT, descargas los JSON que genere y después los importas mediante <b>Importar DATA</b>.</div>
+  <div class="generator-form" style="margin-top:16px">
+   <div class="generator-field">
+    <label for="genLanguage">Idioma que quieres aprender</label>
+    <select id="genLanguage">
+     <option value="fr|Francés|Français|🇫🇷">Francés</option>
+     <option value="en|Inglés|English|🇬🇧">Inglés</option>
+     <option value="de|Alemán|Deutsch|🇩🇪">Alemán</option>
+     <option value="it|Italiano|Italiano|🇮🇹">Italiano</option>
+     <option value="pt|Portugués|Português|🇵🇹">Portugués</option>
+     <option value="ca|Catalán|Català|🏳️">Catalán</option>
+     <option value="nl|Neerlandés|Nederlands|🇳🇱">Neerlandés</option>
+     <option value="ja|Japonés|日本語|🇯🇵">Japonés</option>
+     <option value="ko|Coreano|한국어|🇰🇷">Coreano</option>
+     <option value="zh|Chino mandarín|中文|🇨🇳">Chino mandarín</option>
+     <option value="ar|Árabe|العربية|🌍">Árabe</option>
+     <option value="ru|Ruso|Русский|🇷🇺">Ruso</option>
+     <option value="other">Otro idioma…</option>
+    </select>
+   </div>
+   <div class="generator-field">
+    <label for="genCount">Número de bloques de 50 palabras</label>
+    <select id="genCount"><option value="1">1 bloque (50 palabras)</option><option value="2">2 bloques (100 palabras)</option><option value="3">3 bloques (150 palabras)</option><option value="4">4 bloques (200 palabras)</option><option value="5">5 bloques (250 palabras)</option></select>
+   </div>
+   <div class="generator-field full hidden" id="customLanguageWrap">
+    <label for="genCustomLanguage">Nombre y código del idioma</label>
+    <input id="genCustomLanguage" placeholder="Ej.: Griego | el | Ελληνικά | 🇬🇷">
+   </div>
+   <div class="generator-field">
+    <label for="genLevel">Nivel aproximado</label>
+    <select id="genLevel"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>Mixto y progresivo</option></select>
+   </div>
+   <div class="generator-field">
+    <label for="genStartNumber">Número inicial de bloque</label>
+    <input id="genStartNumber" type="number" min="1" max="999" value="1">
+   </div>
+   <div class="generator-field full">
+    <label>Temas de los bloques</label>
+    <div class="theme-list" id="genThemes"></div>
+   </div>
+   <div class="generator-field full">
+    <label for="genExtra">Instrucciones adicionales (opcional)</label>
+    <textarea id="genExtra" placeholder="Ej.: vocabulario centrado en negocios, evitar palabras demasiado básicas, usar registro cotidiano…"></textarea>
+   </div>
+   <div class="generator-field full">
+    <label for="generatedPrompt">Prompt generado</label>
+    <textarea class="prompt-output" id="generatedPrompt" readonly placeholder="Pulsa «Generar prompt»"></textarea>
+   </div>
+  </div>
+  <div class="generator-actions">
+   <button class="btn primary" id="generatePromptBtn">Generar prompt</button>
+   <button class="btn" id="copyPromptBtn">Copiar prompt</button>
+   <button class="btn" id="downloadPromptBtn">Descargar .txt</button>
+  </div>
+ </div>
+</section>
+
+<section class="login-screen" id="loginScreen"><div class="login-card"><h1>Language Master</h1><p>Inicia sesión con la misma cuenta en el móvil y el ordenador para sincronizar módulos, progreso, sellos, cronómetro e historial.</p><button class="google-btn" id="googleLoginBtn">Continuar con Google</button><p style="font-size:12px;margin-top:10px">En iPhone se abrirá una ventana segura de Google. No cierres esa ventana hasta terminar.</p><p id="loginMessage" style="font-size:13px"></p></div></section><section class="language-screen hidden" id="languageScreen">
+ <div class="language-panel">
+  <h1>Elige el idioma que quieres estudiar</h1>
+  <p class="subtitle">Los idiomas aparecen al importar archivos DATA.</p>
+  <div class="actions" style="margin-top:16px">
+   <button class="btn primary" id="homeImportBtn">＋ Importar DATA</button><button class="btn" id="homeGenerateBtn">✨ Generar bloques</button>
+   <input type="file" id="homeDataInput" accept=".json,application/json" multiple hidden>
+  </div>
+  <div class="language-grid" id="languageGrid"></div>
+  <div class="empty-home hidden" id="noLanguages">Todavía no hay DATA instalado. Pulsa <b>Importar DATA</b> y selecciona uno o varios archivos JSON.</div>
+ </div>
+</section>
+
+<div class="app hidden" id="app">
+<aside>
+ <div class="brand" id="brand">LANGUAGE MASTER<small>Flashcards modulares</small></div>
+ <button class="navbtn active" data-page="inicio">🏠 Inicio</button>
+ <button class="navbtn" data-page="vocabulario">🗂️ Vocabulario <span id="navVocab">0</span></button>
+ <button class="navbtn" data-page="estudiar">⚡ Estudiar mazo</button>
+ <button class="navbtn" data-page="datos">📦 Gestionar DATA</button><button class="navbtn" id="openGeneratorNav">✨ Generar bloques</button>
+ <button class="navbtn" data-page="progreso">📊 Progreso</button>
+ <button class="navbtn" id="changeLanguage">🌍 Cambiar idioma</button>
+ <div class="aside-note">Importa un JSON una sola vez. La aplicación lo guarda y lo carga automáticamente en futuras aperturas.</div>
+</aside>
+<main>
+<div class="topbar">
+ <div><h1 id="pageTitle">Panel de aprendizaje</h1><p class="subtitle" id="pageSubtitle">Estudia hasta dominar cada tarjeta sin fallos.</p></div>
+ <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="topGenerateBtn">✨ Generar bloques</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
+</div>
+
+<section id="inicio" class="section active">
+ <div class="grid">
+  <div class="card stat"><small>Vocabulario total</small><strong id="sTotal">0</strong></div>
+  <div class="card stat"><small>Dominadas</small><strong id="sMastered">0</strong><div class="progress"><i id="pMastered"></i></div></div>
+  <div class="card stat"><small>En aprendizaje</small><strong id="sLearning">0</strong></div>
+  <div class="card stat"><small>Precisión acumulada</small><strong id="sAccuracy">—</strong></div>
+ </div>
+ <div class="section-head"><div><h2>Continuar</h2><p>El sistema prioriza tarjetas pendientes.</p></div></div><div class="deck-grid" id="continueDecks"></div>
+</section>
+
+<section id="vocabulario" class="section">
+ <div class="section-head"><div><h2>Mazos de vocabulario</h2><p>Los mini-bloques dominan palabras. “Todas juntas” es un entrenamiento independiente y sirve para conseguir el sello final.</p></div></div>
+ <div class="advanced-filters">
+  <input id="deckSearch" placeholder="Buscar categoría o palabra…">
+  <select id="statusFilter"><option value="all">Todos los estados</option><option value="pending">Con palabras pendientes</option><option value="ready">Listos para examen final</option><option value="certified">Con sello dominado</option></select>
+  <select id="cefrFilter"><option value="all">Todos los niveles</option></select>
+  <select id="typeFilter"><option value="all">Todos los tipos</option></select>
+  <select id="difficultyFilter"><option value="all">Cualquier dificultad</option></select>
+  <select id="frequencyFilter"><option value="all">Cualquier frecuencia</option></select>
+ </div>
+ <div class="deck-grid" id="deckGrid"></div>
+</section>
+
+<section id="estudiar" class="section">
+ <div class="section-head"><div><h2 id="studyTitle">Estudiar</h2><p id="studySub">Selecciona un mazo.</p></div><button class="btn" id="shuffleBtn">Barajar</button></div>
+ <div id="certBanner" class="cert-banner training">Selecciona un mazo.</div><div class="study"><div>
+  <div class="card flash" id="flashcard">
+   <div class="label" id="cardLabel">IDIOMA</div>
+   <div class="front" id="cardFront">Selecciona un mazo</div>
+   <div class="pronunciation-box" id="pronunciationBox">
+    <button class="pronunciation-btn" id="speakWordBtn" type="button">🔊 Pronunciar</button>
+    <span class="pronunciation-text" id="pronunciationText"></span>
+    <label class="pronunciation-switch">
+     <span>Pronunciación automática</span>
+     <span class="switch"><input type="checkbox" id="autoPronunciationToggle"><span class="switch-slider"></span></span>
+    </label>
+   </div>
+   <div class="example" id="frontExample"></div>
+   <div class="back" id="cardBack"></div>
+   <div class="example back-example" id="backExample"></div>
+   <div class="hint">En autoevaluación, toca la tarjeta para mostrar la respuesta.</div>
+  </div>
+  <div class="rate" id="selfRate"><button class="bad" data-score="0">✕ Fallé</button><button class="warn" data-score="1">≈ Dudé</button><button class="good" data-score="2">✓ Acerté</button></div>
+  <div class="answer-box" id="answerBox">
+   <div class="mobile-prompt-bar" id="mobilePromptBar">
+    <div class="mobile-prompt-label" id="mobilePromptLabel">Palabra actual</div>
+    <div class="mobile-prompt-word" id="mobilePromptWord"></div>
+    <div class="mobile-prompt-example" id="mobilePromptExample"></div>
+   </div>
+   <div class="answer-row" id="answerRow">
+    <input id="writtenAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe la respuesta…">
+    <button class="btn primary" id="checkAnswerBtn">Comprobar</button>
+   </div>
+   <div class="answer-result" id="answerResult"></div>
+   <div class="session-end-actions" id="sessionEndActions">
+    <button class="btn" id="exitStudyBtn">Salir</button>
+   </div>
+  </div>
+ </div><div class="card sidebox"><h3>Sesión actual</h3><div class="big"><span id="sessionPos">0</span>/<span id="sessionTotal">0</span></div><p>Una tarjeta queda dominada tras acertarla 3 veces seguidas. Un fallo reinicia su racha.</p><div class="minirow"><span>Aciertos</span><b id="sessionGood">0</b></div><div class="minirow"><span>Dudas</span><b id="sessionWarn">0</b></div><div class="minirow"><span>Fallos</span><b id="sessionBad">0</b></div><div class="minirow"><span>Pendientes</span><b id="sessionPending">0</b></div><div class="meta-panel"><h4 style="margin:0 0 8px">Datos de la tarjeta</h4><div class="meta-grid" id="cardMetadata"></div><div class="tags" id="cardTags"></div></div>
+     <button class="btn primary" style="width:100%;margin-top:16px" id="retryBtn">Repetir no dominadas</button></div></div>
+</section>
+
+<section id="datos" class="section">
+ <div class="section-head"><div><h2>Gestionar DATA</h2><p>Importa, actualiza o elimina módulos sin tocar el código del programa.</p></div></div>
+ <div class="import-zone"><h3>Importar archivos JSON</h3><p>Puedes seleccionar uno o varios archivos a la vez. Si un JSON tiene el mismo <code>pack_id</code>, sustituye la versión anterior sin borrar el progreso de sus tarjetas.</p><button class="btn primary" id="manageImportBtn">Seleccionar JSON</button></div>
+ <div class="card"><h3 style="margin-top:0">Módulos instalados</h3><div id="dataList"></div></div>
+</section>
+
+<section id="progreso" class="section">
+ <div class="section-head"><div><h2>Progreso por módulo</h2><p>Resultados guardados en este dispositivo.</p></div></div><div id="progressList"></div>
+ <div class="section-head"><div><h2>Ritmo de aprendizaje</h2><p>Historial del cronómetro y media ponderada de palabras dominadas por minuto.</p></div></div>
+ <div class="card"><div id="timerSummary"></div><div style="overflow:auto;margin-top:12px"><table class="history-table"><thead><tr><th>Fecha</th><th>Duración</th><th>Dominadas</th><th>Revisadas</th><th>Palabras/min</th></tr></thead><tbody id="timerHistoryBody"></tbody></table></div></div>
+</section>
+</main></div>
+
+<div class="modalback" id="setupModal"><div class="modal"><h2 id="setupTitle">Configurar mazo</h2>
+ <div class="choicegroup"><strong>Dirección</strong><div class="choice">
+ <label><input type="radio" name="studyDirection" value="front-back" checked><span id="dirFrontBack">Idioma → español</span></label>
+ <label><input type="radio" name="studyDirection" value="back-front"><span id="dirBackFront">Español → idioma</span></label>
+ <label><input type="radio" name="studyDirection" value="audio-front"><span>🔊 Solo audio → escribir palabra</span></label>
+</div><div class="audio-mode-note">El modo de audio tiene progreso independiente. Para dominar completamente una categoría tendrás que conseguir el sello escrito y también el sello auditivo.</div></div>
+ <div class="choicegroup"><strong>Forma de responder</strong><div class="choice"><label><input type="radio" name="studyMode" value="self" checked>Fallé · Dudé · Acerté</label><label><input type="radio" name="studyMode" value="write">Escribir respuesta</label></div></div>
+ <div class="modal-actions"><button class="btn" id="cancelSetupBtn">Cancelar</button><button class="btn primary" id="beginDeckBtn">Empezar mazo</button></div>
+</div></div>
+
+<div class="timer-widget" id="timerWidget"><button class="timer-toggle" id="timerToggleBtn" title="Minimizar o ampliar">−</button>
+ <div class="timer-top"><div><div class="timer-clock" id="timerClock">00:00</div><div class="timer-rate" id="timerRate">0,00 dominadas/min</div></div><span id="timerState">Preparado</span></div>
+ <div class="timer-mini"><div><b id="timerMastered">0</b>dominadas</div><div><b id="timerReviewed">0</b>revisadas</div></div>
+ <div class="timer-buttons"><button class="timer-start" id="timerStartBtn">Iniciar</button><button class="timer-stop" id="timerStopBtn">Finalizar</button><button class="timer-history" id="timerHistoryBtn">Historial</button></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+
+const $=id=>document.getElementById(id);
+const PACKS_KEY="language_master_imported_packs_v2";
+const TIMER_KEY="language_master_timer_v1";
+let packs=[],selectedLanguage=null,languagePacks=[],vocab=[],state=null;
+let currentDeck=null,currentSource=[],queue=[],qIndex=0,direction="front-back",studyMode="self",pendingDeck=null;
+let answerButtonMode="check",sessionEndAction=null,currentCardForSpeech=null;
+let currentTrack="written";
+const AUTO_PRONUNCIATION_KEY="language_master_auto_pronunciation_v1";
+let autoPronunciation=true;
+try{autoPronunciation=JSON.parse(localStorage.getItem(AUTO_PRONUNCIATION_KEY)??"true")}catch(e){autoPronunciation=true}
+let initialViewportHeight=window.innerHeight;
+const DECK_EXPANDED_KEY="language_master_expanded_packs_v1";
+let expandedPacks=new Set();
+try{expandedPacks=new Set(JSON.parse(localStorage.getItem(DECK_EXPANDED_KEY)||"[]"))}catch(e){expandedPacks=new Set()}
+let session={good:0,warn:0,bad:0}, currentMode="mini", currentPack=null, certificationMode=false, certificationPerfect=true, certificationFailedIds=new Set();
+let timer={running:false,startedAt:0,elapsedBefore:0,mastered:0,reviewed:0,history:[]};
+let timerInterval=null;
+
+function toast(s){$("toast").textContent=s;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1800)}
+function loadPacksFallback(){try{return JSON.parse(localStorage.getItem(PACKS_KEY)||"[]")}catch(e){return[]}}
+function savePacksFallback(){try{localStorage.setItem(PACKS_KEY,JSON.stringify(packs));return true}catch(e){return false}}
+function openDB(){return new Promise((resolve,reject)=>{if(!("indexedDB" in window)){reject(new Error("IndexedDB no disponible"));return}const req=indexedDB.open("LanguageMasterDB",2);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("packs"))db.createObjectStore("packs",{keyPath:"pack_id"})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
+async function loadPacks(){try{const db=await openDB();packs=await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readonly"),r=tx.objectStore("packs").getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)});db.close()}catch(e){packs=loadPacksFallback()}}
+async function putPack(pack){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").put(pack);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){const i=packs.findIndex(x=>x.pack_id===pack.pack_id);if(i>=0)packs[i]=pack;else packs.push(pack);if(!savePacksFallback())throw new Error("No se pudo guardar el DATA")}}
+async function deletePack(id){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=packs.filter(x=>x.pack_id!==id);savePacksFallback()}await loadPacks();refreshAfterDataChange()}
+
+function validatePack(p){
+ if(p&&p.metadata&&Array.isArray(p.entradas)){
+  return {pack_id:`legacy_${p.metadata.bloque||Date.now()}_${String(p.metadata.categoria||"data").replace(/\W+/g,"_")}`,language_id:"fr",language_name:"Francés",native_name:"Français",flag:"🇫🇷",version:1,type:"vocabulary",category:p.metadata.categoria||"Vocabulario",title:p.metadata.categoria||"Vocabulario",description:`${p.entradas.length} entradas importadas`,cards:p.entradas.map(e=>({id:e.id,front:e.frances,back:(e.traducciones||[])[0]||"",sentence_front:e.frases?.[0]?.fr||e.frances,sentence_back:e.frases?.[0]?.es||((e.traducciones||[])[0]||"")}))}
+ }
+ if(!p||typeof p!=="object")throw new Error("El archivo no contiene un objeto JSON");
+ for(const k of ["pack_id","language_id","language_name","category","title","cards"])if(!p[k])throw new Error(`Falta el campo ${k}`);
+ if(!Array.isArray(p.cards)||!p.cards.length)throw new Error("El módulo no contiene tarjetas");
+ const ids=new Set();
+ for(const c of p.cards){if(!c.id||!c.front||!c.back)throw new Error("Alguna tarjeta no tiene id, front o back");if(ids.has(c.id))throw new Error(`ID repetido: ${c.id}`);ids.add(c.id);c.sentence_front=c.sentence_front||c.front;c.sentence_back=c.sentence_back||c.back}
+ return p;
+}
+async function importFiles(fileList){const files=[...fileList];if(!files.length)return;let ok=0,errors=[];for(const f of files){try{const p=validatePack(JSON.parse(await f.text()));await putPack(p);ok++}catch(e){errors.push(`${f.name}: ${e.message}`)}}await loadPacks();refreshAfterDataChange();if(ok){toast(`${ok} módulo${ok===1?"":"s"} importado${ok===1?"":"s"}`);window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));}if(errors.length)alert("No se pudieron importar:\n\n"+errors.join("\n"))}
+
+function languages(){const m=new Map();for(const p of packs)if(!m.has(p.language_id))m.set(p.language_id,{id:p.language_id,name:p.language_name,native:p.native_name,flag:p.flag});return[...m.values()]}
+function renderLanguageScreen(){const a=languages();$("languageGrid").innerHTML=a.map(l=>`<button class="language-card" data-language="${l.id}"><span>${l.flag||"🌍"}</span><strong>${l.name}</strong><br><small>${l.native||""}</small></button>`).join("");$("noLanguages").classList.toggle("hidden",a.length>0);document.querySelectorAll("[data-language]").forEach(b=>b.onclick=()=>selectLanguage(b.dataset.language))}
+function enrichCard(c,p){return {...c,pack_id:p.pack_id,pack_title:p.title,category:p.category,grammar:c.grammar||{},learning:c.learning||{},tags:Array.isArray(c.tags)?c.tags:[],examples:Array.isArray(c.examples)&&c.examples.length?c.examples:[{fr:c.sentence_front,es:c.sentence_back}]}}
+function selectLanguage(id){selectedLanguage=id;languagePacks=packs.filter(p=>p.language_id===id);vocab=languagePacks.flatMap(p=>p.cards.map(c=>enrichCard(c,p)));const i=languages().find(x=>x.id===id);$("brand").innerHTML=`${i.flag||""} ${i.native||i.name}<small>Vocabulario modular</small>`;$("dirFrontBack").textContent=`${i.name} → español`;$("dirBackFront").textContent=`Español → ${i.name}`;loadState();migrateState();$("languageScreen").classList.add("hidden");$("app").classList.remove("hidden");populateMetadataFilters();renderAll()}
+function refreshAfterDataChange(){renderLanguageScreen();renderDataList();if(selectedLanguage){const exists=packs.some(p=>p.language_id===selectedLanguage);if(exists)selectLanguage(selectedLanguage);else{$("app").classList.add("hidden");$("languageScreen").classList.remove("hidden");selectedLanguage=null}}}
+
+function progressKey(){return`language_master_progress_${selectedLanguage}_v1`}
+function emptyState(){return{cards:{},all:{},listening:{cards:{},all:{}},attempts:0,good:0,warn:0,bad:0}}
+function loadState(){
+ try{state=JSON.parse(localStorage.getItem(progressKey())||"null")||emptyState()}catch(e){state=emptyState()}
+ state.cards=state.cards||{};state.all=state.all||{};
+ state.listening=state.listening||{cards:{},all:{}};state.listening.cards=state.listening.cards||{};state.listening.all=state.listening.all||{}
+}
+function migrateState(){
+ for(const c of vocab){
+  const key=cardKey(c), old=state.cards[c.id], cur=state.cards[key];
+  if(!cur&&old){state.cards[key]={miniStreak:old.miniStreak??old.streak??0,miniMastered:old.miniMastered??old.mastered??false,attempts:old.attempts||0,fails:old.fails||0,last:old.last||0}}
+  if(!state.cards[key])state.cards[key]={miniStreak:0,miniMastered:false,attempts:0,fails:0,last:0};
+ }
+ saveRaw();
+}
+function saveRaw(){try{localStorage.setItem(progressKey(),JSON.stringify(state))}catch(e){} if(selectedLanguage)window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"progress",language:selectedLanguage}}))}
+function save(){saveRaw();renderStats()}
+function cardKey(c){return`${c.pack_id}::${c.id}`}
+function miniState(c){const k=cardKey(c);return state.cards[k]||(state.cards[k]={miniStreak:0,miniMastered:false,attempts:0,fails:0,last:0})}
+function packAllState(packId){return state.all[packId]||(state.all[packId]={cards:{},certified:false,certifiedAt:null,certificationAttempts:0,reviewed:0})}
+function allCardState(c){const p=packAllState(c.pack_id),k=c.id;return p.cards[k]||(p.cards[k]={streak:0,mastered:false,attempts:0,fails:0})}
+function listeningMiniState(c){
+ const k=cardKey(c),root=state.listening.cards;
+ return root[k]||(root[k]={miniStreak:0,miniMastered:false,attempts:0,fails:0,last:0})
+}
+function listeningPackAllState(packId){
+ const root=state.listening.all;
+ return root[packId]||(root[packId]={cards:{},certified:false,certifiedAt:null,certificationAttempts:0,reviewed:0})
+}
+function listeningAllCardState(c){
+ const p=listeningPackAllState(c.pack_id),k=c.id;
+ return p.cards[k]||(p.cards[k]={streak:0,mastered:false,attempts:0,fails:0})
+}
+function activeMiniState(c){return currentTrack==="listening"?listeningMiniState(c):miniState(c)}
+function activePackAllState(packId){return currentTrack==="listening"?listeningPackAllState(packId):packAllState(packId)}
+function activeAllCardState(c){return currentTrack==="listening"?listeningAllCardState(c):allCardState(c)}
+function listeningMiniMasteredCount(cards){return cards.filter(c=>listeningMiniState(c).miniMastered).length}
+function listeningAllMasteredCount(cards){return cards.filter(c=>listeningAllCardState(c).mastered).length}
+function listeningMiniComplete(packId){const c=packCards(packId);return c.length>0&&listeningMiniMasteredCount(c)===c.length}
+function listeningAllTrained(packId){const c=packCards(packId);return c.length>0&&listeningAllMasteredCount(c)===c.length}
+function listeningCertified(packId){return !!listeningPackAllState(packId).certified}
+function fullyCertified(packId){return packCertified(packId)&&listeningCertified(packId)}
+function activeMiniMasteredCount(cards){return currentTrack==="listening"?listeningMiniMasteredCount(cards):miniMasteredCount(cards)}
+function activeAllMasteredCount(cards){return currentTrack==="listening"?listeningAllMasteredCount(cards):allMasteredCount(cards)}
+function activeMiniComplete(packId){return currentTrack==="listening"?listeningMiniComplete(packId):packMiniComplete(packId)}
+function activeAllTrained(packId){return currentTrack==="listening"?listeningAllTrained(packId):packAllTrained(packId)}
+function activeCertified(packId){return currentTrack==="listening"?listeningCertified(packId):packCertified(packId)}
+
+function packCards(packId){return vocab.filter(c=>c.pack_id===packId)}
+function miniMasteredCount(cards){return cards.filter(c=>miniState(c).miniMastered).length}
+function allMasteredCount(cards){return cards.filter(c=>allCardState(c).mastered).length}
+function packMiniComplete(packId){const c=packCards(packId);return c.length>0&&miniMasteredCount(c)===c.length}
+function packAllTrained(packId){const c=packCards(packId);return c.length>0&&allMasteredCount(c)===c.length}
+function packCertified(packId){return !!packAllState(packId).certified}
+function split10(a){const r=[];for(let i=0;i<a.length;i+=10)r.push(a.slice(i,i+10));return r}
+
+function normalize(s){return String(s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[¿?¡!.,;:'’()[\]]/g," ").replace(/\s+/g," ").trim()}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function highlight(s,t){const a=esc(s),b=esc(String(t).split(/\s*\/\s*/)[0]),i=a.toLowerCase().indexOf(b.toLowerCase());return i<0?a:a.slice(0,i)+"<mark>"+a.slice(i,i+b.length)+"</mark>"+a.slice(i+b.length)}
+function fmtNum(n){return Number(n||0).toLocaleString("es-ES",{minimumFractionDigits:2,maximumFractionDigits:2})}
+
+const titles={inicio:["Panel de aprendizaje","Estudia hasta dominar cada tarjeta sin fallos."],vocabulario:["Vocabulario","Mini-bloques, entrenamiento conjunto y sello final."],estudiar:["Sesión de estudio","El progreso depende del tipo de mazo seleccionado."],datos:["Gestionar DATA","Importa o elimina módulos sin tocar el código."],progreso:["Tu progreso","Palabras dominadas, sellos finales y ritmo de aprendizaje."]};
+function go(p){document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===p));document.querySelectorAll(".navbtn[data-page]").forEach(b=>b.classList.toggle("active",b.dataset.page===p));$("pageTitle").textContent=titles[p][0];$("pageSubtitle").textContent=titles[p][1];if(p==="progreso")renderProgress();if(p==="datos")renderDataList()}
+document.querySelectorAll(".navbtn[data-page]").forEach(b=>b.onclick=()=>go(b.dataset.page));
+
+function populateMetadataFilters(){
+ const add=(id,vals,label)=>{const s=$(id),current=s.value;s.innerHTML=`<option value="all">${label}</option>`+[...vals].filter(Boolean).sort().map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("");if([...s.options].some(o=>o.value===current))s.value=current};
+ add("cefrFilter",new Set(vocab.map(c=>c.learning.cefr)),"Todos los niveles");
+ add("typeFilter",new Set(vocab.map(c=>c.grammar.type)),"Todos los tipos");
+ add("difficultyFilter",new Set(vocab.map(c=>c.learning.difficulty).filter(x=>x!=null).map(String)),"Cualquier dificultad");
+ add("frequencyFilter",new Set(vocab.map(c=>c.learning.frequency).filter(x=>x!=null).map(String)),"Cualquier frecuencia");
+}
+
+let registry={};
+function reg(label,cards,mode,pack){const id="d"+Object.keys(registry).length;registry[id]={label,cards,mode,pack};return id}
+function miniDeckCard(label,cards,pack){
+ const m=miniMasteredCount(cards),pct=Math.round(m/cards.length*100),id=reg(label,cards,"mini",pack);
+ return`<div class="card deck subdeck" data-deck="${id}"><h3>${label}</h3><p>${cards.length} palabras · ${cards.length-m} pendientes</p><div class="progress"><i style="width:${pct}%"></i></div><div class="meta"><span>${pct}% dominado</span><b>Estudiar →</b></div></div>`
+}
+function allDeckCard(pack,cards){
+ const trained=allMasteredCount(cards),listenTrained=listeningAllMasteredCount(cards);
+ const pct=Math.round(trained/cards.length*100),lpct=Math.round(listenTrained/cards.length*100);
+ const writtenCert=packCertified(pack.pack_id),listenCert=listeningCertified(pack.pack_id),full=writtenCert&&listenCert;
+ const id=reg("Todas juntas",cards,"all",pack);
+ return`<div class="card deck subdeck all" data-deck="${id}">
+  <h3>Todas juntas</h3><p>${cards.length} palabras · progreso escrito y auditivo independiente</p>
+  <div class="track-status">
+   <span class="track-chip ${writtenCert?"ok":packMiniComplete(pack.pack_id)&&packAllTrained(pack.pack_id)?"ready":""}">✍️ Escrito: ${writtenCert?"sello":pct+"%"}</span>
+   <span class="track-chip ${listenCert?"ok":listeningMiniComplete(pack.pack_id)&&listeningAllTrained(pack.pack_id)?"ready":""}">🔊 Audio: ${listenCert?"sello":lpct+"%"}</span>
+   <span class="track-chip ${full?"ok":""}">${full?"🏅 Dominio completo":"Dominio incompleto"}</span>
+  </div>
+  <div class="meta"><span>Elige el modo al entrar</span><b>Estudiar →</b></div>
+ </div>`
+}
+function bind(root){root.querySelectorAll("[data-deck]").forEach(e=>e.onclick=()=>{const d=registry[e.dataset.deck];openSetup(d)})}
+function categoryMatches(pack,cards){
+ const q=$("deckSearch").value.toLowerCase(),status=$("statusFilter").value,cefr=$("cefrFilter").value,type=$("typeFilter").value,diff=$("difficultyFilter").value,freq=$("frequencyFilter").value;
+ const searchable=(pack.title+" "+cards.map(c=>c.front+" "+c.back+" "+c.tags.join(" ")).join(" ")).toLowerCase();
+ if(q&&!searchable.includes(q))return false;
+ const miniDone=packMiniComplete(pack.pack_id),cert=fullyCertified(pack.pack_id),ready=(miniDone&&packAllTrained(pack.pack_id)&&!packCertified(pack.pack_id))||(listeningMiniComplete(pack.pack_id)&&listeningAllTrained(pack.pack_id)&&!listeningCertified(pack.pack_id));
+ if(status==="pending"&&miniDone)return false;if(status==="ready"&&!ready)return false;if(status==="certified"&&!cert)return false;
+ const cardMatch=c=>(cefr==="all"||String(c.learning.cefr)===cefr)&&(type==="all"||String(c.grammar.type)===type)&&(diff==="all"||String(c.learning.difficulty)===diff)&&(freq==="all"||String(c.learning.frequency)===freq);
+ return cards.some(cardMatch);
+}
+function saveExpandedPacks(){try{localStorage.setItem(DECK_EXPANDED_KEY,JSON.stringify([...expandedPacks]))}catch(e){}}
+function bindCategoryToggles(root){
+ root.querySelectorAll("[data-pack-toggle]").forEach(btn=>btn.onclick=()=>{
+  const id=btn.dataset.packToggle;
+  if(expandedPacks.has(id))expandedPacks.delete(id);else expandedPacks.add(id);
+  saveExpandedPacks();
+  const group=btn.closest(".category-group"),open=expandedPacks.has(id);
+  group.classList.toggle("expanded",open);group.classList.toggle("collapsed",!open);
+  btn.setAttribute("aria-expanded",String(open));
+ })
+}
+function renderDecks(){
+ registry={};let out="";
+ for(const p of languagePacks){
+  const cards=packCards(p.pack_id);if(!categoryMatches(p,cards))continue;
+  const chunks=split10(cards),open=expandedPacks.has(p.pack_id),mini=miniMasteredCount(cards),listenMini=listeningMiniMasteredCount(cards),cert=fullyCertified(p.pack_id);
+  out+=`<div class="category-group ${open?"expanded":"collapsed"}">
+   <button class="category-toggle" data-pack-toggle="${esc(p.pack_id)}" aria-expanded="${open}">
+    <div class="category-toggle-main">
+     <div class="category-toggle-title"><h3>${esc(p.title)}</h3><span class="seal ${cert?"ok":"no"}">${cert?"🏅 DOMINADO":`${mini}/${cards.length} palabras`}</span></div>
+     <div class="category-toggle-summary">${esc(p.description||`${chunks.length} mini-bloques de 10 palabras`)} · ✍️ ${mini}/${cards.length} · 🔊 ${listenMini}/${cards.length}</div>
+    </div>
+    <span class="category-chevron">⌄</span>
+   </button>
+   <div class="category-content">
+    <p>${esc(p.description||"")}</p>
+    <div class="deck-status"><span class="seal ${packMiniComplete(p.pack_id)?"ok":"no"}">✍️ Escrito: ${mini}/${cards.length}</span><span class="seal ${listeningMiniComplete(p.pack_id)?"ok":"no"}">🔊 Audio: ${listenMini}/${cards.length}</span><span class="seal ${cert?"ok":"no"}">${cert?"🏅 DOMINADO COMPLETO":"Sellos pendientes"}</span></div>
+    <div class="subdeck-grid">${allDeckCard(p,cards)}`;
+  chunks.forEach((x,i)=>out+=miniDeckCard(`Bloque ${i+1} · ${i*10+1}-${i*10+x.length}`,x,p));
+  out+="</div></div></div>"
+ }
+ $("deckGrid").innerHTML=out||'<div class="empty-home">No hay mazos que coincidan con los filtros.</div>';
+ bind($("deckGrid"));bindCategoryToggles($("deckGrid"));
+}
+function renderContinue(){
+ registry={};let out="";
+ for(const p of languagePacks.slice(0,3)){const cards=packCards(p.pack_id),chunks=split10(cards),x=chunks.find(a=>miniMasteredCount(a)<a.length);if(x){const i=chunks.indexOf(x);out+=miniDeckCard(`${p.title} · Bloque ${i+1}`,x,p)}else if(!packCertified(p.pack_id)){out+=allDeckCard(p,cards)}}
+ $("continueDecks").innerHTML=out||'<div class="card">Todo lo instalado está dominado y certificado.</div>';bind($("continueDecks"));
+}
+function renderStats(){
+ const total=vocab.length,m=vocab.filter(c=>miniState(c).miniMastered).length,l=vocab.filter(c=>miniState(c).attempts>0&&!miniState(c).miniMastered).length;
+ $("sTotal").textContent=total;$("navVocab").textContent=total;$("sMastered").textContent=m;$("sLearning").textContent=l;$("sAccuracy").textContent=state.attempts?Math.round(state.good/state.attempts*100)+"%":"—";$("pMastered").style.width=(total?m/total*100:0)+"%";renderContinue();renderDecks()
+}
+function renderProgress(){
+ $("progressList").innerHTML=languagePacks.map(p=>{
+  const c=packCards(p.pack_id),wm=miniMasteredCount(c),wa=allMasteredCount(c),lm=listeningMiniMasteredCount(c),la=listeningAllMasteredCount(c);
+  const wc=packCertified(p.pack_id),lc=listeningCertified(p.pack_id),full=wc&&lc;
+  return`<div class="card" style="margin-bottom:12px">
+   <div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><b>${esc(p.title)}</b><span class="seal ${full?"ok":"no"}">${full?"🏅 DOMINIO COMPLETO":"Pendiente"}</span></div>
+   <p>✍️ Escrito: mini-bloques ${wm}/${c.length}, Todas juntas ${wa}/${c.length}, sello ${wc?"sí":"no"}.</p>
+   <p>🔊 Auditivo: mini-bloques ${lm}/${c.length}, Todas juntas ${la}/${c.length}, sello ${lc?"sí":"no"}.</p>
+  </div>`
+ }).join("");
+ renderTimerHistory();
+}
+function renderDataList(){$("dataList").innerHTML=packs.length?packs.map(p=>`<div class="data-row"><div><b>${p.flag||"🌍"} ${p.title}</b><div class="data-meta">${p.language_name} · ${p.cards.length} tarjetas · ID: ${p.pack_id} · versión ${p.version||1}</div></div><button class="btn danger small" data-delete-pack="${p.pack_id}">Eliminar</button></div>`).join(""):'<div class="empty-home">No hay módulos instalados.</div>';document.querySelectorAll("[data-delete-pack]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este módulo DATA? El progreso no se borrará."))deletePack(b.dataset.deletePack)})}
+function renderAll(){renderStats();renderDataList();go("inicio")}
+
+function openSetup(d){pendingDeck=d;$("setupTitle").textContent="Configurar: "+d.label;$("setupModal").classList.add("active")}
+function closeSetup(){$("setupModal").classList.remove("active")}
+function setMainButton(mode,label){
+ answerButtonMode=mode;$("checkAnswerBtn").textContent=label;$("checkAnswerBtn").disabled=false
+}
+function resetAnswerInterface(){
+ $("answerRow").classList.remove("session-finished");$("sessionEndActions").classList.remove("active");
+ $("writtenAnswer").style.display="";$("answerResult").className="answer-result";$("answerResult").textContent="";
+ sessionEndAction=null
+}
+function startDeck(label,cards,mode,pack){
+ currentDeck=label;currentSource=cards;currentMode=mode;currentPack=pack;currentTrack=direction==="audio-front"?"listening":"written";certificationMode=false;certificationPerfect=true;certificationFailedIds=new Set();
+ if(mode==="mini"){
+  queue=cards.filter(c=>!activeMiniState(c).miniMastered);if(!queue.length)queue=[...cards];
+ }else{
+  const miniDone=activeMiniComplete(pack.pack_id),allDone=activeAllTrained(pack.pack_id);
+  if(miniDone&&allDone&&!activeCertified(pack.pack_id)){certificationMode=true;activePackAllState(pack.pack_id).certificationAttempts++;queue=[...cards]}
+  else{queue=cards.filter(c=>!activeAllCardState(c).mastered);if(!queue.length)queue=[...cards]}
+ }
+ queue.sort(()=>Math.random()-.5);qIndex=0;session={good:0,warn:0,bad:0};
+ go("estudiar");$("studyTitle").textContent=label;
+ if(direction==="audio-front")studyMode="write";
+ $("studySub").textContent=(direction==="audio-front"?"Solo audio → escribir palabra":direction==="front-back"?"Idioma → español":"Español → idioma")+" · "+(studyMode==="write"?"respuesta escrita":"autoevaluación");
+ $("selfRate").style.display=studyMode==="self"?"grid":"none";
+ resetAnswerInterface();$("answerBox").classList.toggle("active",studyMode==="write");
+ setMainButton("check","Comprobar");updateCertBanner();showCard()
+}
+function updateCertBanner(){
+ const b=$("certBanner");
+ if(currentMode==="mini"){b.className="cert-banner training";b.textContent=currentTrack==="listening"?"Mini-bloque auditivo: escucha y escribe. Su progreso es independiente del escrito.":"Mini-bloque escrito: aquí se dominan las palabras del recorrido escrito."}
+ else if(activeCertified(currentPack.pack_id)){b.className="cert-banner done";b.textContent=currentTrack==="listening"?"🏅 Sello auditivo conseguido.":"🏅 Sello escrito conseguido."}
+ else if(certificationMode){b.className="cert-banner cert";b.textContent="⚡ Intento de sello: debes acertar todas a la primera, sin fallos ni dudas."}
+ else{b.className="cert-banner training";b.textContent="Todas juntas: entrenamiento independiente. Las respuestas cuentan como palabras revisadas, no como nuevas palabras dominadas."}
+}
+function chooseExample(c){
+ const ex=c.examples[Math.floor(Math.random()*c.examples.length)]||{fr:c.sentence_front,es:c.sentence_back};
+ return direction==="front-back"?{front:ex.fr,back:ex.es}:{front:ex.es,back:ex.fr}
+}
+const front=c=>direction==="front-back"?c.front:c.back,back=c=>direction==="front-back"?c.back:c.front;
+
+
+function initAutoPronunciation(){
+ $("autoPronunciationToggle").checked=!!autoPronunciation;
+ $("autoPronunciationToggle").onchange=()=>{
+  autoPronunciation=$("autoPronunciationToggle").checked;
+  try{localStorage.setItem(AUTO_PRONUNCIATION_KEY,JSON.stringify(autoPronunciation))}catch(e){}
+ }
+}
+function updateMobilePrompt(c,ex){
+ if(!c){$("mobilePromptWord").textContent="";$("mobilePromptExample").textContent="";return}
+ if(direction==="audio-front"){
+  $("mobilePromptLabel").textContent="Modo auditivo";
+  $("mobilePromptWord").textContent="🔊 Escucha y escribe la palabra";
+  $("mobilePromptExample").textContent="Pulsa «Pronunciar» para repetir el audio";
+ }else{
+  $("mobilePromptLabel").textContent=direction==="front-back"?"Idioma → español":"Español → idioma";
+  $("mobilePromptWord").textContent=front(c);
+  $("mobilePromptExample").textContent=ex?.front||"";
+ }
+}
+function scrollForKeyboard(){
+ if(window.innerWidth>700)return;
+ document.body.classList.add("keyboard-active");
+ setTimeout(()=>{
+  const bar=$("mobilePromptBar");
+  if(bar)bar.scrollIntoView({block:"start",behavior:"auto"});
+ },80)
+}
+function keyboardClosed(){document.body.classList.remove("keyboard-active")}
+$("writtenAnswer").addEventListener("focus",scrollForKeyboard);
+$("writtenAnswer").addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==$("writtenAnswer"))keyboardClosed()},120));
+if(window.visualViewport){
+ const baseHeight=window.visualViewport.height;
+ window.visualViewport.addEventListener("resize",()=>{
+  const keyboardOpen=window.visualViewport.height<baseHeight*0.78;
+  document.body.classList.toggle("keyboard-active",keyboardOpen&&document.activeElement===$("writtenAnswer"));
+  if(keyboardOpen&&document.activeElement===$("writtenAnswer"))scrollForKeyboard()
+ })
+}
+
+function languageVoiceCode(){
+ const map={fr:"fr-FR",en:"en-GB",de:"de-DE",it:"it-IT",pt:"pt-PT",ca:"ca-ES",nl:"nl-NL",ja:"ja-JP",ko:"ko-KR",zh:"zh-CN",ar:"ar-SA",ru:"ru-RU"};
+ return map[selectedLanguage]||selectedLanguage||"fr-FR"
+}
+function pronunciationValue(c){
+ return c?.pronunciation||c?.ipa||c?.phonetic||c?.grammar?.pronunciation||""
+}
+function renderPronunciation(c,revealed=false){
+ currentCardForSpeech=c||null;
+ if(!c){$("pronunciationBox").classList.add("hidden-pronunciation");$("pronunciationText").textContent="";return}
+ const canReveal=direction==="front-back"||direction==="audio-front"||revealed;
+ $("pronunciationBox").classList.toggle("hidden-pronunciation",!canReveal);
+ const value=pronunciationValue(c);
+ $("pronunciationText").innerHTML=value?`<b>Pronunciación:</b> ${esc(value)}`:"Pronunciación de audio";
+}
+function speakCurrentWord(e){
+ if(e)e.stopPropagation();
+ const c=currentCardForSpeech;if(!c)return;
+ if(!("speechSynthesis" in window)){toast("Este navegador no permite reproducir pronunciación");return}
+ window.speechSynthesis.cancel();
+ const utter=new SpeechSynthesisUtterance(c.front);
+ utter.lang=languageVoiceCode();utter.rate=.82;
+ const voices=window.speechSynthesis.getVoices(),prefix=utter.lang.split("-")[0].toLowerCase();
+ const voice=voices.find(v=>v.lang.toLowerCase()===utter.lang.toLowerCase())||voices.find(v=>v.lang.toLowerCase().startsWith(prefix));
+ if(voice)utter.voice=voice;
+ window.speechSynthesis.speak(utter)
+}
+$("speakWordBtn").onclick=speakCurrentWord;
+
+function renderMetadata(c){
+ if(!c){$("cardMetadata").innerHTML="";$("cardTags").innerHTML="";return}
+ const g=c.grammar||{},l=c.learning||{};
+ $("cardMetadata").innerHTML=`<div class="meta-chip"><b>Nivel</b><br>${esc(l.cefr||"Sin dato")}</div><div class="meta-chip"><b>Tipo</b><br>${esc(g.type||"Sin dato")}</div><div class="meta-chip"><b>Género</b><br>${esc(g.gender||"—")}</div><div class="meta-chip"><b>Dificultad</b><br>${esc(l.difficulty??"—")}/5</div><div class="meta-chip"><b>Frecuencia</b><br>${esc(l.frequency??"—")}/5</div><div class="meta-chip"><b>Modo</b><br>${currentMode==="mini"?"Dominio":"Revisión"}</div>`;
+ $("cardTags").innerHTML=(c.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")
+}
+function showCard(){
+ const c=queue[qIndex],input=$("writtenAnswer");
+ resetAnswerInterface();input.value="";input.disabled=false;setMainButton("check","Comprobar");
+ if(!c){finishSession();return}
+ const ex=chooseExample(c);
+ $("cardLabel").textContent=direction==="audio-front"?"SOLO AUDIO → ESCRIBIR":direction==="front-back"?"IDIOMA → ESPAÑOL":"ESPAÑOL → IDIOMA";
+ $("cardFront").textContent=front(c);
+ if(direction==="audio-front")$("frontExample").innerHTML="Pulsa el audio y escribe exactamente la palabra o expresión que escuches.";
+ else $("frontExample").innerHTML=highlight(ex.front,front(c));
+ updateMobilePrompt(c,ex);
+ $("cardBack").textContent=back(c);
+ $("backExample").innerHTML=direction==="audio-front"?highlight(c.sentence_front,c.front):highlight(ex.back,back(c));
+ $("flashcard").classList.remove("flipped");renderPronunciation(c,direction==="audio-front");
+ if(direction==="audio-front")setTimeout(()=>speakCurrentWord(),120);
+ $("sessionPos").textContent=qIndex+1;$("sessionTotal").textContent=queue.length;
+ $("sessionGood").textContent=session.good;$("sessionWarn").textContent=session.warn;$("sessionBad").textContent=session.bad;
+ $("sessionPending").textContent=currentMode==="mini"?currentSource.length-activeMiniMasteredCount(currentSource):currentSource.length-activeAllMasteredCount(currentSource);
+ renderMetadata(c);$("selfRate").style.display=studyMode==="self"?"grid":"none";
+ $("answerBox").classList.toggle("active",studyMode==="write");
+ if(studyMode==="write")setTimeout(()=>{
+  try{input.focus({preventScroll:true})}catch(e){input.focus()}
+  if(document.body.classList.contains("keyboard-active"))scrollForKeyboard()
+ },40)
+}
+function miniNavigationInfo(){
+ if(currentMode!=="mini"||!currentPack)return null;
+ const chunks=split10(packCards(currentPack.pack_id)),ids=new Set(currentSource.map(c=>c.id));
+ const index=chunks.findIndex(ch=>ch.length===currentSource.length&&ch.every(c=>ids.has(c.id)));
+ return{chunks,index,next:index>=0?chunks[index+1]:null}
+}
+function configureSessionEndAction(){
+ const pending=currentMode==="mini"?currentSource.length-activeMiniMasteredCount(currentSource):currentSource.length-activeAllMasteredCount(currentSource);
+ if(pending>0){sessionEndAction="retry";setMainButton("end","Repetir no dominadas");return}
+ if(currentMode==="mini"){
+  const nav=miniNavigationInfo();
+  if(nav?.next){sessionEndAction="next-mini";setMainButton("end","Siguiente minibloque")}
+  else{sessionEndAction="all";setMainButton("end","Ir a Todas juntas")}
+  return
+ }
+ if(activeCertified(currentPack?.pack_id)){sessionEndAction="review-all";setMainButton("end","Revisar todas otra vez");return}
+ if(activeMiniComplete(currentPack?.pack_id)&&activeAllTrained(currentPack?.pack_id)){sessionEndAction="seal";setMainButton("end","Intentar sello sin fallos");return}
+ sessionEndAction="retry";setMainButton("end","Repetir no dominadas")
+}
+function finishSession(){
+ $("cardLabel").textContent="SESIÓN TERMINADA";$("frontExample").innerHTML="";$("backExample").innerHTML="";renderMetadata(null);renderPronunciation(null);
+ let completeMessage="";
+ if(currentMode==="all"&&certificationMode){
+  if(certificationPerfect){
+   activePackAllState(currentPack.pack_id).certified=true;activePackAllState(currentPack.pack_id).certifiedAt=Date.now();
+   $("cardFront").textContent="🏅 ¡Bloque dominado!";$("cardBack").textContent="Has acertado todas a la primera.";
+   completeMessage=currentTrack==="listening"?"Has conseguido el sello auditivo.":"Has conseguido el sello escrito.";toast("Sello de bloque conseguido")
+  }else{
+   $("cardFront").textContent="Intento de sello no superado";$("cardBack").textContent="Repite las palabras que fallaste hasta dominarlas de nuevo.";
+   activePackAllState(currentPack.pack_id).certified=false
+  }
+  save()
+ }else if(currentMode==="all"&&activeMiniComplete(currentPack.pack_id)&&activeAllTrained(currentPack.pack_id)&&!activeCertified(currentPack.pack_id)){
+  $("cardFront").textContent="Entrenamiento conjunto completado";$("cardBack").textContent="Ya puedes intentar el sello acertando todas a la primera."
+ }else if(currentMode==="mini"&&activeMiniMasteredCount(currentSource)===currentSource.length){
+  $("cardFront").textContent="✅ ¡Has dominado las 10 palabras!";
+  const nav=miniNavigationInfo();
+  $("cardBack").textContent=nav?.next?"Puedes continuar directamente con el siguiente minibloque.":"Has terminado todos los minibloques. El siguiente paso es «Todas juntas».";
+  completeMessage="No queda ninguna palabra pendiente en esta sesión."
+ }else{
+  $("cardFront").textContent="Sesión terminada";
+  $("cardBack").textContent=currentMode==="mini"?"Aún quedan palabras por dominar.":"Aún quedan palabras por dominar en «Todas juntas»."
+ }
+ $("flashcard").classList.add("flipped");$("sessionPos").textContent=queue.length;
+ $("selfRate").style.display="none";$("answerBox").classList.add("active");
+ $("answerRow").classList.add("session-finished");$("writtenAnswer").style.display="none";
+ $("answerResult").className=completeMessage?"answer-result ok":"answer-result";
+ $("answerResult").innerHTML=completeMessage?`<div class="session-complete-message">${esc(completeMessage)}</div>`:"";
+ $("sessionEndActions").classList.add("active");configureSessionEndAction()
+}
+function handleSessionEndAction(){
+ if(sessionEndAction==="retry"){startDeck(currentDeck,currentSource,currentMode,currentPack);return}
+ if(sessionEndAction==="next-mini"){
+  const nav=miniNavigationInfo(),next=nav?.next;if(!next)return;
+  const i=nav.index+1;startDeck(`Bloque ${i+1} · ${i*10+1}-${i*10+next.length}`,next,"mini",currentPack);return
+ }
+ if(sessionEndAction==="all"){const cards=packCards(currentPack.pack_id);startDeck("Todas juntas",cards,"all",currentPack);return}
+ if(sessionEndAction==="seal"||sessionEndAction==="review-all"){const cards=packCards(currentPack.pack_id);startDeck("Todas juntas",cards,"all",currentPack)}
+}
+function recordTimerMastered(){if(timer.running){timer.mastered++;saveTimer();renderTimer()}}
+function recordTimerReviewed(){if(timer.running){timer.reviewed++;saveTimer();renderTimer()}}
+function applyScore(s){
+ const c=queue[qIndex];if(!c)return;
+ state.attempts++;if(s===2){state.good++;session.good++}else if(s===1){state.warn++;session.warn++}else{state.bad++;session.bad++}
+ if(currentMode==="mini"){
+  const p=activeMiniState(c),was=p.miniMastered;p.attempts++;p.last=Date.now();
+  if(s===2){p.miniStreak++;if(p.miniStreak>=3)p.miniMastered=true}
+  else if(s===1){p.miniStreak=Math.max(0,p.miniStreak-1)}
+  else{p.miniStreak=0;p.miniMastered=false;p.fails++}
+  if(!was&&p.miniMastered){
+   if(currentTrack==="written")recordTimerMastered();else recordTimerReviewed()
+  }
+ }else{
+  const p=activeAllCardState(c),pack=activePackAllState(c.pack_id);p.attempts++;pack.reviewed++;recordTimerReviewed();
+  if(certificationMode){
+   if(s!==2){certificationPerfect=false;certificationFailedIds.add(c.id);p.streak=0;p.mastered=false;p.fails++}
+  }else{
+   if(s===2){p.streak++;if(p.streak>=3)p.mastered=true}
+   else if(s===1){p.streak=Math.max(0,p.streak-1)}
+   else{p.streak=0;p.mastered=false;p.fails++}
+  }
+ }
+ save()
+}
+function nextCard(){qIndex++;showCard()}
+$("flashcard").onclick=()=>{
+ if(studyMode==="self"){
+  const flipped=$("flashcard").classList.toggle("flipped");
+  renderPronunciation(queue[qIndex],flipped)
+ }
+};
+document.querySelectorAll("[data-score]").forEach(b=>b.onclick=()=>{if(!queue[qIndex])return;applyScore(+b.dataset.score);nextCard()});
+function checkWrittenAnswer(){
+ const c=queue[qIndex];if(!c)return;
+ const expected=back(c),a=normalize($("writtenAnswer").value),accepted=String(expected).split(/\s*\/\s*/).map(normalize),ok=accepted.includes(a);
+ applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
+ $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
+ $("writtenAnswer").disabled=true;$("flashcard").classList.add("flipped");renderPronunciation(c,true);
+ if(autoPronunciation||direction==="audio-front")speakCurrentWord();
+ setMainButton("next","Siguiente")
+}
+$("checkAnswerBtn").onclick=()=>{
+ if(answerButtonMode==="check"){checkWrittenAnswer();return}
+ if(answerButtonMode==="next"){nextCard();return}
+ if(answerButtonMode==="end")handleSessionEndAction()
+};
+$("writtenAnswer").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();$("checkAnswerBtn").click()}});
+$("exitStudyBtn").onclick=()=>{go("vocabulario");renderDecks()};
+$("retryBtn").onclick=()=>currentDeck&&startDeck(currentDeck,currentSource,currentMode,currentPack);
+$("shuffleBtn").onclick=()=>{queue.sort(()=>Math.random()-.5);qIndex=0;showCard()};
+$("cancelSetupBtn").onclick=closeSetup;
+$("beginDeckBtn").onclick=()=>{direction=document.querySelector('input[name="studyDirection"]:checked').value;
+ studyMode=direction==="audio-front"?"write":document.querySelector('input[name="studyMode"]:checked').value;
+ currentTrack=direction==="audio-front"?"listening":"written";const d=pendingDeck;closeSetup();startDeck(d.label,d.cards,d.mode,d.pack)};
+
+for(const id of ["topImportBtn","manageImportBtn"])$(id).onclick=()=>$("dataInput").click();
+$("homeImportBtn").onclick=()=>$("homeDataInput").click();$("dataInput").onchange=e=>importFiles(e.target.files);$("homeDataInput").onchange=e=>importFiles(e.target.files);
+$("changeLanguage").onclick=()=>{$("app").classList.add("hidden");$("languageScreen").classList.remove("hidden");renderLanguageScreen()};
+$("exportBtn").onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`progreso_${selectedLanguage}.json`;a.click();URL.revokeObjectURL(a.href)};
+$("importBtn").onclick=()=>$("importFile").click();$("importFile").onchange=e=>{const r=new FileReader();r.onload=()=>{try{state=JSON.parse(r.result);migrateState();save();toast("Progreso importado")}catch{alert("Archivo no válido")}};r.readAsText(e.target.files[0])};
+for(const id of ["deckSearch","statusFilter","cefrFilter","typeFilter","difficultyFilter","frequencyFilter"])$(id).addEventListener(id==="deckSearch"?"input":"change",renderDecks);
+
+/* Cronómetro */
+function loadTimer(){try{timer={...timer,...JSON.parse(localStorage.getItem(TIMER_KEY)||"{}")}}catch(e){}timer.history=Array.isArray(timer.history)?timer.history:[]}
+function saveTimer(){try{localStorage.setItem(TIMER_KEY,JSON.stringify(timer))}catch(e){} window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"timer"}}))}
+function elapsedSeconds(){return Math.max(0,Math.floor((timer.elapsedBefore||0)+(timer.running?(Date.now()-timer.startedAt)/1000:0)))}
+function renderTimer(){
+ const sec=elapsedSeconds(),min=Math.floor(sec/60),s=sec%60,rate=sec?timer.mastered/(sec/60):0;
+ $("timerClock").textContent=String(min).padStart(2,"0")+":"+String(s).padStart(2,"0");$("timerRate").textContent=fmtNum(rate)+" dominadas/min";$("timerMastered").textContent=timer.mastered;$("timerReviewed").textContent=timer.reviewed;$("timerState").textContent=timer.running?"En marcha":"Preparado";$("timerStartBtn").textContent=timer.running?"Pausar":"Iniciar"
+}
+function startPauseTimer(){
+ if(timer.running){timer.elapsedBefore=elapsedSeconds();timer.running=false;clearInterval(timerInterval);timerInterval=null}
+ else{timer.startedAt=Date.now();timer.running=true;timerInterval=setInterval(renderTimer,500)}
+ saveTimer();renderTimer()
+}
+function finishTimer(){
+ const sec=elapsedSeconds();if(sec<1&&!timer.mastered&&!timer.reviewed){toast("No hay sesión que guardar");return}
+ timer.history.unshift({date:Date.now(),seconds:sec,mastered:timer.mastered,reviewed:timer.reviewed,rate:sec?timer.mastered/(sec/60):0});
+ timer.history=timer.history.slice(0,100);timer.running=false;timer.startedAt=0;timer.elapsedBefore=0;timer.mastered=0;timer.reviewed=0;clearInterval(timerInterval);timerInterval=null;saveTimer();renderTimer();renderTimerHistory();toast("Sesión del cronómetro guardada")
+}
+function renderTimerHistory(){
+ const totalSec=timer.history.reduce((a,x)=>a+x.seconds,0),totalMastered=timer.history.reduce((a,x)=>a+x.mastered,0),avg=totalSec?totalMastered/(totalSec/60):0;
+ $("timerSummary").innerHTML=`<b>Media acumulada: ${fmtNum(avg)} palabras dominadas/min</b><p>${totalMastered} palabras dominadas en ${Math.round(totalSec/60)} minutos registrados. Las sesiones de “Todas juntas” aparecen como revisadas, no dominadas.</p>`;
+ $("timerHistoryBody").innerHTML=timer.history.map(x=>`<tr><td>${new Date(x.date).toLocaleString("es-ES")}</td><td>${Math.floor(x.seconds/60)}:${String(x.seconds%60).padStart(2,"0")}</td><td>${x.mastered}</td><td>${x.reviewed}</td><td>${fmtNum(x.rate)}</td></tr>`).join("")||'<tr><td colspan="5">Todavía no hay sesiones guardadas.</td></tr>'
+}
+
+const TIMER_UI_KEY="language_master_timer_ui_v1";
+function loadTimerUI(){try{const x=JSON.parse(localStorage.getItem(TIMER_UI_KEY)||"{}");$("timerWidget").classList.toggle("collapsed",!!x.collapsed);$("timerToggleBtn").textContent=x.collapsed?"+":"−"}catch(e){}}
+function toggleTimerUI(e){if(e)e.stopPropagation();const w=$("timerWidget"),c=!w.classList.contains("collapsed");w.classList.toggle("collapsed",c);$("timerToggleBtn").textContent=c?"+":"−";localStorage.setItem(TIMER_UI_KEY,JSON.stringify({collapsed:c}));window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"settings"}}))}
+$("timerToggleBtn").onclick=toggleTimerUI;$("timerWidget").addEventListener("click",e=>{if($("timerWidget").classList.contains("collapsed")&&e.target.id!=="timerToggleBtn")toggleTimerUI(e)});
+window.LMBridge={
+ getPacks:()=>packs,
+ replacePacks:async arr=>{const local=JSON.stringify(packs),remote=JSON.stringify(arr||[]);if(local===remote)return;const page=document.querySelector(".section.active")?.id||"inicio";for(const p of arr)await putPack(p);await loadPacks();refreshAfterDataChange();if(selectedLanguage&&document.getElementById(page))go(page)},
+ getProgress:lang=>{try{return JSON.parse(localStorage.getItem(`language_master_progress_${lang}_v1`)||"null")}catch(e){return null}},
+ setProgress:(lang,data)=>{const current=localStorage.getItem(`language_master_progress_${lang}_v1`),incoming=JSON.stringify(data);if(current===incoming)return;localStorage.setItem(`language_master_progress_${lang}_v1`,incoming);if(selectedLanguage===lang){const page=document.querySelector(".section.active")?.id||"inicio";state=data;migrateState();renderStats();renderDecks();if(page==="progreso")renderProgress();if(document.getElementById(page))go(page)}},
+ progressLanguages:()=>Object.keys(localStorage).filter(k=>k.startsWith("language_master_progress_")&&k.endsWith("_v1")).map(k=>k.slice(25,-3)),
+ getTimer:()=>timer,setTimer:data=>{timer={...timer,...data,running:false,startedAt:0};localStorage.setItem(TIMER_KEY,JSON.stringify(timer));renderTimer();renderTimerHistory()},
+ getSettings:()=>{try{return JSON.parse(localStorage.getItem(TIMER_UI_KEY)||"{}")}catch(e){return{}}},setSettings:x=>{localStorage.setItem(TIMER_UI_KEY,JSON.stringify(x||{}));loadTimerUI()}
+};
+$("timerStartBtn").onclick=startPauseTimer;$("timerStopBtn").onclick=finishTimer;$("timerHistoryBtn").onclick=()=>{if(selectedLanguage){go("progreso");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}else toast("Primero elige un idioma")};
+
+
+/* ---------- GENERADOR DE BLOQUES ---------- */
+const GENERATOR_PREFS_KEY="language_master_generator_prefs_v1";
+const languageAliases={
+ fr:"fr|Francés|Français|🇫🇷",en:"en|Inglés|English|🇬🇧",de:"de|Alemán|Deutsch|🇩🇪",
+ it:"it|Italiano|Italiano|🇮🇹",pt:"pt|Portugués|Português|🇵🇹",ca:"ca|Catalán|Català|🏳️",
+ nl:"nl|Neerlandés|Nederlands|🇳🇱",ja:"ja|Japonés|日本語|🇯🇵",ko:"ko|Coreano|한국어|🇰🇷",
+ zh:"zh|Chino mandarín|中文|🇨🇳",ar:"ar|Árabe|العربية|🌍",ru:"ru|Ruso|Русский|🇷🇺"
+};
+function renderThemeInputs(){
+ const n=Number($("genCount").value)||1,root=$("genThemes"),old=[...root.querySelectorAll("input")].map(x=>x.value);
+ root.innerHTML="";
+ for(let i=0;i<n;i++){const input=document.createElement("input");input.className="gen-theme";input.placeholder=`Tema del bloque ${i+1}, por ejemplo: Viajes y aeropuerto`;input.value=old[i]||"";root.appendChild(input)}
+ saveGeneratorPrefs();
+}
+function saveGeneratorPrefs(){
+ try{localStorage.setItem(GENERATOR_PREFS_KEY,JSON.stringify({language:$("genLanguage").value,count:$("genCount").value,level:$("genLevel").value,start:$("genStartNumber").value,extra:$("genExtra").value,themes:[...document.querySelectorAll(".gen-theme")].map(x=>x.value)}))}catch(e){}
+}
+function loadGeneratorPrefs(){
+ try{
+  const p=JSON.parse(localStorage.getItem(GENERATOR_PREFS_KEY)||"{}");
+  if(p.language&&[...$("genLanguage").options].some(o=>o.value===p.language))$("genLanguage").value=p.language;
+  if(p.count)$("genCount").value=p.count;if(p.level)$("genLevel").value=p.level;if(p.start)$("genStartNumber").value=p.start;if(p.extra)$("genExtra").value=p.extra;
+  renderThemeInputs();(p.themes||[]).forEach((v,i)=>{const x=document.querySelectorAll(".gen-theme")[i];if(x)x.value=v})
+ }catch(e){renderThemeInputs()}
+ toggleCustomLanguage();
+}
+function toggleCustomLanguage(){$("customLanguageWrap").classList.toggle("hidden",$("genLanguage").value!=="other")}
+function openGenerator(prefillCurrent=true){
+ if(prefillCurrent&&selectedLanguage&&languageAliases[selectedLanguage])$("genLanguage").value=languageAliases[selectedLanguage];
+ toggleCustomLanguage();renderThemeInputs();$("generatorScreen").classList.add("active");document.body.style.overflow="hidden"
+}
+function closeGenerator(){$("generatorScreen").classList.remove("active");document.body.style.overflow=""}
+function getLanguageData(){
+ if($("genLanguage").value!=="other"){const [code,name,native,flag]=$("genLanguage").value.split("|");return{code,name,native,flag}}
+ const parts=$("genCustomLanguage").value.split("|").map(x=>x.trim());
+ return{code:parts[1]||"xx",name:parts[0]||"Idioma personalizado",native:parts[2]||parts[0]||"Idioma",flag:parts[3]||"🌍"}
+}
+function slugify(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,45)||"vocabulario"}
+function generatePrompt(){
+ const lang=getLanguageData(),count=Number($("genCount").value),start=Math.max(1,Number($("genStartNumber").value)||1),level=$("genLevel").value;
+ const themes=[...document.querySelectorAll(".gen-theme")].map((x,i)=>x.value.trim()||`Tema útil ${i+1}`),extra=$("genExtra").value.trim();
+ const blocks=themes.map((theme,i)=>`- Bloque ${start+i}: «${theme}»; nombre de archivo: ${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}_DATA_v2.json`).join("\n");
+ const ids=themes.map((theme,i)=>`${lang.code.toUpperCase()}_${String(start+i).padStart(3,"0")}_${slugify(theme).toUpperCase().slice(0,12)}_001`).join(", ");
+ const prompt=`Quiero que generes ${count} archivo${count===1?"":"s"} JSON independiente${count===1?"":"s"} para importarlos directamente en mi aplicación Language Master.
+
+IDIOMA OBJETIVO
+- Código: ${lang.code}
+- Nombre en español: ${lang.name}
+- Nombre nativo: ${lang.native}
+- Bandera: ${lang.flag}
+- Las traducciones y explicaciones deben estar en español.
+- Nivel aproximado: ${level}.
+
+BLOQUES QUE DEBES CREAR
+${blocks}
+
+REQUISITOS DE CONTENIDO
+1. Cada archivo debe contener exactamente 50 tarjetas.
+2. Las 50 entradas deben ser útiles, naturales y claramente relacionadas con el tema indicado.
+3. No repitas ninguna palabra o expresión entre los ${count} bloques.
+4. Prioriza vocabulario real y frecuente apropiado para el nivel ${level}.
+5. Cada tarjeta debe incluir DOS ejemplos naturales y diferentes. Cada frase del idioma objetivo debe contener exactamente la palabra o expresión de "front" de forma visible y natural.
+6. La traducción española de cada ejemplo debe transmitir el mismo significado natural, no una traducción artificial palabra por palabra.
+7. Comprueba ortografía, tildes, género, artículos y uso real antes de entregar los archivos.
+8. No uses frases genéricas repetidas cambiando solamente la palabra.
+${extra?`9. Instrucciones adicionales: ${extra}\n`:""}
+FORMATO OBLIGATORIO
+Cada archivo debe ser JSON válido, codificado en UTF-8 y seguir exactamente esta estructura:
+
+{
+  "schema_version": "2.0",
+  "pack_id": "${lang.code}_${String(start).padStart(3,"0")}_tema_sin_espacios",
+  "language_id": "${lang.code}",
+  "language_name": "${lang.name}",
+  "native_name": "${lang.native}",
+  "flag": "${lang.flag}",
+  "version": 1,
+  "type": "vocabulary",
+  "category": "Nombre exacto del tema",
+  "title": "Nombre exacto del tema",
+  "description": "50 palabras útiles del tema, con dos ejemplos naturales por tarjeta.",
+  "source": {
+    "name": "generated_for_language_master",
+    "category_order": ${start}
+  },
+  "cards": [
+    {
+      "id": "${ids.split(", ")[0]}",
+      "front": "palabra o expresión en ${lang.name}",
+      "back": "traducción principal al español",
+      "sentence_front": "primer ejemplo en ${lang.name}",
+      "sentence_back": "traducción natural del primer ejemplo",
+      "pronunciation": "guía breve y legible de pronunciación o cadena vacía si no puede darse con fiabilidad",
+      "ipa": "transcripción IPA fiable o cadena vacía",
+      "examples": [
+        {"${lang.code}": "primer ejemplo en ${lang.name}", "es": "traducción natural"},
+        {"${lang.code}": "segundo ejemplo en ${lang.name}", "es": "traducción natural"}
+      ],
+      "grammar": {
+        "type": "nom/verbe/adjectif/adverbe/expression u otra categoría adecuada",
+        "gender": "masculin/féminin/null según corresponda",
+        "plural": "forma plural o null"
+      },
+      "learning": {
+        "cefr": "${level}",
+        "difficulty": 1,
+        "frequency": 5
+      },
+      "tags": ["tema", "subtema"],
+      "audio": null,
+      "notes": ""
+    }
+  ]
+}
+
+REGLAS TÉCNICAS IMPORTANTES
+- "pack_id" debe ser único en cada archivo y seguir: ${lang.code}_NNN_tema_en_snake_case.
+- Los ID de tarjetas deben ser globalmente únicos y contener idioma, número de bloque y contador 001-050.
+- Ejemplos de ID válidos: ${ids}.
+- "sentence_front" y "sentence_back" deben ser exactamente el primer elemento de "examples".
+- Para máxima compatibilidad, además de la clave "${lang.code}" dentro de examples, incluye también "fr" cuando el idioma sea francés. En cualquier otro idioma usa solo "${lang.code}" y "es".
+- No añadas comentarios dentro del JSON.
+- Los campos "pronunciation" e "ipa" son opcionales: si no puedes rellenarlos con fiabilidad usa una cadena vacía, nunca inventes.
+- No dejes campos obligatorios vacíos.
+- Valida que cada archivo tenga exactamente 50 objetos dentro de "cards".
+- Entrégame los ${count} archivos como archivos descargables separados, no como un único JSON.
+- Si tu interfaz no permite adjuntar archivos, muestra cada JSON completo en un bloque de código separado, indicando claramente el nombre exacto del archivo.
+- No resumas ni omitas tarjetas. No pongas “continúa” ni puntos suspensivos.
+- Antes de entregar, revisa que todos los JSON sean válidos y que no haya comas finales ni IDs duplicados.`;
+ $("generatedPrompt").value=prompt;saveGeneratorPrefs();toast("Prompt generado")
+}
+async function copyGeneratedPrompt(){
+ if(!$("generatedPrompt").value)generatePrompt();
+ try{await navigator.clipboard.writeText($("generatedPrompt").value);toast("Prompt copiado")}catch(e){$("generatedPrompt").select();document.execCommand("copy");toast("Prompt copiado")}
+}
+function downloadGeneratedPrompt(){
+ if(!$("generatedPrompt").value)generatePrompt();
+ const lang=getLanguageData(),blob=new Blob([$("generatedPrompt").value],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=`prompt_${lang.code}_${$("genCount").value}_bloques_language_master.txt`;a.click();URL.revokeObjectURL(a.href)
+}
+$("homeGenerateBtn").onclick=()=>openGenerator(false);
+$("openGeneratorNav").onclick=()=>openGenerator(true);
+$("topGenerateBtn").onclick=()=>openGenerator(true);
+$("closeGeneratorBtn").onclick=closeGenerator;
+$("genLanguage").onchange=()=>{toggleCustomLanguage();saveGeneratorPrefs()};
+$("genCount").onchange=renderThemeInputs;
+$("genLevel").onchange=saveGeneratorPrefs;$("genStartNumber").oninput=saveGeneratorPrefs;$("genExtra").oninput=saveGeneratorPrefs;
+$("genThemes").addEventListener("input",saveGeneratorPrefs);
+$("generatePromptBtn").onclick=generatePrompt;$("copyPromptBtn").onclick=copyGeneratedPrompt;$("downloadPromptBtn").onclick=downloadGeneratedPrompt;
+$("generatorScreen").addEventListener("click",e=>{if(e.target===$("generatorScreen"))closeGenerator()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("generatorScreen").classList.contains("active"))closeGenerator()});
+loadGeneratorPrefs();
+
+(async()=>{initAutoPronunciation();loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
+
+</script>
+<script type="module">
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import{getFirestore,doc,setDoc,collection,getDocs,onSnapshot}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyDEWokiLIvAZmz78vFQ9pczW2eruUU6hWE",authDomain:"language-master-ad3eb.firebaseapp.com",projectId:"language-master-ad3eb",storageBucket:"language-master-ad3eb.firebasestorage.app",messagingSenderId:"657765473612",appId:"1:657765473612:web:7c2633b43d0cef6dc083e9",measurementId:"G-V6WK0RXQE6"};
+const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();await setPersistence(auth,browserLocalPersistence);let user=null,unsubs=[],busy=false,timerId=null;const $=id=>document.getElementById(id),mobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);function status(c,t){$("syncDot").className="sync-dot "+c;$("syncText").textContent=t}async function login(){const msg=$("loginMessage");msg.textContent="Abriendo Google…";try{await signInWithPopup(auth,provider);msg.textContent=""}catch(e){console.error(e);if(e.code==="auth/popup-blocked"){msg.textContent="Safari ha bloqueado la ventana. Permite ventanas emergentes para esta web y vuelve a pulsar."}else if(e.code==="auth/popup-closed-by-user"){msg.textContent="Se cerró la ventana antes de completar el acceso."}else if(e.code==="auth/unauthorized-domain"){msg.textContent="Falta autorizar adrianmespana.github.io en Firebase Authentication."}else{msg.textContent="No se pudo iniciar sesión: "+e.message}}}$("googleLoginBtn").onclick=login;$("logoutBtn").onclick=()=>signOut(auth);
+const root=()=>collection(db,"users",user.uid,"sync"),ref=id=>doc(db,"users",user.uid,"sync",id);
+let lastSeen=0;
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+async function pushAll(){
+ if(!user)return;
+ status("busy","Guardando…");
+ const langs=window.LMBridge.progressLanguages(),progress={};
+ for(const l of langs)progress[l]=window.LMBridge.getProgress(l);
+ const updatedAt=Date.now();lastSeen=updatedAt;
+ await setDoc(ref("state"),{packs:window.LMBridge.getPacks(),progress,timer:window.LMBridge.getTimer(),settings:window.LMBridge.getSettings(),updatedAt});
+ status("ok","Guardado en la nube");
+}
+async function applyRemote(d,initial=false){
+ if(!d)return;
+ const remoteTime=d.updatedAt||0;
+ if(!initial&&remoteTime<=lastSeen)return;
+ lastSeen=Math.max(lastSeen,remoteTime);
+ const localPacks=window.LMBridge.getPacks();
+ if(d.packs&& !same(d.packs,localPacks))await window.LMBridge.replacePacks(d.packs);
+ if(d.progress){
+  for(const[l,p]of Object.entries(d.progress)){
+   const local=window.LMBridge.getProgress(l);
+   if(!same(local,p))window.LMBridge.setProgress(l,p);
+  }
+ }
+ if(d.timer&&!same(window.LMBridge.getTimer(),d.timer))window.LMBridge.setTimer(d.timer);
+ if(d.settings&&!same(window.LMBridge.getSettings(),d.settings))window.LMBridge.setSettings(d.settings);
+}
+async function firstMerge(){
+ status("busy","Combinando datos…");
+ const snap=await getDocs(root()),d=snap.docs.find(x=>x.id==="state")?.data();
+ if(d){
+  lastSeen=d.updatedAt||0;
+  if(d.packs?.length&&!window.LMBridge.getPacks().length)await window.LMBridge.replacePacks(d.packs);
+  if(d.progress)for(const[l,p]of Object.entries(d.progress))if(!window.LMBridge.getProgress(l))window.LMBridge.setProgress(l,p);
+  if(d.timer&&!(window.LMBridge.getTimer().history||[]).length)window.LMBridge.setTimer(d.timer);
+  if(d.settings&&!Object.keys(window.LMBridge.getSettings()||{}).length)window.LMBridge.setSettings(d.settings);
+ }
+ await pushAll();
+}
+function listen(){
+ unsubs.forEach(f=>f());
+ unsubs=[onSnapshot(ref("state"),async s=>{
+  if(!s.exists()||busy)return;
+  const d=s.data();
+  if((d.updatedAt||0)<=lastSeen)return;
+  busy=true;
+  try{status("busy","Recibiendo cambios…");await applyRemote(d);status("ok","Sincronizado")}
+  catch(e){status("err","Error al sincronizar");console.error(e)}
+  finally{busy=false}
+ })];
+}
+window.addEventListener("lm-local-change",()=>{if(!user||busy)return;clearTimeout(timerId);timerId=setTimeout(pushAll,900)});
+$("forceSyncBtn").onclick=async()=>{if(!user)return;status("busy","Sincronizando…");const s=await getDocs(root()),d=s.docs.find(x=>x.id==="state")?.data();if(d&& (d.updatedAt||0)>lastSeen)await applyRemote(d);else await pushAll();status("ok","Sincronizado")};
+onAuthStateChanged(auth,async u=>{user=u;if(!u){unsubs.forEach(f=>f());$("loginScreen").classList.remove("hidden");$("languageScreen").classList.add("hidden");$("app").classList.add("hidden");return}$("loginScreen").classList.add("hidden");$("languageScreen").classList.remove("hidden");$("cloudUser").classList.remove("hidden");$("userName").textContent=u.displayName||u.email;$("userPhoto").src=u.photoURL||"";await firstMerge();listen()});
+</script></body>
+</html>
