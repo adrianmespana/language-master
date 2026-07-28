@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V5.0 · Tarjeta centrada</title>
+<title>Language Master V5.1 · Progreso por tarjeta</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -215,6 +215,25 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  }
 }
 
+
+/* V5.1 · progreso por tarjeta y sonidos */
+.card-top-status{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.card-progress-pill{background:#eef1ff;color:#304eb8;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:850}
+.mastery-needed{margin-top:10px;background:#f6f7fb;color:#5e6880;border-radius:11px;padding:8px 11px;font-size:13px;font-weight:750;text-align:center}
+.session-summary-card{padding:18px;border-radius:16px;text-align:center;margin-top:12px}
+.session-summary-card.pending{background:#fff4d7;color:#805400}
+.session-summary-card.done{background:#e8f7ee;color:#12663b}
+.session-summary-card h3{margin:0 0 8px;font-size:22px}
+.session-summary-card p{margin:0;line-height:1.45}
+@media(max-width:700px){
+ body.card-focus-mode .study-main>.flash{display:flex!important}
+ body.card-focus-mode .study-main>.answer-box{display:block!important}
+ body.card-focus-mode .section-head,
+ body.card-focus-mode #certBanner,
+ body.card-focus-mode .sidebox{display:none!important}
+ body.card-focus-mode main{padding-top:6px!important}
+}
+
 </style>
 </head>
 <body>
@@ -349,7 +368,11 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
   <div class="study-main">
 
    <div class="card flash" id="flashcard">
-    <div class="label" id="cardLabel">IDIOMA</div>
+    <div class="card-top-status">
+     <div class="label" id="cardLabel">IDIOMA</div>
+     <div class="card-progress-pill" id="cardProgressPill">Tarjeta 0 de 0</div>
+    </div>
+    <div class="mastery-needed" id="masteryNeeded">Faltan 3 aciertos seguidos para dominarla</div>
     <div class="front" id="cardFront">Selecciona un mazo</div>
 
     <div class="pronunciation-box" id="pronunciationBox">
@@ -358,6 +381,10 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
      <label class="pronunciation-switch">
       <span>Pronunciación automática</span>
       <span class="switch"><input type="checkbox" id="autoPronunciationToggle"><span class="switch-slider"></span></span>
+     </label>
+     <label class="pronunciation-switch">
+      <span>Sonidos de acierto/fallo</span>
+      <span class="switch"><input type="checkbox" id="answerSoundToggle"><span class="switch-slider"></span></span>
      </label>
     </div>
 
@@ -458,6 +485,9 @@ const AUTO_PRONUNCIATION_KEY="language_master_auto_pronunciation_v1";
 let autoPronunciation=true;
 try{autoPronunciation=JSON.parse(localStorage.getItem(AUTO_PRONUNCIATION_KEY)??"true")}catch(e){autoPronunciation=true}
 let initialViewportHeight=window.innerHeight;
+const ANSWER_SOUND_KEY="language_master_answer_sound_v1";
+let answerSounds=true;
+try{answerSounds=JSON.parse(localStorage.getItem(ANSWER_SOUND_KEY)??"true")}catch(e){answerSounds=true}
 const DECK_EXPANDED_KEY="language_master_expanded_packs_v1";
 let expandedPacks=new Set();
 try{expandedPacks=new Set(JSON.parse(localStorage.getItem(DECK_EXPANDED_KEY)||"[]"))}catch(e){expandedPacks=new Set()}
@@ -716,29 +746,23 @@ function updateMobilePrompt(c,ex){
  }
 }
 
-function cardCenterY(){
- const card=$("flashcard");if(!card)return 0;
- const rect=card.getBoundingClientRect();
- const viewport=window.visualViewport?window.visualViewport.height:window.innerHeight;
- return Math.max(0,window.scrollY+rect.top-(viewport-rect.height)/2)
-}
 function centerStudyCard(){
  if(window.innerWidth>700)return;
- const y=cardCenterY();
- window.scrollTo({top:y,left:0,behavior:"auto"})
+ const card=$("flashcard");if(!card)return;
+ card.style.display="flex";
+ card.scrollIntoView({block:"center",inline:"nearest",behavior:"auto"})
 }
 function centerStudyCardRepeated(){
  if(window.innerWidth>700)return;
- [0,50,120,220,380,650].forEach(ms=>setTimeout(centerStudyCard,ms))
+ [0,80,180,320,520].forEach(ms=>setTimeout(centerStudyCard,ms))
 }
 function enterCardFocusMode(){
  if(window.innerWidth>700)return;
  document.body.classList.add("card-focus-mode");
+ $("flashcard").style.display="flex";
  centerStudyCardRepeated()
 }
-function leaveCardFocusMode(){
- document.body.classList.remove("card-focus-mode");
-}
+function leaveCardFocusMode(){document.body.classList.remove("card-focus-mode")}
 
 function scrollForKeyboard(){
  if(window.innerWidth>700)return;
@@ -749,7 +773,11 @@ function keyboardClosed(){
  document.body.classList.remove("keyboard-active");
  if(document.body.classList.contains("card-focus-mode"))centerStudyCardRepeated()
 }
-$("writtenAnswer").addEventListener("focus",()=>{enterCardFocusMode();scrollForKeyboard()});
+$("writtenAnswer").addEventListener("focus",()=>{
+ enterCardFocusMode();
+ $("flashcard").style.display="flex";
+ centerStudyCardRepeated()
+});
 $("writtenAnswer").addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==$("writtenAnswer")){keyboardClosed();centerStudyCardRepeated()}},120));
 if(window.visualViewport){
  const baseHeight=window.visualViewport.height;
@@ -758,6 +786,43 @@ if(window.visualViewport){
   document.body.classList.toggle("keyboard-active",keyboardOpen&&document.activeElement===$("writtenAnswer"));
   if(document.body.classList.contains("card-focus-mode")||keyboardOpen)centerStudyCardRepeated()
  })
+}
+
+
+function initAnswerSounds(){
+ $("answerSoundToggle").checked=!!answerSounds;
+ $("answerSoundToggle").onchange=()=>{
+  answerSounds=$("answerSoundToggle").checked;
+  try{localStorage.setItem(ANSWER_SOUND_KEY,JSON.stringify(answerSounds))}catch(e){}
+ }
+}
+function playAnswerSound(ok){
+ if(!answerSounds)return;
+ try{
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  const ctx=new AudioCtx(),osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.type=ok?"sine":"square";
+  osc.frequency.setValueAtTime(ok?660:190,ctx.currentTime);
+  if(ok)osc.frequency.exponentialRampToValueAtTime(880,ctx.currentTime+.13);
+  else osc.frequency.exponentialRampToValueAtTime(130,ctx.currentTime+.18);
+  gain.gain.setValueAtTime(.12,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.22);
+  osc.start();osc.stop(ctx.currentTime+.23);
+  osc.onended=()=>ctx.close()
+ }catch(e){}
+}
+function cardMasteryRemaining(c){
+ const p=currentMode==="mini"?activeMiniState(c):activeAllCardState(c);
+ const streak=currentMode==="mini"?(p.miniStreak||0):(p.streak||0);
+ const mastered=currentMode==="mini"?!!p.miniMastered:!!p.mastered;
+ return mastered?0:Math.max(0,3-streak)
+}
+function updateCardProgressStatus(c){
+ if(!c){$("cardProgressPill").textContent="Sesión terminada";$("masteryNeeded").textContent="";return}
+ $("cardProgressPill").textContent=`Tarjeta ${Math.min(qIndex+1,queue.length)} de ${queue.length}`;
+ const remaining=cardMasteryRemaining(c);
+ $("masteryNeeded").textContent=remaining===0?"✓ Esta tarjeta ya está dominada":`Faltan ${remaining} acierto${remaining===1?"":"s"} seguido${remaining===1?"":"s"} para dominarla`
 }
 
 function languageVoiceCode(){
@@ -822,7 +887,7 @@ function showCard(){
  $("sessionPos").textContent=qIndex+1;$("sessionTotal").textContent=queue.length;
  $("sessionGood").textContent=session.good;$("sessionWarn").textContent=session.warn;$("sessionBad").textContent=session.bad;
  $("sessionPending").textContent=currentMode==="mini"?currentSource.length-activeMiniMasteredCount(currentSource):currentSource.length-activeAllMasteredCount(currentSource);
- renderMetadata(c);$("selfRate").style.display=studyMode==="self"?"grid":"none";
+ renderMetadata(c);updateCardProgressStatus(c);$("selfRate").style.display=studyMode==="self"?"grid":"none";
  $("answerBox").classList.toggle("active",studyMode==="write");
  if(studyMode==="write")setTimeout(()=>{
   try{input.focus({preventScroll:true})}catch(e){input.focus()}
@@ -872,11 +937,15 @@ function finishSession(){
   $("cardFront").textContent="Sesión terminada";
   $("cardBack").textContent=currentMode==="mini"?"Aún quedan palabras por dominar.":"Aún quedan palabras por dominar en «Todas juntas»."
  }
+ const remaining=currentMode==="mini"?currentSource.length-activeMiniMasteredCount(currentSource):currentSource.length-activeAllMasteredCount(currentSource);
+ updateCardProgressStatus(null);
  $("flashcard").classList.add("flipped");$("sessionPos").textContent=queue.length;enterCardFocusMode();centerStudyCardRepeated();
  $("selfRate").style.display="none";$("answerBox").classList.add("active");
  $("answerRow").classList.add("session-finished");$("writtenAnswer").style.display="none";
- $("answerResult").className=completeMessage?"answer-result ok":"answer-result";
- $("answerResult").innerHTML=completeMessage?`<div class="session-complete-message">${esc(completeMessage)}</div>`:"";
+ $("answerResult").className="answer-result "+(remaining===0?"ok":"no");
+ $("answerResult").innerHTML=remaining===0
+  ?`<div class="session-summary-card done"><h3>🎉 ¡Enhorabuena!</h3><p>Has dominado todas las palabras de esta sesión.</p></div>`
+  :`<div class="session-summary-card pending"><h3>Te quedan ${remaining}</h3><p>${remaining===1?"palabra pendiente":"palabras pendientes"} por dominar. Pulsa «Repetir no dominadas» para continuar.</p></div>`;
  $("sessionEndActions").classList.add("active");configureSessionEndAction()
 }
 function handleSessionEndAction(){
@@ -911,7 +980,7 @@ function applyScore(s){
    else{p.streak=0;p.mastered=false;p.fails++}
   }
  }
- save()
+ save();updateCardProgressStatus(c)
 }
 function nextCard(){
  qIndex++;
@@ -939,6 +1008,7 @@ function checkWrittenAnswer(){
  const expected=back(c),a=normalize($("writtenAnswer").value),accepted=String(expected).split(/\s*\/\s*/).map(normalize),ok=accepted.includes(a);
  applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
  $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
+ playAnswerSound(ok);
  $("writtenAnswer").disabled=true;$("flashcard").style.display="flex";$("flashcard").classList.add("flipped");renderPronunciation(c,true);
  document.body.classList.add("answer-checked");enterCardFocusMode();
  if(autoPronunciation||direction==="audio-front")speakCurrentWord();
@@ -1164,7 +1234,7 @@ $("generatorScreen").addEventListener("click",e=>{if(e.target===$("generatorScre
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("generatorScreen").classList.contains("active"))closeGenerator()});
 loadGeneratorPrefs();
 
-(async()=>{initAutoPronunciation();loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
+(async()=>{initAutoPronunciation();initAnswerSounds();loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
 
 </script>
 <script type="module">
