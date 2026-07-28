@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V4.9 · Tarjeta estable</title>
+<title>Language Master V5.0 · Tarjeta centrada</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -164,64 +164,54 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 
 
 
-/* V4.9 · interfaz de estudio estable */
+
+/* V5.0 · entrada debajo y tarjeta siempre centrada */
 .study-main{min-width:0}
-.study-main>.answer-box{
- display:none;
- margin:0 0 12px;
- position:relative;
- z-index:10;
-}
-.study-main>.answer-box.active{display:block}
 .study-main>.flash{margin:0}
+.study-main>.answer-box{display:none;margin-top:12px}
+.study-main>.answer-box.active{display:block}
 .mobile-prompt-bar{display:none!important}
 
 @media(max-width:700px){
  .study{display:block!important}
- .study-main>.answer-box{
-  display:none;
-  margin:0 0 10px;
- }
- .study-main>.answer-box.active{display:block}
  .study-main>.flash{
-  display:flex!important;
-  min-height:430px;
+   display:flex!important;
+   min-height:430px;
+   scroll-margin-top:18vh;
+   scroll-margin-bottom:18vh;
  }
- body.keyboard-active .section-head,
- body.keyboard-active #certBanner,
- body.keyboard-active .sidebox{
-  display:none!important;
+ .study-main>.answer-box{
+   margin-top:10px;
  }
- body.keyboard-active main{
-  padding-top:8px;
+ body.card-focus-mode .section-head,
+ body.card-focus-mode #certBanner,
+ body.card-focus-mode .sidebox{
+   display:none!important;
  }
- body.keyboard-active .study-main>.answer-box{
-  position:sticky;
-  top:6px;
-  z-index:70;
-  background:var(--bg);
-  padding-top:2px;
+ body.card-focus-mode main{
+   padding-top:8px;
  }
- body.keyboard-active .study-main>.flash{
-  min-height:280px;
-  padding:16px;
+ body.card-focus-mode .study-main>.flash{
+   min-height:300px;
+   padding:16px;
  }
- body.keyboard-active .flash .front{
-  font-size:31px!important;
-  margin:10px 0 8px;
+ body.card-focus-mode .flash .front{
+   font-size:31px!important;
+   margin:10px 0 8px;
  }
- body.keyboard-active .flash .example{
-  font-size:15px;
-  line-height:1.4;
+ body.card-focus-mode .flash .example{
+   font-size:15px;
+   line-height:1.4;
  }
- body.keyboard-active .pronunciation-box{
-  margin:0 0 6px;
+ body.card-focus-mode .pronunciation-box{
+   margin:0 0 6px;
  }
- body.answer-checked .study-main>.answer-box{
-  display:block!important;
+ body.card-focus-mode .study-main>.answer-box{
+   display:block!important;
  }
- body.answer-checked .study-main>.flash{
-  display:flex!important;
+ body.card-focus-mode .timer-widget{
+   opacity:.35;
+   pointer-events:none;
  }
 }
 
@@ -346,6 +336,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 </section>
 
 
+
 <section id="estudiar" class="section">
  <div class="section-head">
   <div><h2 id="studyTitle">Estudiar</h2><p id="studySub">Selecciona un mazo.</p></div>
@@ -356,25 +347,6 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 
  <div class="study">
   <div class="study-main">
-
-   <div class="answer-box" id="answerBox">
-    <div class="mobile-prompt-bar" id="mobilePromptBar">
-     <div class="mobile-prompt-label" id="mobilePromptLabel">Palabra actual</div>
-     <div class="mobile-prompt-word" id="mobilePromptWord"></div>
-     <div class="mobile-prompt-example" id="mobilePromptExample"></div>
-    </div>
-
-    <div class="answer-row" id="answerRow">
-     <input id="writtenAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe la respuesta…">
-     <button class="btn primary" id="checkAnswerBtn">Comprobar</button>
-    </div>
-
-    <div class="answer-result" id="answerResult"></div>
-
-    <div class="session-end-actions" id="sessionEndActions">
-     <button class="btn" id="exitStudyBtn">Salir</button>
-    </div>
-   </div>
 
    <div class="card flash" id="flashcard">
     <div class="label" id="cardLabel">IDIOMA</div>
@@ -393,6 +365,25 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
     <div class="back" id="cardBack"></div>
     <div class="example back-example" id="backExample"></div>
     <div class="hint">En autoevaluación, toca la tarjeta para mostrar la respuesta.</div>
+   </div>
+
+   <div class="answer-box" id="answerBox">
+    <div class="mobile-prompt-bar" id="mobilePromptBar">
+     <div class="mobile-prompt-label" id="mobilePromptLabel">Palabra actual</div>
+     <div class="mobile-prompt-word" id="mobilePromptWord"></div>
+     <div class="mobile-prompt-example" id="mobilePromptExample"></div>
+    </div>
+
+    <div class="answer-row" id="answerRow">
+     <input id="writtenAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe la respuesta…">
+     <button class="btn primary" id="checkAnswerBtn">Comprobar</button>
+    </div>
+
+    <div class="answer-result" id="answerResult"></div>
+
+    <div class="session-end-actions" id="sessionEndActions">
+     <button class="btn" id="exitStudyBtn">Salir</button>
+    </div>
    </div>
 
    <div class="rate" id="selfRate">
@@ -420,6 +411,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
   </div>
  </div>
 </section>
+
 
 
 <section id="datos" class="section">
@@ -673,7 +665,7 @@ function resetAnswerInterface(){
  $("writtenAnswer").style.display="";$("answerResult").className="answer-result";$("answerResult").textContent="";
  sessionEndAction=null
 }
-function startDeck(label,cards,mode,pack){
+function startDeck(label,cards,mode,pack){leaveCardFocusMode();
  currentDeck=label;currentSource=cards;currentMode=mode;currentPack=pack;currentTrack=direction==="audio-front"?"listening":"written";certificationMode=false;certificationPerfect=true;certificationFailedIds=new Set();
  if(mode==="mini"){
   queue=cards.filter(c=>!activeMiniState(c).miniMastered);if(!queue.length)queue=[...cards];
@@ -723,24 +715,48 @@ function updateMobilePrompt(c,ex){
   $("mobilePromptExample").textContent=ex?.front||"";
  }
 }
-function scrollForKeyboard(){
- $("flashcard").style.display="flex";
- if(window.innerWidth>700)return;
- document.body.classList.add("keyboard-active");
- setTimeout(()=>{
-  const bar=$("mobilePromptBar");
-  if(bar)bar.scrollIntoView({block:"start",behavior:"auto"});
- },80)
+
+function cardCenterY(){
+ const card=$("flashcard");if(!card)return 0;
+ const rect=card.getBoundingClientRect();
+ const viewport=window.visualViewport?window.visualViewport.height:window.innerHeight;
+ return Math.max(0,window.scrollY+rect.top-(viewport-rect.height)/2)
 }
-function keyboardClosed(){document.body.classList.remove("keyboard-active")}
-$("writtenAnswer").addEventListener("focus",scrollForKeyboard);
-$("writtenAnswer").addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==$("writtenAnswer"))keyboardClosed()},120));
+function centerStudyCard(){
+ if(window.innerWidth>700)return;
+ const y=cardCenterY();
+ window.scrollTo({top:y,left:0,behavior:"auto"})
+}
+function centerStudyCardRepeated(){
+ if(window.innerWidth>700)return;
+ [0,50,120,220,380,650].forEach(ms=>setTimeout(centerStudyCard,ms))
+}
+function enterCardFocusMode(){
+ if(window.innerWidth>700)return;
+ document.body.classList.add("card-focus-mode");
+ centerStudyCardRepeated()
+}
+function leaveCardFocusMode(){
+ document.body.classList.remove("card-focus-mode");
+}
+
+function scrollForKeyboard(){
+ if(window.innerWidth>700)return;
+ enterCardFocusMode();
+ centerStudyCardRepeated()
+}
+function keyboardClosed(){
+ document.body.classList.remove("keyboard-active");
+ if(document.body.classList.contains("card-focus-mode"))centerStudyCardRepeated()
+}
+$("writtenAnswer").addEventListener("focus",()=>{enterCardFocusMode();scrollForKeyboard()});
+$("writtenAnswer").addEventListener("blur",()=>setTimeout(()=>{if(document.activeElement!==$("writtenAnswer")){keyboardClosed();centerStudyCardRepeated()}},120));
 if(window.visualViewport){
  const baseHeight=window.visualViewport.height;
  window.visualViewport.addEventListener("resize",()=>{
   const keyboardOpen=window.visualViewport.height<baseHeight*0.78;
   document.body.classList.toggle("keyboard-active",keyboardOpen&&document.activeElement===$("writtenAnswer"));
-  if(keyboardOpen&&document.activeElement===$("writtenAnswer"))scrollForKeyboard()
+  if(document.body.classList.contains("card-focus-mode")||keyboardOpen)centerStudyCardRepeated()
  })
 }
 
@@ -856,7 +872,7 @@ function finishSession(){
   $("cardFront").textContent="Sesión terminada";
   $("cardBack").textContent=currentMode==="mini"?"Aún quedan palabras por dominar.":"Aún quedan palabras por dominar en «Todas juntas»."
  }
- $("flashcard").classList.add("flipped");$("sessionPos").textContent=queue.length;
+ $("flashcard").classList.add("flipped");$("sessionPos").textContent=queue.length;enterCardFocusMode();centerStudyCardRepeated();
  $("selfRate").style.display="none";$("answerBox").classList.add("active");
  $("answerRow").classList.add("session-finished");$("writtenAnswer").style.display="none";
  $("answerResult").className=completeMessage?"answer-result ok":"answer-result";
@@ -899,7 +915,15 @@ function applyScore(s){
 }
 function nextCard(){
  qIndex++;
- showCard()
+ showCard();
+ enterCardFocusMode();
+ setTimeout(()=>{
+  const input=$("writtenAnswer");
+  if(studyMode==="write"&&input){
+   try{input.focus({preventScroll:true})}catch(e){input.focus()}
+  }
+  centerStudyCardRepeated()
+ },40)
 }
 $("flashcard").onclick=()=>{
  if(studyMode==="self"){
@@ -916,9 +940,10 @@ function checkWrittenAnswer(){
  applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
  $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
  $("writtenAnswer").disabled=true;$("flashcard").style.display="flex";$("flashcard").classList.add("flipped");renderPronunciation(c,true);
- document.body.classList.add("answer-checked");
+ document.body.classList.add("answer-checked");enterCardFocusMode();
  if(autoPronunciation||direction==="audio-front")speakCurrentWord();
- setMainButton("next","Siguiente")
+ setMainButton("next","Siguiente");
+ centerStudyCardRepeated()
 }
 $("checkAnswerBtn").onclick=()=>{
  if(answerButtonMode==="check"){checkWrittenAnswer();return}
@@ -931,7 +956,7 @@ $("writtenAnswer").addEventListener("keydown",e=>{
   $("checkAnswerBtn").click();
  }
 });
-$("exitStudyBtn").onclick=()=>{go("vocabulario");renderDecks()};
+$("exitStudyBtn").onclick=()=>{leaveCardFocusMode();go("vocabulario");renderDecks()};
 $("retryBtn").onclick=()=>currentDeck&&startDeck(currentDeck,currentSource,currentMode,currentPack);
 $("shuffleBtn").onclick=()=>{queue.sort(()=>Math.random()-.5);qIndex=0;showCard()};
 $("cancelSetupBtn").onclick=closeSetup;
