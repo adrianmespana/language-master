@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V4.8 · Entrada arriba</title>
+<title>Language Master V4.9 · Tarjeta estable</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -163,77 +163,66 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 }
 
 
-/* V4.6 · corrección móvil tras comprobar y audio realmente ciego */
+
+/* V4.9 · interfaz de estudio estable */
+.study-main{min-width:0}
+.study-main>.answer-box{
+ display:none;
+ margin:0 0 12px;
+ position:relative;
+ z-index:10;
+}
+.study-main>.answer-box.active{display:block}
+.study-main>.flash{margin:0}
+.mobile-prompt-bar{display:none!important}
+
 @media(max-width:700px){
- body.keyboard-active.answer-checked .mobile-prompt-bar{
-   display:block!important;
-   position:sticky;
-   top:6px;
-   z-index:60;
+ .study{display:block!important}
+ .study-main>.answer-box{
+  display:none;
+  margin:0 0 10px;
  }
- body.keyboard-active.answer-checked #answerResult{
-   display:block!important;
-   margin-top:8px;
+ .study-main>.answer-box.active{display:block}
+ .study-main>.flash{
+  display:flex!important;
+  min-height:430px;
  }
- body.keyboard-active.answer-checked #answerRow{
-   display:flex!important;
- }
- body.keyboard-active.answer-checked #writtenAnswer{
-   display:none!important;
- }
- body.keyboard-active.answer-checked #checkAnswerBtn{
-   width:100%;
-   flex:1;
- }
- body.keyboard-active.answer-checked #answerBox{
-   position:sticky;
-   top:6px;
-   z-index:55;
- }
- body.keyboard-active.answer-checked .mobile-prompt-example{
-   display:none;
- }
- body.keyboard-active.answer-checked .mobile-prompt-word{
-   font-size:22px;
- }
-}
-.audio-blind-placeholder{
-  font-size:18px;
-  font-weight:800;
-  color:var(--muted);
-  text-align:center;
-  padding:16px 8px;
-}
-
-
-body.mobile-review-mode .study{display:block!important}
- body.mobile-review-mode main{padding-top:8px!important}
- body.mobile-review-mode #answerBox{display:block!important;margin-top:0!important;position:relative!important;top:auto!important;z-index:65}
- body.mobile-review-mode .mobile-prompt-bar{display:block!important;position:relative!important;top:auto!important;z-index:66}
- body.mobile-review-mode #answerRow{display:flex!important}
- body.mobile-review-mode #writtenAnswer{display:none!important}
- body.mobile-review-mode #checkAnswerBtn{width:100%!important;flex:1!important;min-height:54px;font-size:19px}
- body.mobile-review-mode #answerResult{display:block!important;margin-top:9px!important}
- body.mobile-review-mode .mobile-prompt-word{font-size:25px;white-space:normal}
- body.mobile-review-mode .mobile-prompt-example{display:none!important}
- body.mobile-review-mode .timer-widget{opacity:.35;pointer-events:none}
-}
-
-
-/* V4.8 · entrada de texto encima de la tarjeta */
-.study>div:first-child>.answer-box{margin-top:0;margin-bottom:12px}
-.study>div:first-child>.flash{margin-top:0}
-@media(max-width:700px){
  body.keyboard-active .section-head,
  body.keyboard-active #certBanner,
- body.keyboard-active .sidebox{display:none!important}
- body.keyboard-active #flashcard{display:flex!important}
- body.keyboard-active .study{display:block}
- body.keyboard-active main{padding-top:8px}
- body.keyboard-active .answer-box{position:sticky;top:6px;z-index:50;margin-bottom:8px}
- body.keyboard-active #flashcard{min-height:250px}
- body.keyboard-active #flashcard .front{font-size:30px!important;margin:10px 0 8px}
- body.keyboard-active #flashcard .example{font-size:15px}
+ body.keyboard-active .sidebox{
+  display:none!important;
+ }
+ body.keyboard-active main{
+  padding-top:8px;
+ }
+ body.keyboard-active .study-main>.answer-box{
+  position:sticky;
+  top:6px;
+  z-index:70;
+  background:var(--bg);
+  padding-top:2px;
+ }
+ body.keyboard-active .study-main>.flash{
+  min-height:280px;
+  padding:16px;
+ }
+ body.keyboard-active .flash .front{
+  font-size:31px!important;
+  margin:10px 0 8px;
+ }
+ body.keyboard-active .flash .example{
+  font-size:15px;
+  line-height:1.4;
+ }
+ body.keyboard-active .pronunciation-box{
+  margin:0 0 6px;
+ }
+ body.answer-checked .study-main>.answer-box{
+  display:block!important;
+ }
+ body.answer-checked .study-main>.flash{
+  display:flex!important;
+ }
 }
 
 </style>
@@ -356,44 +345,82 @@ body.mobile-review-mode .study{display:block!important}
  <div class="deck-grid" id="deckGrid"></div>
 </section>
 
+
 <section id="estudiar" class="section">
- <div class="section-head"><div><h2 id="studyTitle">Estudiar</h2><p id="studySub">Selecciona un mazo.</p></div><button class="btn" id="shuffleBtn">Barajar</button></div>
- <div id="certBanner" class="cert-banner training">Selecciona un mazo.</div><div class="study"><div>
-  <div class="answer-box" id="answerBox">
-   <div class="mobile-prompt-bar" id="mobilePromptBar">
-    <div class="mobile-prompt-label" id="mobilePromptLabel">Palabra actual</div><div class="card flash" id="flashcard">
-   <div class="label" id="cardLabel">IDIOMA</div>
-   <div class="front" id="cardFront">Selecciona un mazo</div>
-   <div class="pronunciation-box" id="pronunciationBox">
-    <button class="pronunciation-btn" id="speakWordBtn" type="button">🔊 Pronunciar</button>
-    <span class="pronunciation-text" id="pronunciationText"></span>
-    <label class="pronunciation-switch">
-     <span>Pronunciación automática</span>
-     <span class="switch"><input type="checkbox" id="autoPronunciationToggle"><span class="switch-slider"></span></span>
-    </label>
+ <div class="section-head">
+  <div><h2 id="studyTitle">Estudiar</h2><p id="studySub">Selecciona un mazo.</p></div>
+  <button class="btn" id="shuffleBtn">Barajar</button>
+ </div>
+
+ <div id="certBanner" class="cert-banner training">Selecciona un mazo.</div>
+
+ <div class="study">
+  <div class="study-main">
+
+   <div class="answer-box" id="answerBox">
+    <div class="mobile-prompt-bar" id="mobilePromptBar">
+     <div class="mobile-prompt-label" id="mobilePromptLabel">Palabra actual</div>
+     <div class="mobile-prompt-word" id="mobilePromptWord"></div>
+     <div class="mobile-prompt-example" id="mobilePromptExample"></div>
+    </div>
+
+    <div class="answer-row" id="answerRow">
+     <input id="writtenAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe la respuesta…">
+     <button class="btn primary" id="checkAnswerBtn">Comprobar</button>
+    </div>
+
+    <div class="answer-result" id="answerResult"></div>
+
+    <div class="session-end-actions" id="sessionEndActions">
+     <button class="btn" id="exitStudyBtn">Salir</button>
+    </div>
    </div>
-   <div class="example" id="frontExample"></div>
-   <div class="back" id="cardBack"></div>
-   <div class="example back-example" id="backExample"></div>
-   <div class="hint">En autoevaluación, toca la tarjeta para mostrar la respuesta.</div>
+
+   <div class="card flash" id="flashcard">
+    <div class="label" id="cardLabel">IDIOMA</div>
+    <div class="front" id="cardFront">Selecciona un mazo</div>
+
+    <div class="pronunciation-box" id="pronunciationBox">
+     <button class="pronunciation-btn" id="speakWordBtn" type="button">🔊 Pronunciar</button>
+     <span class="pronunciation-text" id="pronunciationText"></span>
+     <label class="pronunciation-switch">
+      <span>Pronunciación automática</span>
+      <span class="switch"><input type="checkbox" id="autoPronunciationToggle"><span class="switch-slider"></span></span>
+     </label>
+    </div>
+
+    <div class="example" id="frontExample"></div>
+    <div class="back" id="cardBack"></div>
+    <div class="example back-example" id="backExample"></div>
+    <div class="hint">En autoevaluación, toca la tarjeta para mostrar la respuesta.</div>
+   </div>
+
+   <div class="rate" id="selfRate">
+    <button class="bad" data-score="0">✕ Fallé</button>
+    <button class="warn" data-score="1">≈ Dudé</button>
+    <button class="good" data-score="2">✓ Acerté</button>
+   </div>
+
   </div>
-  <div class="rate" id="selfRate"><button class="bad" data-score="0">✕ Fallé</button><button class="warn" data-score="1">≈ Dudé</button><button class="good" data-score="2">✓ Acerté</button></div>
-  
-    <div class="mobile-prompt-word" id="mobilePromptWord"></div>
-    <div class="mobile-prompt-example" id="mobilePromptExample"></div>
+
+  <div class="card sidebox">
+   <h3>Sesión actual</h3>
+   <div class="big"><span id="sessionPos">0</span>/<span id="sessionTotal">0</span></div>
+   <p>Una tarjeta queda dominada tras acertarla 3 veces seguidas. Un fallo reinicia su racha.</p>
+   <div class="minirow"><span>Aciertos</span><b id="sessionGood">0</b></div>
+   <div class="minirow"><span>Dudas</span><b id="sessionWarn">0</b></div>
+   <div class="minirow"><span>Fallos</span><b id="sessionBad">0</b></div>
+   <div class="minirow"><span>Pendientes</span><b id="sessionPending">0</b></div>
+   <div class="meta-panel">
+    <h4 style="margin:0 0 8px">Datos de la tarjeta</h4>
+    <div class="meta-grid" id="cardMetadata"></div>
+    <div class="tags" id="cardTags"></div>
    </div>
-   <div class="answer-row" id="answerRow">
-    <input id="writtenAnswer" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Escribe la respuesta…">
-    <button class="btn primary" id="checkAnswerBtn">Comprobar</button>
-   </div>
-   <div class="answer-result" id="answerResult"></div>
-   <div class="session-end-actions" id="sessionEndActions">
-    <button class="btn" id="exitStudyBtn">Salir</button>
-   </div>
+   <button class="btn primary" style="width:100%;margin-top:16px" id="retryBtn">Repetir no dominadas</button>
   </div>
- </div><div class="card sidebox"><h3>Sesión actual</h3><div class="big"><span id="sessionPos">0</span>/<span id="sessionTotal">0</span></div><p>Una tarjeta queda dominada tras acertarla 3 veces seguidas. Un fallo reinicia su racha.</p><div class="minirow"><span>Aciertos</span><b id="sessionGood">0</b></div><div class="minirow"><span>Dudas</span><b id="sessionWarn">0</b></div><div class="minirow"><span>Fallos</span><b id="sessionBad">0</b></div><div class="minirow"><span>Pendientes</span><b id="sessionPending">0</b></div><div class="meta-panel"><h4 style="margin:0 0 8px">Datos de la tarjeta</h4><div class="meta-grid" id="cardMetadata"></div><div class="tags" id="cardTags"></div></div>
-     <button class="btn primary" style="width:100%;margin-top:16px" id="retryBtn">Repetir no dominadas</button></div></div>
+ </div>
 </section>
+
 
 <section id="datos" class="section">
  <div class="section-head"><div><h2>Gestionar DATA</h2><p>Importa, actualiza o elimina módulos sin tocar el código del programa.</p></div></div>
@@ -697,6 +724,7 @@ function updateMobilePrompt(c,ex){
  }
 }
 function scrollForKeyboard(){
+ $("flashcard").style.display="flex";
  if(window.innerWidth>700)return;
  document.body.classList.add("keyboard-active");
  setTimeout(()=>{
@@ -752,6 +780,7 @@ function renderMetadata(c){
  $("cardTags").innerHTML=(c.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("")
 }
 function showCard(){
+ $("flashcard").style.display="flex";
  const c=queue[qIndex],input=$("writtenAnswer");
  resetAnswerInterface();input.value="";input.disabled=false;setMainButton("check","Comprobar");
  if(!c){finishSession();return}
@@ -886,7 +915,7 @@ function checkWrittenAnswer(){
  const expected=back(c),a=normalize($("writtenAnswer").value),accepted=String(expected).split(/\s*\/\s*/).map(normalize),ok=accepted.includes(a);
  applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
  $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
- $("writtenAnswer").disabled=true;$("flashcard").classList.add("flipped");renderPronunciation(c,true);
+ $("writtenAnswer").disabled=true;$("flashcard").style.display="flex";$("flashcard").classList.add("flipped");renderPronunciation(c,true);
  document.body.classList.add("answer-checked");
  if(autoPronunciation||direction==="audio-front")speakCurrentWord();
  setMainButton("next","Siguiente")
