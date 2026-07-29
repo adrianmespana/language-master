@@ -292,6 +292,15 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  .word-tools-field.full,.card-editor-field.full{grid-column:1}
 }
 
+
+/* V5.5 · modo frase con hueco */
+.cloze-spanish{font-size:22px;font-weight:750;line-height:1.45;max-width:820px}
+.cloze-target{margin-top:18px;font-size:22px;line-height:1.55;color:#35415d;font-weight:650}
+.cloze-gap{display:inline-block;min-width:120px;border-bottom:3px solid var(--primary);color:var(--primary);letter-spacing:.12em;text-align:center;padding:0 8px;font-weight:900}
+.cloze-complete{font-size:18px;line-height:1.55;color:#53617d}
+.cloze-answer-word{margin-top:8px;font-size:25px;color:var(--primary);font-weight:850}
+@media(max-width:700px){.cloze-spanish,.cloze-target{font-size:18px}.cloze-gap{min-width:92px}}
+
 </style>
 </head>
 <body>
@@ -613,7 +622,8 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  <label><input type="radio" name="studyDirection" value="front-back" checked><span id="dirFrontBack">Idioma → español</span></label>
  <label><input type="radio" name="studyDirection" value="back-front"><span id="dirBackFront">Español → idioma</span></label>
  <label><input type="radio" name="studyDirection" value="audio-front"><span>🔊 Solo audio → escribir palabra</span></label>
-</div><div class="audio-mode-note">El modo de audio tiene progreso independiente. Para dominar completamente una categoría tendrás que conseguir el sello escrito y también el sello auditivo.</div></div>
+ <label><input type="radio" name="studyDirection" value="cloze-front"><span>🧩 Frase en español → completar hueco</span></label>
+</div><div class="audio-mode-note">El modo de audio tiene progreso independiente. El modo de frase con hueco muestra la frase completa en español y debajo la frase del idioma estudiado ocultando la palabra que debes escribir; cuenta dentro del progreso escrito.</div></div>
  <div class="choicegroup"><strong>Forma de responder</strong><div class="choice"><label><input type="radio" name="studyMode" value="self" checked>Fallé · Dudé · Acerté</label><label><input type="radio" name="studyMode" value="write">Escribir respuesta</label></div></div>
  <div class="modal-actions"><button class="btn" id="cancelSetupBtn">Cancelar</button><button class="btn primary" id="beginDeckBtn">Empezar mazo</button></div>
 </div></div>
@@ -866,8 +876,9 @@ function startDeck(label,cards,mode,pack){leaveCardFocusMode();
  }
  queue.sort(()=>Math.random()-.5);qIndex=0;session={good:0,warn:0,bad:0};
  go("estudiar");$("studyTitle").textContent=label;
- if(direction==="audio-front")studyMode="write";
- $("studySub").textContent=(direction==="audio-front"?"Solo audio → escribir palabra":direction==="front-back"?"Idioma → español":"Español → idioma")+" · "+(studyMode==="write"?"respuesta escrita":"autoevaluación");
+ if(direction==="audio-front"||direction==="cloze-front")studyMode="write";
+ const directionLabel=direction==="audio-front"?"Solo audio → escribir palabra":direction==="cloze-front"?"Frase en español → completar hueco":direction==="front-back"?"Idioma → español":"Español → idioma";
+ $("studySub").textContent=directionLabel+" · "+(studyMode==="write"?"respuesta escrita":"autoevaluación");
  $("selfRate").style.display=studyMode==="self"?"grid":"none";
  resetAnswerInterface();$("answerBox").classList.toggle("active",studyMode==="write");
  setMainButton("check","Comprobar");updateCertBanner();showCard()
@@ -887,6 +898,39 @@ function chooseExample(c){
 }
 const front=c=>direction==="front-back"?c.front:c.back,back=c=>direction==="front-back"?c.back:c.front;
 
+function clozeAnswerVariants(c){
+ const values=String(c?.front||"").split(/\s*(?:\/|\||;)\s*/g).map(x=>x.trim()).filter(Boolean);
+ if((c?.language_id||selectedLanguage)==="en"){
+  for(const value of [...values])if(/^to\s+/i.test(value))values.push(value.replace(/^to\s+/i,"").trim())
+ }
+ return[...new Set(values)].sort((a,b)=>b.length-a.length)
+}
+function clozeExampleCandidates(c){
+ const code=c.language_id||selectedLanguage,items=[];
+ const add=(target,spanish)=>{target=String(target||"").trim();spanish=String(spanish||"").trim();if(target&&spanish&&!items.some(x=>x.target===target&&x.spanish===spanish))items.push({target,spanish})};
+ add(c.sentence_front,c.sentence_back);
+ for(const ex of c.examples||[])add(ex?.[code]??ex?.target??ex?.native??ex?.fr??ex?.en,ex?.es??ex?.spanish);
+ return items
+}
+function clozeMatch(sentence,c){
+ const source=String(sentence||""),lower=source.toLocaleLowerCase();
+ for(const value of clozeAnswerVariants(c)){
+  const index=lower.indexOf(value.toLocaleLowerCase());
+  if(index>=0)return{index,length:value.length,value}
+ }
+ return null
+}
+function chooseClozeExample(c){
+ const candidates=clozeExampleCandidates(c),matching=candidates.filter(x=>clozeMatch(x.target,c));
+ const pool=matching.length?matching:candidates;
+ return pool[Math.floor(Math.random()*pool.length)]||{target:c.sentence_front||c.front,spanish:c.sentence_back||c.back}
+}
+function renderClozeSentence(sentence,c){
+ const source=String(sentence||""),match=clozeMatch(source,c);
+ if(!match)return`${esc(source)} <span class="cloze-gap">________</span>`;
+ return esc(source.slice(0,match.index))+`<span class="cloze-gap">________</span>`+esc(source.slice(match.index+match.length))
+}
+
 
 function initAutoPronunciation(){
  $("autoPronunciationToggle").checked=!!autoPronunciation;
@@ -901,6 +945,10 @@ function updateMobilePrompt(c,ex){
   $("mobilePromptLabel").textContent="Modo auditivo";
   $("mobilePromptWord").textContent="🔊 Escucha y escribe";
   $("mobilePromptExample").textContent="";
+ }else if(direction==="cloze-front"){
+  $("mobilePromptLabel").textContent="Completar hueco";
+  $("mobilePromptWord").textContent=ex?.spanish||ex?.front||"";
+  $("mobilePromptExample").textContent=ex?.target||ex?.back||"";
  }else{
   $("mobilePromptLabel").textContent=direction==="front-back"?"Idioma → español":"Español → idioma";
   $("mobilePromptWord").textContent=front(c);
@@ -1025,13 +1073,16 @@ function renderMetadata(c){
 function showCard(){
  $("flashcard").style.display="flex";
  const c=queue[qIndex],input=$("writtenAnswer");
- resetAnswerInterface();input.value="";input.disabled=false;setMainButton("check","Comprobar");
+ resetAnswerInterface();input.value="";input.disabled=false;input.placeholder=direction==="cloze-front"?"Escribe la palabra que falta…":"Escribe la respuesta…";setMainButton("check","Comprobar");
  if(!c){finishSession();return}
- const ex=chooseExample(c);
- $("cardLabel").textContent=direction==="audio-front"?"SOLO AUDIO → ESCRIBIR":direction==="front-back"?"IDIOMA → ESPAÑOL":"ESPAÑOL → IDIOMA";
+ const ex=direction==="cloze-front"?chooseClozeExample(c):chooseExample(c);
+ $("cardLabel").textContent=direction==="audio-front"?"SOLO AUDIO → ESCRIBIR":direction==="cloze-front"?"ESPAÑOL → COMPLETAR HUECO":direction==="front-back"?"IDIOMA → ESPAÑOL":"ESPAÑOL → IDIOMA";
  if(direction==="audio-front"){
   $("cardFront").textContent="";
   $("frontExample").innerHTML='<div class="audio-blind-placeholder">🔊 Escucha y escribe lo que oyes</div>';
+ }else if(direction==="cloze-front"){
+  $("cardFront").innerHTML=`<div class="cloze-spanish">${esc(ex.spanish)}</div>`;
+  $("frontExample").innerHTML=`<div class="cloze-target">${renderClozeSentence(ex.target,c)}</div>`;
  }else{
   $("cardFront").textContent=front(c);
   $("frontExample").innerHTML=highlight(ex.front,front(c));
@@ -1040,6 +1091,9 @@ function showCard(){
  if(direction==="audio-front"){
   $("cardBack").textContent=c.front;
   $("backExample").innerHTML=highlight(c.sentence_front,c.front);
+ }else if(direction==="cloze-front"){
+  $("cardBack").innerHTML=`<div class="cloze-answer-word">${esc(c.front)}</div>`;
+  $("backExample").innerHTML=`<div class="cloze-complete">${highlight(ex.target,c.front)}</div>`;
  }else{
   $("cardBack").textContent=back(c);
   $("backExample").innerHTML=highlight(ex.back,back(c));
@@ -1167,7 +1221,8 @@ document.querySelectorAll("[data-score]").forEach(b=>b.onclick=()=>{if(!queue[qI
 
 function checkWrittenAnswer(){
  const c=queue[qIndex];if(!c)return;
- const expected=back(c),a=normalize($("writtenAnswer").value),accepted=String(expected).split(/\s*\/\s*/).map(normalize),ok=accepted.includes(a);
+ const expected=direction==="cloze-front"?c.front:back(c),a=normalize($("writtenAnswer").value);
+ const accepted=(direction==="cloze-front"?clozeAnswerVariants(c):String(expected).split(/\s*\/\s*/)).map(normalize),ok=accepted.includes(a);
  applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
  $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
  playAnswerSound(ok);
@@ -1193,7 +1248,7 @@ $("retryBtn").onclick=()=>currentDeck&&startDeck(currentDeck,currentSource,curre
 $("shuffleBtn").onclick=()=>{queue.sort(()=>Math.random()-.5);qIndex=0;showCard()};
 $("cancelSetupBtn").onclick=closeSetup;
 $("beginDeckBtn").onclick=()=>{direction=document.querySelector('input[name="studyDirection"]:checked').value;
- studyMode=direction==="audio-front"?"write":document.querySelector('input[name="studyMode"]:checked').value;
+ studyMode=(direction==="audio-front"||direction==="cloze-front")?"write":document.querySelector('input[name="studyMode"]:checked').value;
  currentTrack=direction==="audio-front"?"listening":"written";const d=pendingDeck;closeSetup();startDeck(d.label,d.cards,d.mode,d.pack)};
 
 for(const id of ["topImportBtn","manageImportBtn"])$(id).onclick=()=>$("dataInput").click();
