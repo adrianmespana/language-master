@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V5.2 · Generación automática con IA</title>
+<title>Language Master V5.4 · Gestión personalizada de palabras</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -243,6 +243,55 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 .generator-spinner{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:lmspin .7s linear infinite}
 @keyframes lmspin{to{transform:rotate(360deg)}}
 
+
+/* V5.4 · añadir, editar y eliminar palabras por bloque */
+.word-tools-screen{position:fixed;inset:0;z-index:185;background:linear-gradient(140deg,#10172a,#283866);padding:18px;overflow:auto;display:none}
+.word-tools-screen.active{display:block}
+.word-tools-shell{width:min(1080px,100%);margin:18px auto;background:#fff;border-radius:24px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.34)}
+.word-tools-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
+.word-tools-head h1{margin:0 0 6px}.word-tools-head p{margin:0;color:var(--muted)}
+.word-tools-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.word-tools-field{display:flex;flex-direction:column;gap:6px}.word-tools-field.full{grid-column:1/-1}
+.word-tools-field label{font-size:13px;font-weight:800}
+.word-tools-field input,.word-tools-field select,.word-tools-field textarea,.card-editor-grid input,.card-editor-grid select,.card-editor-grid textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fff}
+.word-tools-field textarea,.card-editor-grid textarea{min-height:84px;resize:vertical}
+.word-entry-list{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.word-entry-row{display:grid;grid-template-columns:minmax(180px,1.15fr) minmax(210px,1fr) minmax(180px,1fr) auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fafbff}
+.word-entry-row input,.word-entry-row select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
+.word-entry-row .new-pack-name.hidden{display:none}
+.word-remove-row{border:0;background:#fdecee;color:#9d2835;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:900}
+.word-tools-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.word-tools-status{margin-top:14px;white-space:pre-wrap;background:#111827;color:#eaf0ff;border-radius:14px;padding:14px;min-height:92px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.45}
+.word-tools-status.error{background:#4b1820}.word-tools-status.done{background:#123b2b}
+.data-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.manager-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,1fr) auto;gap:9px;margin-bottom:13px}
+.manager-toolbar input,.manager-toolbar select{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff;width:100%}
+.manager-list{display:flex;flex-direction:column;gap:8px}
+.manager-row{display:grid;grid-template-columns:auto minmax(150px,1fr) minmax(170px,1.2fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:11px;background:#fafbff}
+.manager-row-main{min-width:0}.manager-row-main b,.manager-row-back{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.manager-row-main small,.manager-row-back small{color:var(--muted)}
+.manager-row-actions{display:flex;gap:6px;flex-wrap:wrap}
+.card-editor-back{display:none;position:fixed;inset:0;z-index:235;background:rgba(8,13,28,.72);padding:18px;overflow:auto}
+.card-editor-back.active{display:block}
+.card-editor{width:min(900px,100%);margin:20px auto;background:#fff;border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.34)}
+.card-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.card-editor-field{display:flex;flex-direction:column;gap:5px}.card-editor-field.full{grid-column:1/-1}
+.card-editor-field label{font-size:12px;font-weight:800;color:var(--muted)}
+.card-editor-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:17px}
+.editor-check{display:flex;align-items:center;gap:8px;background:#fff4d7;color:#805400;border-radius:11px;padding:10px;font-size:13px}
+.editor-check input{width:auto}
+@media(max-width:800px){
+ .word-tools-form{grid-template-columns:1fr 1fr}
+ .word-entry-row{grid-template-columns:1fr 1fr}.word-entry-row .word-remove-row{grid-column:1/-1}
+ .manager-toolbar{grid-template-columns:1fr}
+ .manager-row{grid-template-columns:auto 1fr}.manager-row-back{grid-column:2}.manager-row-actions{grid-column:1/-1}
+}
+@media(max-width:560px){
+ .word-tools-shell{padding:16px;margin:0 auto}.word-tools-head{flex-direction:column}
+ .word-tools-form,.word-entry-row,.card-editor-grid{grid-template-columns:1fr}
+ .word-tools-field.full,.card-editor-field.full{grid-column:1}
+}
+
 </style>
 </head>
 <body>
@@ -309,12 +358,109 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  </div>
 </section>
 
+
+<section class="word-tools-screen" id="wordAdderScreen">
+ <div class="word-tools-shell">
+  <div class="word-tools-head">
+   <div><h1>＋ Añadir palabras con IA</h1><p>Cada palabra puede ir a un bloque distinto, existente o nuevo. n8n completa automáticamente todos sus metadatos.</p></div>
+   <button class="btn" id="closeWordAdderBtn">✕ Cerrar</button>
+  </div>
+  <div class="generator-tip">Elige el idioma y el número de palabras. En cada fila selecciona el bloque de destino o crea uno nuevo. Antes de enviar, la app impedirá duplicados en todo el idioma.</div>
+  <div class="word-tools-form" style="margin-top:15px">
+   <div class="word-tools-field">
+    <label for="wordLanguage">Idioma</label>
+    <select id="wordLanguage"></select>
+   </div>
+   <div class="word-tools-field">
+    <label for="wordLevel">Nivel aproximado</label>
+    <select id="wordLevel"><option>A1</option><option>A2</option><option selected>B1</option><option>B2</option><option>C1</option><option>Mixto y progresivo</option></select>
+   </div>
+   <div class="word-tools-field">
+    <label for="wordCount">Número de palabras</label>
+    <select id="wordCount"></select>
+   </div>
+   <div class="word-tools-field full hidden" id="wordCustomLanguageWrap">
+    <label for="wordCustomLanguage">Idioma personalizado</label>
+    <input id="wordCustomLanguage" placeholder="Ej.: Griego | el | Ελληνικά | 🇬🇷">
+   </div>
+   <div class="word-tools-field full">
+    <label for="wordBulkPaste">Pegar una lista rápidamente (una palabra por línea)</label>
+    <textarea id="wordBulkPaste" placeholder="negotiate&#10;deadline&#10;revenue"></textarea>
+    <button class="btn small" id="applyWordBulkBtn" type="button">Distribuir la lista en filas</button>
+   </div>
+  </div>
+  <div class="word-entry-list" id="wordEntryList"></div>
+  <div class="word-tools-actions">
+   <button class="btn" id="addWordRowBtn" type="button">＋ Añadir otra fila</button>
+   <button class="btn" id="removeWordRowBtn" type="button">− Quitar última fila</button>
+   <button class="btn primary" id="submitWordsBtn" type="button">Generar metadatos y añadir</button>
+  </div>
+  <div class="word-tools-status hidden" id="wordAdderStatus"></div>
+ </div>
+</section>
+
+<section class="word-tools-screen" id="cardManagerScreen">
+ <div class="word-tools-shell">
+  <div class="word-tools-head">
+   <div><h1>Gestionar palabras</h1><p>Edita, elimina o amplía cualquier bloque instalado.</p></div>
+   <button class="btn" id="closeCardManagerBtn">✕ Cerrar</button>
+  </div>
+  <div class="manager-toolbar">
+   <select id="managerPackSelect"></select>
+   <input id="managerSearch" placeholder="Buscar palabra o traducción…">
+   <button class="btn primary" id="managerAddWordsBtn">＋ Añadir al bloque</button>
+  </div>
+  <div class="word-tools-actions" style="margin:0 0 12px">
+   <button class="btn small" id="managerSelectAllBtn">Seleccionar visibles</button>
+   <button class="btn danger small" id="managerDeleteSelectedBtn">Eliminar seleccionadas</button>
+   <span class="data-meta" id="managerSummary"></span>
+  </div>
+  <div class="manager-list" id="managerCardList"></div>
+ </div>
+</section>
+
+<div class="card-editor-back" id="cardEditorBack">
+ <div class="card-editor">
+  <div class="word-tools-head">
+   <div><h2 style="margin:0">Editar tarjeta</h2><p id="cardEditorPackLabel"></p></div>
+   <button class="btn" id="closeCardEditorBtn">✕</button>
+  </div>
+  <div class="card-editor-grid">
+   <div class="card-editor-field"><label>Palabra o expresión</label><input id="editFront"></div>
+   <div class="card-editor-field"><label>Traducción al español</label><input id="editBack"></div>
+   <div class="card-editor-field full"><label>Frase en el idioma objetivo</label><textarea id="editSentenceFront"></textarea></div>
+   <div class="card-editor-field full"><label>Traducción de la frase</label><textarea id="editSentenceBack"></textarea></div>
+   <div class="card-editor-field"><label>Pronunciación orientativa</label><input id="editPronunciation"></div>
+   <div class="card-editor-field"><label>IPA</label><input id="editIpa"></div>
+   <div class="card-editor-field"><label>Tipo gramatical</label><input id="editGrammarType"></div>
+   <div class="card-editor-field"><label>Género</label><input id="editGender"></div>
+   <div class="card-editor-field"><label>Plural</label><input id="editPlural"></div>
+   <div class="card-editor-field"><label>Nivel CEFR</label><select id="editCefr"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>Mixto y progresivo</option></select></div>
+   <div class="card-editor-field"><label>Dificultad (1-5)</label><input id="editDifficulty" type="number" min="1" max="5"></div>
+   <div class="card-editor-field"><label>Frecuencia (1-5)</label><input id="editFrequency" type="number" min="1" max="5"></div>
+   <div class="card-editor-field full"><label>Etiquetas separadas por comas</label><input id="editTags"></div>
+   <div class="card-editor-field"><label>Ejemplo 1</label><textarea id="editExample1Target"></textarea></div>
+   <div class="card-editor-field"><label>Traducción ejemplo 1</label><textarea id="editExample1Es"></textarea></div>
+   <div class="card-editor-field"><label>Ejemplo 2</label><textarea id="editExample2Target"></textarea></div>
+   <div class="card-editor-field"><label>Traducción ejemplo 2</label><textarea id="editExample2Es"></textarea></div>
+   <div class="card-editor-field full"><label>Notas</label><textarea id="editNotes"></textarea></div>
+   <label class="editor-check full"><input type="checkbox" id="editResetProgress" checked> Reiniciar el progreso de esta tarjeta si cambia la palabra.</label>
+  </div>
+  <div class="card-editor-actions">
+   <button class="btn" id="regenerateCardBtn">✨ Regenerar metadatos con IA</button>
+   <button class="btn danger" id="deleteEditingCardBtn">Eliminar tarjeta</button>
+   <button class="btn" id="cancelCardEditorBtn">Cancelar</button>
+   <button class="btn primary" id="saveCardEditorBtn">Guardar cambios</button>
+  </div>
+ </div>
+</div>
+
 <section class="login-screen" id="loginScreen"><div class="login-card"><h1>Language Master</h1><p>Inicia sesión con la misma cuenta en el móvil y el ordenador para sincronizar módulos, progreso, sellos, cronómetro e historial.</p><button class="google-btn" id="googleLoginBtn">Continuar con Google</button><p style="font-size:12px;margin-top:10px">En iPhone se abrirá una ventana segura de Google. No cierres esa ventana hasta terminar.</p><p id="loginMessage" style="font-size:13px"></p></div></section><section class="language-screen hidden" id="languageScreen">
  <div class="language-panel">
   <h1>Elige el idioma que quieres estudiar</h1>
   <p class="subtitle">Los idiomas aparecen al importar archivos DATA.</p>
   <div class="actions" style="margin-top:16px">
-   <button class="btn primary" id="homeImportBtn">＋ Importar DATA</button><button class="btn" id="homeGenerateBtn">✨ Generar bloques</button>
+   <button class="btn primary" id="homeImportBtn">＋ Importar DATA</button><button class="btn" id="homeGenerateBtn">✨ Generar bloques</button><button class="btn" id="homeAddWordsBtn">＋ Añadir palabras</button>
    <input type="file" id="homeDataInput" accept=".json,application/json" multiple hidden>
   </div>
   <div class="language-grid" id="languageGrid"></div>
@@ -328,7 +474,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  <button class="navbtn active" data-page="inicio">🏠 Inicio</button>
  <button class="navbtn" data-page="vocabulario">🗂️ Vocabulario <span id="navVocab">0</span></button>
  <button class="navbtn" data-page="estudiar">⚡ Estudiar mazo</button>
- <button class="navbtn" data-page="datos">📦 Gestionar DATA</button><button class="navbtn" id="openGeneratorNav">✨ Generar bloques</button>
+ <button class="navbtn" data-page="datos">📦 Gestionar DATA</button><button class="navbtn" id="openGeneratorNav">✨ Generar bloques</button><button class="navbtn" id="openWordAdderNav">＋ Añadir palabras</button><button class="navbtn" id="openCardManagerNav">✏️ Gestionar palabras</button>
  <button class="navbtn" data-page="progreso">📊 Progreso</button>
  <button class="navbtn" id="changeLanguage">🌍 Cambiar idioma</button>
  <div class="aside-note">Importa un JSON una sola vez. La aplicación lo guarda y lo carga automáticamente en futuras aperturas.</div>
@@ -336,7 +482,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 <main>
 <div class="topbar">
  <div><h1 id="pageTitle">Panel de aprendizaje</h1><p class="subtitle" id="pageSubtitle">Estudia hasta dominar cada tarjeta sin fallos.</p></div>
- <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="topGenerateBtn">✨ Generar bloques</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
+ <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="topGenerateBtn">✨ Generar bloques</button><button class="btn" id="topAddWordsBtn">＋ Añadir palabras</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
 </div>
 
 <section id="inicio" class="section active">
@@ -451,7 +597,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 
 <section id="datos" class="section">
  <div class="section-head"><div><h2>Gestionar DATA</h2><p>Importa, actualiza o elimina módulos sin tocar el código del programa.</p></div></div>
- <div class="import-zone"><h3>Importar archivos JSON</h3><p>Puedes seleccionar uno o varios archivos a la vez. Si un JSON tiene el mismo <code>pack_id</code>, sustituye la versión anterior sin borrar el progreso de sus tarjetas.</p><button class="btn primary" id="manageImportBtn">Seleccionar JSON</button></div>
+ <div class="import-zone"><h3>Importar archivos JSON</h3><p>Puedes seleccionar uno o varios archivos a la vez. Si un JSON tiene el mismo <code>pack_id</code>, sustituye la versión anterior sin borrar el progreso de sus tarjetas.</p><button class="btn primary" id="manageImportBtn">Seleccionar JSON</button> <button class="btn" id="dataAddWordsBtn">＋ Añadir palabras</button> <button class="btn" id="dataManageWordsBtn">✏️ Gestionar palabras</button></div>
  <div class="card"><h3 style="margin-top:0">Módulos instalados</h3><div id="dataList"></div></div>
 </section>
 
@@ -509,7 +655,8 @@ function savePacksFallback(){try{localStorage.setItem(PACKS_KEY,JSON.stringify(p
 function openDB(){return new Promise((resolve,reject)=>{if(!("indexedDB" in window)){reject(new Error("IndexedDB no disponible"));return}const req=indexedDB.open("LanguageMasterDB",2);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("packs"))db.createObjectStore("packs",{keyPath:"pack_id"})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
 async function loadPacks(){try{const db=await openDB();packs=await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readonly"),r=tx.objectStore("packs").getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)});db.close()}catch(e){packs=loadPacksFallback()}}
 async function putPack(pack){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").put(pack);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){const i=packs.findIndex(x=>x.pack_id===pack.pack_id);if(i>=0)packs[i]=pack;else packs.push(pack);if(!savePacksFallback())throw new Error("No se pudo guardar el DATA")}}
-async function deletePack(id){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=packs.filter(x=>x.pack_id!==id);savePacksFallback()}await loadPacks();refreshAfterDataChange()}
+async function replaceAllPacks(arr){const clean=Array.isArray(arr)?arr:[];try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite"),store=tx.objectStore("packs");store.clear();for(const p of clean)store.put(p);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=clean;savePacksFallback()}}
+async function deletePack(id){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=packs.filter(x=>x.pack_id!==id);savePacksFallback()}await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}))}
 
 function validatePack(p){
  if(p&&p.metadata&&Array.isArray(p.entradas)){
@@ -526,7 +673,7 @@ async function importFiles(fileList){const files=[...fileList];if(!files.length)
 
 function languages(){const m=new Map();for(const p of packs)if(!m.has(p.language_id))m.set(p.language_id,{id:p.language_id,name:p.language_name,native:p.native_name,flag:p.flag});return[...m.values()]}
 function renderLanguageScreen(){const a=languages();$("languageGrid").innerHTML=a.map(l=>`<button class="language-card" data-language="${l.id}"><span>${l.flag||"🌍"}</span><strong>${l.name}</strong><br><small>${l.native||""}</small></button>`).join("");$("noLanguages").classList.toggle("hidden",a.length>0);document.querySelectorAll("[data-language]").forEach(b=>b.onclick=()=>selectLanguage(b.dataset.language))}
-function enrichCard(c,p){return {...c,pack_id:p.pack_id,pack_title:p.title,category:p.category,grammar:c.grammar||{},learning:c.learning||{},tags:Array.isArray(c.tags)?c.tags:[],examples:Array.isArray(c.examples)&&c.examples.length?c.examples:[{fr:c.sentence_front,es:c.sentence_back}]}}
+function enrichCard(c,p){return {...c,pack_id:p.pack_id,pack_title:p.title,category:p.category,language_id:p.language_id,grammar:c.grammar||{},learning:c.learning||{},tags:Array.isArray(c.tags)?c.tags:[],examples:Array.isArray(c.examples)&&c.examples.length?c.examples:[{[p.language_id]:c.sentence_front,es:c.sentence_back}]}}
 function selectLanguage(id){selectedLanguage=id;languagePacks=packs.filter(p=>p.language_id===id);vocab=languagePacks.flatMap(p=>p.cards.map(c=>enrichCard(c,p)));const i=languages().find(x=>x.id===id);$("brand").innerHTML=`${i.flag||""} ${i.native||i.name}<small>Vocabulario modular</small>`;$("dirFrontBack").textContent=`${i.name} → español`;$("dirBackFront").textContent=`Español → ${i.name}`;loadState();migrateState();$("languageScreen").classList.add("hidden");$("app").classList.remove("hidden");populateMetadataFilters();renderAll()}
 function refreshAfterDataChange(){renderLanguageScreen();renderDataList();if(selectedLanguage){const exists=packs.some(p=>p.language_id===selectedLanguage);if(exists)selectLanguage(selectedLanguage);else{$("app").classList.add("hidden");$("languageScreen").classList.remove("hidden");selectedLanguage=null}}}
 
@@ -689,7 +836,12 @@ function renderProgress(){
  }).join("");
  renderTimerHistory();
 }
-function renderDataList(){$("dataList").innerHTML=packs.length?packs.map(p=>`<div class="data-row"><div><b>${p.flag||"🌍"} ${p.title}</b><div class="data-meta">${p.language_name} · ${p.cards.length} tarjetas · ID: ${p.pack_id} · versión ${p.version||1}</div></div><button class="btn danger small" data-delete-pack="${p.pack_id}">Eliminar</button></div>`).join(""):'<div class="empty-home">No hay módulos instalados.</div>';document.querySelectorAll("[data-delete-pack]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este módulo DATA? El progreso no se borrará."))deletePack(b.dataset.deletePack)})}
+function renderDataList(){
+ $("dataList").innerHTML=packs.length?packs.map(p=>`<div class="data-row"><div><b>${p.flag||"🌍"} ${esc(p.title)}</b><div class="data-meta">${esc(p.language_name)} · ${p.cards.length} tarjetas · ID: ${esc(p.pack_id)} · versión ${p.version||1}</div></div><div class="data-actions"><button class="btn small" data-add-pack="${esc(p.pack_id)}">＋ Añadir palabras</button><button class="btn small" data-manage-pack="${esc(p.pack_id)}">✏️ Gestionar palabras</button><button class="btn danger small" data-delete-pack="${esc(p.pack_id)}">Eliminar bloque</button></div></div>`).join(""):'<div class="empty-home">No hay módulos instalados.</div>';
+ document.querySelectorAll("[data-add-pack]").forEach(b=>b.onclick=()=>openWordAdder(b.dataset.addPack));
+ document.querySelectorAll("[data-manage-pack]").forEach(b=>b.onclick=()=>openCardManager(b.dataset.managePack));
+ document.querySelectorAll("[data-delete-pack]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este módulo DATA? El progreso guardado no se borrará automáticamente."))deletePack(b.dataset.deletePack)})
+}
 function renderAll(){renderStats();renderDataList();go("inicio")}
 
 function openSetup(d){pendingDeck=d;$("setupTitle").textContent="Configurar: "+d.label;$("setupModal").classList.add("active")}
@@ -728,8 +880,10 @@ function updateCertBanner(){
  else{b.className="cert-banner training";b.textContent="Todas juntas: entrenamiento independiente. Las respuestas cuentan como palabras revisadas, no como nuevas palabras dominadas."}
 }
 function chooseExample(c){
- const ex=c.examples[Math.floor(Math.random()*c.examples.length)]||{fr:c.sentence_front,es:c.sentence_back};
- return direction==="front-back"?{front:ex.fr,back:ex.es}:{front:ex.es,back:ex.fr}
+ const ex=c.examples[Math.floor(Math.random()*c.examples.length)]||{};
+ const target=ex[c.language_id||selectedLanguage]??ex.target??ex.native??ex.fr??ex.en??c.sentence_front;
+ const spanish=ex.es??ex.spanish??c.sentence_back;
+ return direction==="front-back"?{front:target,back:spanish}:{front:spanish,back:target}
 }
 const front=c=>direction==="front-back"?c.front:c.back,back=c=>direction==="front-back"?c.back:c.front;
 
@@ -1079,7 +1233,7 @@ function toggleTimerUI(e){if(e)e.stopPropagation();const w=$("timerWidget"),c=!w
 $("timerToggleBtn").onclick=toggleTimerUI;$("timerWidget").addEventListener("click",e=>{if($("timerWidget").classList.contains("collapsed")&&e.target.id!=="timerToggleBtn")toggleTimerUI(e)});
 window.LMBridge={
  getPacks:()=>packs,
- replacePacks:async arr=>{const local=JSON.stringify(packs),remote=JSON.stringify(arr||[]);if(local===remote)return;const page=document.querySelector(".section.active")?.id||"inicio";for(const p of arr)await putPack(p);await loadPacks();refreshAfterDataChange();if(selectedLanguage&&document.getElementById(page))go(page)},
+ replacePacks:async arr=>{const local=JSON.stringify(packs),remote=JSON.stringify(arr||[]);if(local===remote)return;const page=document.querySelector(".section.active")?.id||"inicio";await replaceAllPacks(arr||[]);await loadPacks();refreshAfterDataChange();if(selectedLanguage&&document.getElementById(page))go(page)},
  getProgress:lang=>{try{return JSON.parse(localStorage.getItem(`language_master_progress_${lang}_v1`)||"null")}catch(e){return null}},
  setProgress:(lang,data)=>{const current=localStorage.getItem(`language_master_progress_${lang}_v1`),incoming=JSON.stringify(data);if(current===incoming)return;localStorage.setItem(`language_master_progress_${lang}_v1`,incoming);if(selectedLanguage===lang){const page=document.querySelector(".section.active")?.id||"inicio";state=data;migrateState();renderStats();renderDecks();if(page==="progreso")renderProgress();if(document.getElementById(page))go(page)}},
  progressLanguages:()=>Object.keys(localStorage).filter(k=>k.startsWith("language_master_progress_")&&k.endsWith("_v1")).map(k=>k.slice(25,-3)),
@@ -1262,6 +1416,7 @@ async function requestGeneratedBlock(payload){
  body.set("numeroTarjetas",String(payload.cardCount||50));
  body.set("nivel",payload.level);
  body.set("instrucciones",payload.instructions||"");
+ body.set("forbiddenTerms",JSON.stringify(payload.forbiddenTerms||[]));
  let response;
  try{
   response=await fetch(N8N_GENERATE_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8","Accept":"application/json"},body:body.toString()});
@@ -1296,7 +1451,7 @@ async function buildUniquePack({lang,theme,blockNumber,level,extra,baseForbidden
   const instructions=buildNoRepeatInstructions({extra,forbiddenLabels:workingLabels,needed,theme,isRepair});
   calls++;
   if(isRepair)generatorLog(`  Generando solo ${needed} sustitución${needed===1?"":"es"}; se conservan ${accepted.length} tarjetas válidas…`);
-  const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,cardCount:needed,instructions});
+  const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,cardCount:needed,instructions,forbiddenTerms:[...workingLabels]});
   const candidate=normalizeGeneratedPack(raw,{lang,theme,blockNumber,level,expectedCount:needed});
   if(!template)template=candidate;
   const review=reviewCandidateCards(candidate,workingKeys,lang.code);
@@ -1375,7 +1530,340 @@ $("genThemes").addEventListener("input",saveGeneratorPrefs);
 $("generatePromptBtn").onclick=generateAndInstallBlocks;
 $("generatorScreen").addEventListener("click",e=>{if(e.target===$("generatorScreen"))closeGenerator()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("generatorScreen").classList.contains("active"))closeGenerator()});
+
 loadGeneratorPrefs();
+
+/* ---------- AÑADIR Y GESTIONAR PALABRAS ---------- */
+const N8N_ADD_WORDS_URL="https://n8n.srv1863570.hstgr.cloud/webhook/557f2f8d-a978-4b5a-9b1d-e02b81b986c7";
+let wordAdderBusy=false,wordRows=[],managedPackId=null,editingPackId=null,editingCardId=null;
+
+function languageDataFromValue(value,customValue=""){
+ if(value!=="other"){
+  const [code,name,native,flag]=String(value||"").split("|");
+  return{code:code||"xx",name:name||"Idioma",native:native||name||"Idioma",flag:flag||"🌍"}
+ }
+ const parts=String(customValue||"").split("|").map(x=>x.trim());
+ return{code:parts[1]||"xx",name:parts[0]||"Idioma personalizado",native:parts[2]||parts[0]||"Idioma",flag:parts[3]||"🌍"}
+}
+function initWordLanguageOptions(){
+ $("wordLanguage").innerHTML=$("genLanguage").innerHTML;
+ for(let i=1;i<=20;i++)$("wordCount").insertAdjacentHTML("beforeend",`<option value="${i}">${i} palabra${i===1?"":"s"}</option>`);
+ $("wordCount").value="1"
+}
+function getWordLanguage(){
+ return languageDataFromValue($("wordLanguage").value,$("wordCustomLanguage").value)
+}
+function toggleWordCustomLanguage(){
+ $("wordCustomLanguageWrap").classList.toggle("hidden",$("wordLanguage").value!=="other")
+}
+function destinationOptions(langCode,selected=""){
+ const list=packs.filter(p=>p.language_id===langCode);
+ return `<option value="">Elige bloque…</option>${list.map(p=>`<option value="${esc(p.pack_id)}" ${p.pack_id===selected?"selected":""}>${esc(p.title)} (${p.cards.length})</option>`).join("")}<option value="__new__" ${selected==="__new__"?"selected":""}>＋ Crear bloque nuevo…</option>`
+}
+function renderWordRows(count=null,prefillPackId=null){
+ const n=count??(Number($("wordCount").value)||1);
+ const lang=getWordLanguage();
+ const domRows=[...document.querySelectorAll(".word-entry-row")];
+ const old=domRows.length?domRows.map(row=>({
+  word:row.querySelector(".word-value")?.value||"",
+  destination:row.querySelector(".word-destination")?.value||"",
+  newTitle:row.querySelector(".new-pack-name")?.value||""
+ })):wordRows;
+ wordRows=Array.from({length:n},(_,i)=>old[i]||{word:"",destination:prefillPackId||"",newTitle:""});
+ const root=$("wordEntryList");root.innerHTML="";
+ wordRows.forEach((rowData,index)=>{
+  const row=document.createElement("div");row.className="word-entry-row";row.dataset.index=index;
+  row.innerHTML=`<input class="word-value" placeholder="Palabra ${index+1}" value="${esc(rowData.word)}"><select class="word-destination">${destinationOptions(lang.code,rowData.destination||prefillPackId||"")}</select><input class="new-pack-name ${rowData.destination==="__new__"?"":"hidden"}" placeholder="Nombre del bloque nuevo" value="${esc(rowData.newTitle)}"><button class="word-remove-row" type="button" title="Quitar fila">✕</button>`;
+  root.appendChild(row)
+ });
+ $("wordCount").value=String(n);
+ bindWordRows()
+}
+function bindWordRows(){
+ document.querySelectorAll(".word-entry-row").forEach(row=>{
+  const dest=row.querySelector(".word-destination"),newName=row.querySelector(".new-pack-name");
+  dest.onchange=()=>newName.classList.toggle("hidden",dest.value!=="__new__");
+  row.querySelector(".word-remove-row").onclick=()=>{
+   if(document.querySelectorAll(".word-entry-row").length===1){row.querySelector(".word-value").value="";return}
+   row.remove();renumberWordRows()
+  }
+ });
+}
+function renumberWordRows(){
+ const rows=[...document.querySelectorAll(".word-entry-row")];
+ rows.forEach((row,i)=>{row.dataset.index=i;row.querySelector(".word-value").placeholder=`Palabra ${i+1}`});
+ $("wordCount").value=String(rows.length);
+ wordRows=[]
+}
+function setWordAdderStatus(text,type=""){
+ const el=$("wordAdderStatus");el.classList.remove("hidden","error","done");if(type)el.classList.add(type);el.textContent=text
+}
+function setWordAdderBusy(busy){
+ wordAdderBusy=busy;
+ ["submitWordsBtn","addWordRowBtn","removeWordRowBtn","wordLanguage","wordLevel","wordCount","wordCustomLanguage","applyWordBulkBtn"].forEach(id=>{const e=$(id);if(e)e.disabled=busy});
+ document.querySelectorAll("#wordEntryList input,#wordEntryList select,#wordEntryList button").forEach(e=>e.disabled=busy);
+ $("closeWordAdderBtn").disabled=busy;
+ $("submitWordsBtn").textContent=busy?"Generando metadatos…":"Generar metadatos y añadir"
+}
+function openWordAdder(prefillPackId=null){
+ const pack=packs.find(p=>p.pack_id===prefillPackId);
+ const selectedInfo=!pack&&selectedLanguage?languages().find(l=>l.id===selectedLanguage):null;
+ const source=pack?{id:pack.language_id,name:pack.language_name,native:pack.native_name,flag:pack.flag}:selectedInfo;
+ if(source&&languageAliases[source.id]){$("wordLanguage").value=languageAliases[source.id];$("wordCustomLanguage").value=""}
+ else if(source){$("wordLanguage").value="other";$("wordCustomLanguage").value=`${source.name||"Idioma"} | ${source.id} | ${source.native||source.name||"Idioma"} | ${source.flag||"🌍"}`}
+ toggleWordCustomLanguage();
+ $("wordBulkPaste").value="";$("wordAdderStatus").classList.add("hidden");
+ wordRows=[];$("wordEntryList").innerHTML="";
+ renderWordRows(Number($("wordCount").value)||1,prefillPackId);
+ $("wordAdderScreen").classList.add("active");document.body.style.overflow="hidden"
+}
+function closeWordAdder(){if(wordAdderBusy){toast("Espera a que termine");return}$("wordAdderScreen").classList.remove("active");document.body.style.overflow=""}
+function nextCardIndex(pack){
+ let max=0;
+ for(const c of pack.cards||[]){const m=String(c.id||"").match(/(\d+)$/);if(m)max=Math.max(max,Number(m[1])||0)}
+ return Math.max(max+1,(pack.cards||[]).length+1)
+}
+function uniqueCustomPackId(langCode,title,reserved){
+ const base=`${langCode}_personalizado_${slugify(title)}`,used=new Set([...packs.map(p=>p.pack_id),...(reserved||[])]);
+ if(!used.has(base))return base;
+ let i=2;while(used.has(`${base}_${i}`))i++;
+ return`${base}_${i}`
+}
+function findDuplicateFront(langCode,front,excludePackId=null,excludeCardId=null){
+ const keys=termKeys(front,langCode);
+ for(const p of packs){
+  if(p.language_id!==langCode)continue;
+  for(const c of p.cards||[]){
+   if(p.pack_id===excludePackId&&c.id===excludeCardId)continue;
+   if(termKeys(c.front,langCode).some(k=>keys.includes(k)))return{pack:p,card:c}
+  }
+ }
+ return null
+}
+async function requestWordMetadata({lang,level,theme,words,packId,startIndex}){
+ const body=new URLSearchParams();
+ body.set("idiomaCodigo",lang.code);body.set("idiomaNombre",lang.name);body.set("idiomaNativo",lang.native);
+ body.set("nivel",level);body.set("tema",theme);body.set("palabras",JSON.stringify(words));
+ body.set("packId",packId);body.set("indiceInicial",String(startIndex));
+ let response;
+ try{response=await fetch(N8N_ADD_WORDS_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8","Accept":"application/json"},body:body.toString()})}
+ catch(e){throw new Error("No se pudo conectar con el workflow de añadir palabras")}
+ const raw=await response.text();
+ if(!response.ok)throw new Error(`n8n devolvió el error ${response.status}: ${raw.slice(0,220)}`);
+ const parsed=parseGeneratedResponse(raw);
+ if(!parsed||!Array.isArray(parsed.cards))throw new Error("n8n no devolvió el campo cards");
+ if(parsed.cards.length!==words.length)throw new Error(`Se pidieron ${words.length} tarjetas y n8n devolvió ${parsed.cards.length}`);
+ return parsed.cards
+}
+function normalizeIncomingCard(card,lang,level,theme){
+ const examples=Array.isArray(card.examples)?card.examples:[];
+ const normalizedExamples=examples.map(ex=>{
+  const target=ex?.[lang.code]??ex?.target??ex?.native??ex?.fr??ex?.en??"";
+  return{[lang.code]:String(target||""),es:String(ex?.es??ex?.spanish??"")}
+ }).filter(ex=>ex[lang.code]||ex.es);
+ const front=String(card.front||"").trim(),back=String(card.back||"").trim();
+ const sentenceFront=String(card.sentence_front||normalizedExamples[0]?.[lang.code]||front).trim();
+ const sentenceBack=String(card.sentence_back||normalizedExamples[0]?.es||back).trim();
+ if(!normalizedExamples.length)normalizedExamples.push({[lang.code]:sentenceFront,es:sentenceBack});
+ return{
+  ...card,front,back,sentence_front:sentenceFront,sentence_back:sentenceBack,
+  pronunciation:String(card.pronunciation||""),ipa:String(card.ipa||""),
+  examples:normalizedExamples.slice(0,2),
+  grammar:{type:card.grammar?.type||"expression",gender:card.grammar?.gender??null,plural:card.grammar?.plural??null},
+  learning:{cefr:card.learning?.cefr||level,difficulty:Math.min(5,Math.max(1,Number(card.learning?.difficulty)||3)),frequency:Math.min(5,Math.max(1,Number(card.learning?.frequency)||4))},
+  tags:Array.isArray(card.tags)&&card.tags.length?card.tags:[theme],audio:card.audio??null,notes:String(card.notes||"")
+ }
+}
+function assignFreshIds(pack,cards){
+ const used=new Set((pack.cards||[]).map(c=>String(c.id))),result=[];let index=nextCardIndex(pack);
+ for(const card of cards){
+  let id;do{id=`${pack.pack_id}_${String(index++).padStart(3,"0")}`}while(used.has(id));
+  used.add(id);result.push({...card,id})
+ }
+ return result
+}
+async function submitWords(){
+ if(wordAdderBusy)return;
+ const lang=getWordLanguage(),level=$("wordLevel").value;
+ if($("wordLanguage").value==="other"&&(!$("wordCustomLanguage").value.includes("|")||lang.code==="xx")){alert("Escribe el idioma personalizado como: Nombre | código | nombre nativo | bandera");return}
+ const rows=[...document.querySelectorAll(".word-entry-row")].map((row,i)=>({
+  index:i+1,word:row.querySelector(".word-value").value.trim(),destination:row.querySelector(".word-destination").value,newTitle:row.querySelector(".new-pack-name").value.trim()
+ }));
+ if(rows.some(r=>!r.word)){alert("Completa todas las palabras.");return}
+ if(rows.some(r=>!r.destination)){alert("Elige el bloque de destino de cada palabra.");return}
+ if(rows.some(r=>r.destination==="__new__"&&!r.newTitle)){alert("Escribe el nombre de cada bloque nuevo.");return}
+ const batchKeys=new Map();
+ for(const r of rows){
+  const key=normalizeTerm(r.word,lang.code);
+  if(batchKeys.has(key)){alert(`La palabra «${r.word}» está repetida en las filas ${batchKeys.get(key)} y ${r.index}.`);return}
+  batchKeys.set(key,r.index);
+  const duplicate=findDuplicateFront(lang.code,r.word);
+  if(duplicate){alert(`«${r.word}» ya existe en el bloque «${duplicate.pack.title}».`);return}
+ }
+ const reserved=new Set(),newPackMap=new Map(),groups=new Map();
+ for(const r of rows){
+  let pack,groupKey;
+  if(r.destination==="__new__"){
+   const titleKey=normalize(r.newTitle);
+   if(!newPackMap.has(titleKey)){
+    const packId=uniqueCustomPackId(lang.code,r.newTitle,reserved);reserved.add(packId);
+    newPackMap.set(titleKey,{pack_id:packId,language_id:lang.code,language_name:lang.name,native_name:lang.native,flag:lang.flag,version:2,type:"vocabulary",category:r.newTitle,title:r.newTitle,description:`Bloque personalizado: ${r.newTitle}`,source:{name:"n8n_gemini_custom_words"},cards:[]})
+   }
+   pack=newPackMap.get(titleKey);groupKey=`new:${titleKey}`
+  }else{
+   pack=packs.find(p=>p.pack_id===r.destination);
+   if(!pack){alert(`No se encontró el bloque de la fila ${r.index}.`);return}
+   groupKey=`existing:${pack.pack_id}`
+  }
+  if(!groups.has(groupKey))groups.set(groupKey,{pack,words:[]});
+  groups.get(groupKey).words.push(r.word)
+ }
+ setWordAdderBusy(true);setWordAdderStatus(`Preparando ${rows.length} palabra${rows.length===1?"":"s"} en ${groups.size} bloque${groups.size===1?"":"s"}…`);
+ try{
+  let done=0;const pendingUpdates=[];
+  for(const {pack,words} of groups.values()){
+   const startIndex=nextCardIndex(pack),theme=pack.title||pack.category||"Personalizado";
+   setWordAdderStatus(`Generando metadatos para ${words.length} palabra${words.length===1?"":"s"} → ${theme}\n${done}/${rows.length} preparadas`);
+   const generated=await requestWordMetadata({lang,level,theme,words,packId:pack.pack_id,startIndex});
+   const normalized=generated.map(c=>normalizeIncomingCard(c,lang,level,theme));
+   for(let i=0;i<normalized.length;i++){
+    if(normalizeTerm(normalized[i].front,lang.code)!==normalizeTerm(words[i],lang.code))throw new Error(`Gemini cambió la palabra «${words[i]}»`)
+   }
+   const withIds=assignFreshIds(pack,normalized),updated=validatePack({...pack,cards:[...(pack.cards||[]),...withIds]});
+   pendingUpdates.push(updated);done+=words.length
+  }
+  setWordAdderStatus(`Metadatos completados. Guardando ${rows.length} palabra${rows.length===1?"":"s"}…`);
+  for(const updated of pendingUpdates)await putPack(updated);
+  await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
+  setWordAdderStatus(`✓ ${rows.length} palabra${rows.length===1?"":"s"} añadida${rows.length===1?"":"s"} correctamente y enviada${rows.length===1?"":"s"} a Firebase.`,"done");
+  toast(`${rows.length} palabra${rows.length===1?"":"s"} añadida${rows.length===1?"":"s"}`)
+ }catch(e){console.error(e);setWordAdderStatus(`✕ ERROR: ${e.message}`,"error");alert("No se pudieron añadir las palabras:\n\n"+e.message)}
+ finally{setWordAdderBusy(false)}
+}
+function openCardManager(packId=null){
+ managedPackId=packId||managedPackId||packs.find(p=>p.language_id===selectedLanguage)?.pack_id||packs[0]?.pack_id||null;
+ renderManagerPackOptions();renderManagedCards();
+ $("cardManagerScreen").classList.add("active");document.body.style.overflow="hidden"
+}
+function closeCardManager(){$("cardManagerScreen").classList.remove("active");document.body.style.overflow=""}
+function renderManagerPackOptions(){
+ const current=managedPackId;
+ $("managerPackSelect").innerHTML=packs.map(p=>`<option value="${esc(p.pack_id)}">${p.flag||"🌍"} ${esc(p.title)} · ${p.cards.length}</option>`).join("");
+ if(current&&packs.some(p=>p.pack_id===current))$("managerPackSelect").value=current;
+ else managedPackId=$("managerPackSelect").value||null
+}
+function renderManagedCards(){
+ managedPackId=$("managerPackSelect").value||managedPackId;
+ const pack=packs.find(p=>p.pack_id===managedPackId),q=normalize($("managerSearch").value);
+ if(!pack){$("managerCardList").innerHTML='<div class="empty-home">No hay bloques instalados.</div>';$("managerSummary").textContent="";return}
+ const cards=(pack.cards||[]).filter(c=>!q||normalize(`${c.front} ${c.back}`).includes(q));
+ $("managerSummary").textContent=`${cards.length} visibles de ${pack.cards.length}`;
+ $("managerCardList").innerHTML=cards.length?cards.map(c=>`<div class="manager-row"><input type="checkbox" class="manager-card-check" value="${esc(c.id)}"><div class="manager-row-main"><b>${esc(c.front)}</b><small>${esc(c.grammar?.type||"")}${c.learning?.cefr?" · "+esc(c.learning.cefr):""}</small></div><div class="manager-row-back"><b>${esc(c.back)}</b><small>${esc(c.sentence_front||"")}</small></div><div class="manager-row-actions"><button class="btn small" data-edit-card="${esc(c.id)}">Editar</button><button class="btn danger small" data-delete-card="${esc(c.id)}">Eliminar</button></div></div>`).join(""):'<div class="empty-home">No hay palabras que coincidan.</div>';
+ document.querySelectorAll("[data-edit-card]").forEach(b=>b.onclick=()=>openCardEditor(managedPackId,b.dataset.editCard));
+ document.querySelectorAll("[data-delete-card]").forEach(b=>b.onclick=()=>deleteCardsFromPack(managedPackId,[b.dataset.deleteCard]))
+}
+function clearCardProgress(langId,packId,cardIds){
+ const ids=new Set(cardIds),key=`language_master_progress_${langId}_v1`;
+ let st;try{st=JSON.parse(localStorage.getItem(key)||"null")}catch(e){st=null}
+ if(!st)return;
+ st.cards=st.cards||{};for(const id of ids){delete st.cards[`${packId}::${id}`];delete st.cards[id]}
+ if(st.all?.[packId]){for(const id of ids)delete st.all[packId].cards?.[id];st.all[packId].certified=false;st.all[packId].certifiedAt=null}
+ if(st.listening?.cards)for(const id of ids){delete st.listening.cards[`${packId}::${id}`];delete st.listening.cards[id]}
+ if(st.listening?.all?.[packId]){for(const id of ids)delete st.listening.all[packId].cards?.[id];st.listening.all[packId].certified=false;st.listening.all[packId].certifiedAt=null}
+ localStorage.setItem(key,JSON.stringify(st));
+ if(selectedLanguage===langId)state=st;
+ window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"progress",language:langId}}))
+}
+async function deleteCardsFromPack(packId,cardIds){
+ const pack=packs.find(p=>p.pack_id===packId);if(!pack)return;
+ const ids=[...new Set(cardIds)].filter(id=>pack.cards.some(c=>c.id===id));if(!ids.length)return;
+ if(!confirm(`¿Eliminar ${ids.length} palabra${ids.length===1?"":"s"} de «${pack.title}»?`))return;
+ if(ids.length===pack.cards.length){
+  if(!confirm("Has seleccionado todas las palabras. Se eliminará el bloque completo. ¿Continuar?"))return;
+  clearCardProgress(pack.language_id,pack.pack_id,ids);await deletePack(pack.pack_id);managedPackId=packs[0]?.pack_id||null;renderManagerPackOptions();renderManagedCards();return
+ }
+ const updated={...pack,cards:pack.cards.filter(c=>!ids.includes(c.id))};
+ clearCardProgress(pack.language_id,pack.pack_id,ids);await putPack(updated);await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
+ renderManagerPackOptions();$("managerPackSelect").value=packId;managedPackId=packId;renderManagedCards();toast("Palabras eliminadas")
+}
+function exampleTarget(card,index,langId){
+ const ex=card.examples?.[index]||{};return ex[langId]??ex.target??ex.native??ex.fr??ex.en??""
+}
+function openCardEditor(packId,cardId){
+ const pack=packs.find(p=>p.pack_id===packId),card=pack?.cards.find(c=>c.id===cardId);if(!pack||!card)return;
+ editingPackId=packId;editingCardId=cardId;$("cardEditorPackLabel").textContent=pack.title;
+ $("editFront").value=card.front||"";$("editBack").value=card.back||"";$("editSentenceFront").value=card.sentence_front||"";$("editSentenceBack").value=card.sentence_back||"";
+ $("editPronunciation").value=card.pronunciation||"";$("editIpa").value=card.ipa||"";$("editGrammarType").value=card.grammar?.type||"";$("editGender").value=card.grammar?.gender??"";$("editPlural").value=card.grammar?.plural??"";
+ $("editCefr").value=[...$("editCefr").options].some(o=>o.value===card.learning?.cefr)?card.learning.cefr:"Mixto y progresivo";
+ $("editDifficulty").value=card.learning?.difficulty||3;$("editFrequency").value=card.learning?.frequency||4;$("editTags").value=(card.tags||[]).join(", ");
+ $("editExample1Target").value=exampleTarget(card,0,pack.language_id)||card.sentence_front||"";$("editExample1Es").value=card.examples?.[0]?.es||card.sentence_back||"";
+ $("editExample2Target").value=exampleTarget(card,1,pack.language_id);$("editExample2Es").value=card.examples?.[1]?.es||"";$("editNotes").value=card.notes||"";$("editResetProgress").checked=true;
+ $("cardEditorBack").classList.add("active")
+}
+function closeCardEditor(){$("cardEditorBack").classList.remove("active");editingPackId=null;editingCardId=null}
+function cardFromEditor(original,pack){
+ const front=$("editFront").value.trim(),back=$("editBack").value.trim(),sf=$("editSentenceFront").value.trim(),sb=$("editSentenceBack").value.trim();
+ if(!front||!back||!sf||!sb)throw new Error("Completa palabra, traducción y ambas frases");
+ const duplicate=findDuplicateFront(pack.language_id,front,pack.pack_id,original.id);
+ if(duplicate)throw new Error(`«${front}» ya existe en el bloque «${duplicate.pack.title}»`);
+ const examples=[];
+ const e1t=$("editExample1Target").value.trim(),e1s=$("editExample1Es").value.trim(),e2t=$("editExample2Target").value.trim(),e2s=$("editExample2Es").value.trim();
+ if(e1t||e1s)examples.push({[pack.language_id]:e1t||sf,es:e1s||sb});
+ if(e2t||e2s)examples.push({[pack.language_id]:e2t,es:e2s});
+ if(!examples.length)examples.push({[pack.language_id]:sf,es:sb});
+ return{...original,front,back,sentence_front:sf,sentence_back:sb,pronunciation:$("editPronunciation").value.trim(),ipa:$("editIpa").value.trim(),examples,
+  grammar:{type:$("editGrammarType").value.trim()||"expression",gender:$("editGender").value.trim()||null,plural:$("editPlural").value.trim()||null},
+  learning:{cefr:$("editCefr").value,difficulty:Math.min(5,Math.max(1,Number($("editDifficulty").value)||3)),frequency:Math.min(5,Math.max(1,Number($("editFrequency").value)||4))},
+  tags:$("editTags").value.split(",").map(x=>x.trim()).filter(Boolean),audio:original.audio??null,notes:$("editNotes").value.trim()}
+}
+async function saveCardEditor(){
+ const pack=packs.find(p=>p.pack_id===editingPackId),original=pack?.cards.find(c=>c.id===editingCardId);if(!pack||!original)return;
+ try{
+  const updatedCard=cardFromEditor(original,pack),frontChanged=normalizeTerm(updatedCard.front,pack.language_id)!==normalizeTerm(original.front,pack.language_id);
+  const updated={...pack,cards:pack.cards.map(c=>c.id===original.id?updatedCard:c)};
+  if(frontChanged&&$("editResetProgress").checked)clearCardProgress(pack.language_id,pack.pack_id,[original.id]);
+  await putPack(validatePack(updated));await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
+  const keepPack=pack.pack_id;closeCardEditor();renderManagerPackOptions();$("managerPackSelect").value=keepPack;managedPackId=keepPack;renderManagedCards();toast("Tarjeta actualizada")
+ }catch(e){alert(e.message)}
+}
+async function regenerateEditingCard(){
+ const pack=packs.find(p=>p.pack_id===editingPackId),original=pack?.cards.find(c=>c.id===editingCardId),front=$("editFront").value.trim();if(!pack||!original||!front)return;
+ const duplicate=findDuplicateFront(pack.language_id,front,pack.pack_id,original.id);if(duplicate){alert(`«${front}» ya existe en «${duplicate.pack.title}».`);return}
+ const btn=$("regenerateCardBtn");btn.disabled=true;btn.textContent="Generando…";
+ try{
+  const lang={code:pack.language_id,name:pack.language_name,native:pack.native_name,flag:pack.flag};
+  const cards=await requestWordMetadata({lang,level:$("editCefr").value,theme:pack.title,words:[front],packId:pack.pack_id,startIndex:nextCardIndex(pack)});
+  const c=normalizeIncomingCard(cards[0],lang,$("editCefr").value,pack.title);
+  $("editBack").value=c.back;$("editSentenceFront").value=c.sentence_front;$("editSentenceBack").value=c.sentence_back;$("editPronunciation").value=c.pronunciation;$("editIpa").value=c.ipa;
+  $("editGrammarType").value=c.grammar.type;$("editGender").value=c.grammar.gender??"";$("editPlural").value=c.grammar.plural??"";$("editDifficulty").value=c.learning.difficulty;$("editFrequency").value=c.learning.frequency;$("editTags").value=(c.tags||[]).join(", ");
+  $("editExample1Target").value=exampleTarget(c,0,pack.language_id);$("editExample1Es").value=c.examples?.[0]?.es||"";$("editExample2Target").value=exampleTarget(c,1,pack.language_id);$("editExample2Es").value=c.examples?.[1]?.es||"";$("editNotes").value=c.notes||"";
+  toast("Metadatos regenerados. Pulsa Guardar cambios.")
+ }catch(e){alert("No se pudieron regenerar los metadatos:\n\n"+e.message)}
+ finally{btn.disabled=false;btn.textContent="✨ Regenerar metadatos con IA"}
+}
+function initWordTools(){
+ initWordLanguageOptions();renderWordRows(1);
+ $("homeAddWordsBtn").onclick=()=>openWordAdder();$("openWordAdderNav").onclick=()=>openWordAdder();$("topAddWordsBtn").onclick=()=>openWordAdder();$("dataAddWordsBtn").onclick=()=>openWordAdder();
+ $("openCardManagerNav").onclick=()=>openCardManager();$("dataManageWordsBtn").onclick=()=>openCardManager();
+ $("closeWordAdderBtn").onclick=closeWordAdder;$("closeCardManagerBtn").onclick=closeCardManager;
+ $("wordLanguage").onchange=()=>{toggleWordCustomLanguage();const words=[...document.querySelectorAll(".word-value")].map(x=>x.value);wordRows=words.map(word=>({word,destination:"",newTitle:""}));$("wordEntryList").innerHTML="";renderWordRows(Number($("wordCount").value)||1)};
+ $("wordCount").onchange=()=>renderWordRows(Number($("wordCount").value)||1);
+ $("addWordRowBtn").onclick=()=>renderWordRows(Math.min(20,document.querySelectorAll(".word-entry-row").length+1));
+ $("removeWordRowBtn").onclick=()=>renderWordRows(Math.max(1,document.querySelectorAll(".word-entry-row").length-1));
+ $("applyWordBulkBtn").onclick=()=>{const words=$("wordBulkPaste").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,20);if(!words.length)return;renderWordRows(words.length);document.querySelectorAll(".word-value").forEach((x,i)=>x.value=words[i]||"")};
+ $("submitWordsBtn").onclick=submitWords;
+ $("managerPackSelect").onchange=()=>{managedPackId=$("managerPackSelect").value;renderManagedCards()};$("managerSearch").oninput=renderManagedCards;
+ $("managerAddWordsBtn").onclick=()=>{const id=$("managerPackSelect").value;closeCardManager();openWordAdder(id)};
+ $("managerSelectAllBtn").onclick=()=>document.querySelectorAll(".manager-card-check").forEach(c=>c.checked=true);
+ $("managerDeleteSelectedBtn").onclick=()=>deleteCardsFromPack(managedPackId,[...document.querySelectorAll(".manager-card-check:checked")].map(c=>c.value));
+ $("closeCardEditorBtn").onclick=closeCardEditor;$("cancelCardEditorBtn").onclick=closeCardEditor;$("saveCardEditorBtn").onclick=saveCardEditor;$("regenerateCardBtn").onclick=regenerateEditingCard;
+ $("deleteEditingCardBtn").onclick=async()=>{const p=editingPackId,c=editingCardId;closeCardEditor();await deleteCardsFromPack(p,[c])};
+ $("wordAdderScreen").addEventListener("click",e=>{if(e.target===$("wordAdderScreen"))closeWordAdder()});
+ $("cardManagerScreen").addEventListener("click",e=>{if(e.target===$("cardManagerScreen"))closeCardManager()});
+ $("cardEditorBack").addEventListener("click",e=>{if(e.target===$("cardEditorBack"))closeCardEditor()});
+ document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("cardEditorBack").classList.contains("active"))closeCardEditor();else if($("wordAdderScreen").classList.contains("active"))closeWordAdder();else if($("cardManagerScreen").classList.contains("active"))closeCardManager()})
+}
+initWordTools();
 
 (async()=>{initAutoPronunciation();initAnswerSounds();loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
 
