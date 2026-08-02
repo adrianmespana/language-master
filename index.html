@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Language Master V5.4 · Gestión personalizada de palabras</title>
+<title>Language Master V5.2 · Sincronización unificada</title>
 <style>
 :root{
  --bg:#f5f7fb;--panel:#fff;--text:#172033;--muted:#657089;--line:#dfe5ef;
@@ -234,73 +234,6 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  body.card-focus-mode main{padding-top:6px!important}
 }
 
-
-/* V5.3 · generación rápida sin repeticiones mediante n8n */
-.generator-status{min-height:260px!important;white-space:pre-wrap}
-.generator-actions .btn[disabled],.generator-form input[disabled],.generator-form select[disabled],.generator-form textarea[disabled]{opacity:.62;cursor:not-allowed}
-.generator-live{display:flex;align-items:center;gap:9px;background:#eef1ff;color:#304eb8;border-radius:13px;padding:11px 13px;font-size:13px;font-weight:750;margin-top:12px}
-.generator-live.error{background:#fdecee;color:#9d2835}.generator-live.done{background:#e8f7ee;color:#12663b}
-.generator-spinner{width:16px;height:16px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:lmspin .7s linear infinite}
-@keyframes lmspin{to{transform:rotate(360deg)}}
-
-
-/* V5.4 · añadir, editar y eliminar palabras por bloque */
-.word-tools-screen{position:fixed;inset:0;z-index:185;background:linear-gradient(140deg,#10172a,#283866);padding:18px;overflow:auto;display:none}
-.word-tools-screen.active{display:block}
-.word-tools-shell{width:min(1080px,100%);margin:18px auto;background:#fff;border-radius:24px;padding:24px;box-shadow:0 28px 90px rgba(0,0,0,.34)}
-.word-tools-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
-.word-tools-head h1{margin:0 0 6px}.word-tools-head p{margin:0;color:var(--muted)}
-.word-tools-form{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.word-tools-field{display:flex;flex-direction:column;gap:6px}.word-tools-field.full{grid-column:1/-1}
-.word-tools-field label{font-size:13px;font-weight:800}
-.word-tools-field input,.word-tools-field select,.word-tools-field textarea,.card-editor-grid input,.card-editor-grid select,.card-editor-grid textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:10px 11px;background:#fff}
-.word-tools-field textarea,.card-editor-grid textarea{min-height:84px;resize:vertical}
-.word-entry-list{display:flex;flex-direction:column;gap:9px;margin-top:10px}
-.word-entry-row{display:grid;grid-template-columns:minmax(180px,1.15fr) minmax(210px,1fr) minmax(180px,1fr) auto;gap:8px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:10px;background:#fafbff}
-.word-entry-row input,.word-entry-row select{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;background:#fff}
-.word-entry-row .new-pack-name.hidden{display:none}
-.word-remove-row{border:0;background:#fdecee;color:#9d2835;border-radius:10px;padding:10px 12px;cursor:pointer;font-weight:900}
-.word-tools-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.word-tools-status{margin-top:14px;white-space:pre-wrap;background:#111827;color:#eaf0ff;border-radius:14px;padding:14px;min-height:92px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:13px;line-height:1.45}
-.word-tools-status.error{background:#4b1820}.word-tools-status.done{background:#123b2b}
-.data-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
-.manager-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) minmax(180px,1fr) auto;gap:9px;margin-bottom:13px}
-.manager-toolbar input,.manager-toolbar select{border:1px solid var(--line);border-radius:11px;padding:10px;background:#fff;width:100%}
-.manager-list{display:flex;flex-direction:column;gap:8px}
-.manager-row{display:grid;grid-template-columns:auto minmax(150px,1fr) minmax(170px,1.2fr) auto;gap:10px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:11px;background:#fafbff}
-.manager-row-main{min-width:0}.manager-row-main b,.manager-row-back{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.manager-row-main small,.manager-row-back small{color:var(--muted)}
-.manager-row-actions{display:flex;gap:6px;flex-wrap:wrap}
-.card-editor-back{display:none;position:fixed;inset:0;z-index:235;background:rgba(8,13,28,.72);padding:18px;overflow:auto}
-.card-editor-back.active{display:block}
-.card-editor{width:min(900px,100%);margin:20px auto;background:#fff;border-radius:22px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.34)}
-.card-editor-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
-.card-editor-field{display:flex;flex-direction:column;gap:5px}.card-editor-field.full{grid-column:1/-1}
-.card-editor-field label{font-size:12px;font-weight:800;color:var(--muted)}
-.card-editor-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:17px}
-.editor-check{display:flex;align-items:center;gap:8px;background:#fff4d7;color:#805400;border-radius:11px;padding:10px;font-size:13px}
-.editor-check input{width:auto}
-@media(max-width:800px){
- .word-tools-form{grid-template-columns:1fr 1fr}
- .word-entry-row{grid-template-columns:1fr 1fr}.word-entry-row .word-remove-row{grid-column:1/-1}
- .manager-toolbar{grid-template-columns:1fr}
- .manager-row{grid-template-columns:auto 1fr}.manager-row-back{grid-column:2}.manager-row-actions{grid-column:1/-1}
-}
-@media(max-width:560px){
- .word-tools-shell{padding:16px;margin:0 auto}.word-tools-head{flex-direction:column}
- .word-tools-form,.word-entry-row,.card-editor-grid{grid-template-columns:1fr}
- .word-tools-field.full,.card-editor-field.full{grid-column:1}
-}
-
-
-/* V5.5 · modo frase con hueco */
-.cloze-spanish{font-size:22px;font-weight:750;line-height:1.45;max-width:820px}
-.cloze-target{margin-top:18px;font-size:22px;line-height:1.55;color:#35415d;font-weight:650}
-.cloze-gap{display:inline-block;min-width:120px;border-bottom:3px solid var(--primary);color:var(--primary);letter-spacing:.12em;text-align:center;padding:0 8px;font-weight:900}
-.cloze-complete{font-size:18px;line-height:1.55;color:#53617d}
-.cloze-answer-word{margin-top:8px;font-size:25px;color:var(--primary);font-weight:850}
-@media(max-width:700px){.cloze-spanish,.cloze-target{font-size:18px}.cloze-gap{min-width:92px}}
-
 </style>
 </head>
 <body>
@@ -308,10 +241,10 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 <section class="generator-screen" id="generatorScreen">
  <div class="generator-shell">
   <div class="generator-head">
-   <div><h1>Generar e instalar nuevos bloques DATA</h1><p>La app enviará cada tema a tu workflow de n8n, Gemini creará el JSON y Language Master lo instalará automáticamente.</p></div>
+   <div><h1>Generar nuevos bloques DATA</h1><p>Crea un prompt para pedir a cualquier ChatGPT hasta cinco archivos JSON de 50 palabras, listos para importar.</p></div>
    <button class="btn" id="closeGeneratorBtn">✕ Cerrar</button>
   </div>
-  <div class="generator-tip">Completa los datos y pulsa <b>Generar e instalar bloques</b>. Antes de generar, la app enviará a Gemini todas las entradas ya instaladas para excluirlas. Si aun así aparece alguna coincidencia, conservará las tarjetas válidas y generará únicamente las sustitutas necesarias, sin repetir el bloque completo.</div>
+  <div class="generator-tip">El generador no crea el vocabulario dentro de esta app: prepara una instrucción completa. La copias en ChatGPT, descargas los JSON que genere y después los importas mediante <b>Importar DATA</b>.</div>
   <div class="generator-form" style="margin-top:16px">
    <div class="generator-field">
     <label for="genLanguage">Idioma que quieres aprender</label>
@@ -356,120 +289,24 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
     <textarea id="genExtra" placeholder="Ej.: vocabulario centrado en negocios, evitar palabras demasiado básicas, usar registro cotidiano…"></textarea>
    </div>
    <div class="generator-field full">
-    <label for="generatedPrompt">Estado de la generación</label>
-    <textarea class="prompt-output generator-status" id="generatedPrompt" readonly placeholder="Aquí aparecerá el progreso de cada bloque."></textarea>
+    <label for="generatedPrompt">Prompt generado</label>
+    <textarea class="prompt-output" id="generatedPrompt" readonly placeholder="Pulsa «Generar prompt»"></textarea>
    </div>
   </div>
-  <div id="generatorLive" class="generator-live hidden"></div>
   <div class="generator-actions">
-   <button class="btn primary" id="generatePromptBtn">Generar e instalar bloques</button>
+   <button class="btn primary" id="generatePromptBtn">Generar prompt</button>
+   <button class="btn" id="copyPromptBtn">Copiar prompt</button>
+   <button class="btn" id="downloadPromptBtn">Descargar .txt</button>
   </div>
  </div>
 </section>
-
-
-<section class="word-tools-screen" id="wordAdderScreen">
- <div class="word-tools-shell">
-  <div class="word-tools-head">
-   <div><h1>＋ Añadir palabras con IA</h1><p>Cada palabra puede ir a un bloque distinto, existente o nuevo. n8n completa automáticamente todos sus metadatos.</p></div>
-   <button class="btn" id="closeWordAdderBtn">✕ Cerrar</button>
-  </div>
-  <div class="generator-tip">Elige el idioma y el número de palabras. En cada fila selecciona el bloque de destino o crea uno nuevo. Antes de enviar, la app impedirá duplicados en todo el idioma.</div>
-  <div class="word-tools-form" style="margin-top:15px">
-   <div class="word-tools-field">
-    <label for="wordLanguage">Idioma</label>
-    <select id="wordLanguage"></select>
-   </div>
-   <div class="word-tools-field">
-    <label for="wordLevel">Nivel aproximado</label>
-    <select id="wordLevel"><option>A1</option><option>A2</option><option selected>B1</option><option>B2</option><option>C1</option><option>Mixto y progresivo</option></select>
-   </div>
-   <div class="word-tools-field">
-    <label for="wordCount">Número de palabras</label>
-    <select id="wordCount"></select>
-   </div>
-   <div class="word-tools-field full hidden" id="wordCustomLanguageWrap">
-    <label for="wordCustomLanguage">Idioma personalizado</label>
-    <input id="wordCustomLanguage" placeholder="Ej.: Griego | el | Ελληνικά | 🇬🇷">
-   </div>
-   <div class="word-tools-field full">
-    <label for="wordBulkPaste">Pegar una lista rápidamente (una palabra por línea)</label>
-    <textarea id="wordBulkPaste" placeholder="negotiate&#10;deadline&#10;revenue"></textarea>
-    <button class="btn small" id="applyWordBulkBtn" type="button">Distribuir la lista en filas</button>
-   </div>
-  </div>
-  <div class="word-entry-list" id="wordEntryList"></div>
-  <div class="word-tools-actions">
-   <button class="btn" id="addWordRowBtn" type="button">＋ Añadir otra fila</button>
-   <button class="btn" id="removeWordRowBtn" type="button">− Quitar última fila</button>
-   <button class="btn primary" id="submitWordsBtn" type="button">Generar metadatos y añadir</button>
-  </div>
-  <div class="word-tools-status hidden" id="wordAdderStatus"></div>
- </div>
-</section>
-
-<section class="word-tools-screen" id="cardManagerScreen">
- <div class="word-tools-shell">
-  <div class="word-tools-head">
-   <div><h1>Gestionar palabras</h1><p>Edita, elimina o amplía cualquier bloque instalado.</p></div>
-   <button class="btn" id="closeCardManagerBtn">✕ Cerrar</button>
-  </div>
-  <div class="manager-toolbar">
-   <select id="managerPackSelect"></select>
-   <input id="managerSearch" placeholder="Buscar palabra o traducción…">
-   <button class="btn primary" id="managerAddWordsBtn">＋ Añadir al bloque</button>
-  </div>
-  <div class="word-tools-actions" style="margin:0 0 12px">
-   <button class="btn small" id="managerSelectAllBtn">Seleccionar visibles</button>
-   <button class="btn danger small" id="managerDeleteSelectedBtn">Eliminar seleccionadas</button>
-   <span class="data-meta" id="managerSummary"></span>
-  </div>
-  <div class="manager-list" id="managerCardList"></div>
- </div>
-</section>
-
-<div class="card-editor-back" id="cardEditorBack">
- <div class="card-editor">
-  <div class="word-tools-head">
-   <div><h2 style="margin:0">Editar tarjeta</h2><p id="cardEditorPackLabel"></p></div>
-   <button class="btn" id="closeCardEditorBtn">✕</button>
-  </div>
-  <div class="card-editor-grid">
-   <div class="card-editor-field"><label>Palabra o expresión</label><input id="editFront"></div>
-   <div class="card-editor-field"><label>Traducción al español</label><input id="editBack"></div>
-   <div class="card-editor-field full"><label>Frase en el idioma objetivo</label><textarea id="editSentenceFront"></textarea></div>
-   <div class="card-editor-field full"><label>Traducción de la frase</label><textarea id="editSentenceBack"></textarea></div>
-   <div class="card-editor-field"><label>Pronunciación orientativa</label><input id="editPronunciation"></div>
-   <div class="card-editor-field"><label>IPA</label><input id="editIpa"></div>
-   <div class="card-editor-field"><label>Tipo gramatical</label><input id="editGrammarType"></div>
-   <div class="card-editor-field"><label>Género</label><input id="editGender"></div>
-   <div class="card-editor-field"><label>Plural</label><input id="editPlural"></div>
-   <div class="card-editor-field"><label>Nivel CEFR</label><select id="editCefr"><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>Mixto y progresivo</option></select></div>
-   <div class="card-editor-field"><label>Dificultad (1-5)</label><input id="editDifficulty" type="number" min="1" max="5"></div>
-   <div class="card-editor-field"><label>Frecuencia (1-5)</label><input id="editFrequency" type="number" min="1" max="5"></div>
-   <div class="card-editor-field full"><label>Etiquetas separadas por comas</label><input id="editTags"></div>
-   <div class="card-editor-field"><label>Ejemplo 1</label><textarea id="editExample1Target"></textarea></div>
-   <div class="card-editor-field"><label>Traducción ejemplo 1</label><textarea id="editExample1Es"></textarea></div>
-   <div class="card-editor-field"><label>Ejemplo 2</label><textarea id="editExample2Target"></textarea></div>
-   <div class="card-editor-field"><label>Traducción ejemplo 2</label><textarea id="editExample2Es"></textarea></div>
-   <div class="card-editor-field full"><label>Notas</label><textarea id="editNotes"></textarea></div>
-   <label class="editor-check full"><input type="checkbox" id="editResetProgress" checked> Reiniciar el progreso de esta tarjeta si cambia la palabra.</label>
-  </div>
-  <div class="card-editor-actions">
-   <button class="btn" id="regenerateCardBtn">✨ Regenerar metadatos con IA</button>
-   <button class="btn danger" id="deleteEditingCardBtn">Eliminar tarjeta</button>
-   <button class="btn" id="cancelCardEditorBtn">Cancelar</button>
-   <button class="btn primary" id="saveCardEditorBtn">Guardar cambios</button>
-  </div>
- </div>
-</div>
 
 <section class="login-screen" id="loginScreen"><div class="login-card"><h1>Language Master</h1><p>Inicia sesión con la misma cuenta en el móvil y el ordenador para sincronizar módulos, progreso, sellos, cronómetro e historial.</p><button class="google-btn" id="googleLoginBtn">Continuar con Google</button><p style="font-size:12px;margin-top:10px">En iPhone se abrirá una ventana segura de Google. No cierres esa ventana hasta terminar.</p><p id="loginMessage" style="font-size:13px"></p></div></section><section class="language-screen hidden" id="languageScreen">
  <div class="language-panel">
   <h1>Elige el idioma que quieres estudiar</h1>
   <p class="subtitle">Los idiomas aparecen al importar archivos DATA.</p>
   <div class="actions" style="margin-top:16px">
-   <button class="btn primary" id="homeImportBtn">＋ Importar DATA</button><button class="btn" id="homeGenerateBtn">✨ Generar bloques</button><button class="btn" id="homeAddWordsBtn">＋ Añadir palabras</button>
+   <button class="btn primary" id="homeImportBtn">＋ Importar DATA</button><button class="btn" id="homeGenerateBtn">✨ Generar bloques</button>
    <input type="file" id="homeDataInput" accept=".json,application/json" multiple hidden>
   </div>
   <div class="language-grid" id="languageGrid"></div>
@@ -483,7 +320,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  <button class="navbtn active" data-page="inicio">🏠 Inicio</button>
  <button class="navbtn" data-page="vocabulario">🗂️ Vocabulario <span id="navVocab">0</span></button>
  <button class="navbtn" data-page="estudiar">⚡ Estudiar mazo</button>
- <button class="navbtn" data-page="datos">📦 Gestionar DATA</button><button class="navbtn" id="openGeneratorNav">✨ Generar bloques</button><button class="navbtn" id="openWordAdderNav">＋ Añadir palabras</button><button class="navbtn" id="openCardManagerNav">✏️ Gestionar palabras</button>
+ <button class="navbtn" data-page="datos">📦 Gestionar DATA</button><button class="navbtn" id="openGeneratorNav">✨ Generar bloques</button>
  <button class="navbtn" data-page="progreso">📊 Progreso</button>
  <button class="navbtn" id="changeLanguage">🌍 Cambiar idioma</button>
  <div class="aside-note">Importa un JSON una sola vez. La aplicación lo guarda y lo carga automáticamente en futuras aperturas.</div>
@@ -491,7 +328,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 <main>
 <div class="topbar">
  <div><h1 id="pageTitle">Panel de aprendizaje</h1><p class="subtitle" id="pageSubtitle">Estudia hasta dominar cada tarjeta sin fallos.</p></div>
- <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="topGenerateBtn">✨ Generar bloques</button><button class="btn" id="topAddWordsBtn">＋ Añadir palabras</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
+ <div class="actions cloudbar"><div class="cloud-user hidden" id="cloudUser"><span class="sync-dot" id="syncDot"></span><img id="userPhoto" alt=""><div><b id="userName"></b><div class="cloud-state" id="syncText">Sincronizando…</div></div></div><button class="btn primary" id="topImportBtn">＋ Importar DATA</button><button class="btn" id="topGenerateBtn">✨ Generar bloques</button><button class="btn" id="forceSyncBtn">↻ Sincronizar</button><button class="btn" id="logoutBtn">Cerrar sesión</button><button class="btn" id="exportBtn">Exportar progreso</button><button class="btn" id="importBtn">Importar progreso</button><input type="file" id="dataInput" accept=".json,application/json" multiple hidden><input type="file" id="importFile" accept=".json" hidden></div>
 </div>
 
 <section id="inicio" class="section active">
@@ -606,7 +443,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
 
 <section id="datos" class="section">
  <div class="section-head"><div><h2>Gestionar DATA</h2><p>Importa, actualiza o elimina módulos sin tocar el código del programa.</p></div></div>
- <div class="import-zone"><h3>Importar archivos JSON</h3><p>Puedes seleccionar uno o varios archivos a la vez. Si un JSON tiene el mismo <code>pack_id</code>, sustituye la versión anterior sin borrar el progreso de sus tarjetas.</p><button class="btn primary" id="manageImportBtn">Seleccionar JSON</button> <button class="btn" id="dataAddWordsBtn">＋ Añadir palabras</button> <button class="btn" id="dataManageWordsBtn">✏️ Gestionar palabras</button></div>
+ <div class="import-zone"><h3>Importar archivos JSON</h3><p>Puedes seleccionar uno o varios archivos a la vez. Si un JSON tiene el mismo <code>pack_id</code>, sustituye la versión anterior sin borrar el progreso de sus tarjetas.</p><button class="btn primary" id="manageImportBtn">Seleccionar JSON</button></div>
  <div class="card"><h3 style="margin-top:0">Módulos instalados</h3><div id="dataList"></div></div>
 </section>
 
@@ -622,8 +459,7 @@ h1{font-size:28px;margin:0}.subtitle{color:var(--muted);margin:6px 0 0}.actions{
  <label><input type="radio" name="studyDirection" value="front-back" checked><span id="dirFrontBack">Idioma → español</span></label>
  <label><input type="radio" name="studyDirection" value="back-front"><span id="dirBackFront">Español → idioma</span></label>
  <label><input type="radio" name="studyDirection" value="audio-front"><span>🔊 Solo audio → escribir palabra</span></label>
- <label><input type="radio" name="studyDirection" value="cloze-front"><span>🧩 Frase en español → completar hueco</span></label>
-</div><div class="audio-mode-note">El modo de audio tiene progreso independiente. El modo de frase con hueco muestra la frase completa en español y debajo la frase del idioma estudiado ocultando la palabra que debes escribir; cuenta dentro del progreso escrito.</div></div>
+</div><div class="audio-mode-note">El modo de audio tiene progreso independiente. Para dominar completamente una categoría tendrás que conseguir el sello escrito y también el sello auditivo.</div></div>
  <div class="choicegroup"><strong>Forma de responder</strong><div class="choice"><label><input type="radio" name="studyMode" value="self" checked>Fallé · Dudé · Acerté</label><label><input type="radio" name="studyMode" value="write">Escribir respuesta</label></div></div>
  <div class="modal-actions"><button class="btn" id="cancelSetupBtn">Cancelar</button><button class="btn primary" id="beginDeckBtn">Empezar mazo</button></div>
 </div></div>
@@ -665,8 +501,7 @@ function savePacksFallback(){try{localStorage.setItem(PACKS_KEY,JSON.stringify(p
 function openDB(){return new Promise((resolve,reject)=>{if(!("indexedDB" in window)){reject(new Error("IndexedDB no disponible"));return}const req=indexedDB.open("LanguageMasterDB",2);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains("packs"))db.createObjectStore("packs",{keyPath:"pack_id"})};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)})}
 async function loadPacks(){try{const db=await openDB();packs=await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readonly"),r=tx.objectStore("packs").getAll();r.onsuccess=()=>resolve(r.result||[]);r.onerror=()=>reject(r.error)});db.close()}catch(e){packs=loadPacksFallback()}}
 async function putPack(pack){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").put(pack);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){const i=packs.findIndex(x=>x.pack_id===pack.pack_id);if(i>=0)packs[i]=pack;else packs.push(pack);if(!savePacksFallback())throw new Error("No se pudo guardar el DATA")}}
-async function replaceAllPacks(arr){const clean=Array.isArray(arr)?arr:[];try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite"),store=tx.objectStore("packs");store.clear();for(const p of clean)store.put(p);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=clean;savePacksFallback()}}
-async function deletePack(id){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=packs.filter(x=>x.pack_id!==id);savePacksFallback()}await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}))}
+async function deletePack(id){try{const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction("packs","readwrite");tx.objectStore("packs").delete(id);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}catch(e){packs=packs.filter(x=>x.pack_id!==id);savePacksFallback()}await loadPacks();refreshAfterDataChange()}
 
 function validatePack(p){
  if(p&&p.metadata&&Array.isArray(p.entradas)){
@@ -683,7 +518,7 @@ async function importFiles(fileList){const files=[...fileList];if(!files.length)
 
 function languages(){const m=new Map();for(const p of packs)if(!m.has(p.language_id))m.set(p.language_id,{id:p.language_id,name:p.language_name,native:p.native_name,flag:p.flag});return[...m.values()]}
 function renderLanguageScreen(){const a=languages();$("languageGrid").innerHTML=a.map(l=>`<button class="language-card" data-language="${l.id}"><span>${l.flag||"🌍"}</span><strong>${l.name}</strong><br><small>${l.native||""}</small></button>`).join("");$("noLanguages").classList.toggle("hidden",a.length>0);document.querySelectorAll("[data-language]").forEach(b=>b.onclick=()=>selectLanguage(b.dataset.language))}
-function enrichCard(c,p){return {...c,pack_id:p.pack_id,pack_title:p.title,category:p.category,language_id:p.language_id,grammar:c.grammar||{},learning:c.learning||{},tags:Array.isArray(c.tags)?c.tags:[],examples:Array.isArray(c.examples)&&c.examples.length?c.examples:[{[p.language_id]:c.sentence_front,es:c.sentence_back}]}}
+function enrichCard(c,p){return {...c,pack_id:p.pack_id,pack_title:p.title,category:p.category,grammar:c.grammar||{},learning:c.learning||{},tags:Array.isArray(c.tags)?c.tags:[],examples:Array.isArray(c.examples)&&c.examples.length?c.examples:[{fr:c.sentence_front,es:c.sentence_back}]}}
 function selectLanguage(id){selectedLanguage=id;languagePacks=packs.filter(p=>p.language_id===id);vocab=languagePacks.flatMap(p=>p.cards.map(c=>enrichCard(c,p)));const i=languages().find(x=>x.id===id);$("brand").innerHTML=`${i.flag||""} ${i.native||i.name}<small>Vocabulario modular</small>`;$("dirFrontBack").textContent=`${i.name} → español`;$("dirBackFront").textContent=`Español → ${i.name}`;loadState();migrateState();$("languageScreen").classList.add("hidden");$("app").classList.remove("hidden");populateMetadataFilters();renderAll()}
 function refreshAfterDataChange(){renderLanguageScreen();renderDataList();if(selectedLanguage){const exists=packs.some(p=>p.language_id===selectedLanguage);if(exists)selectLanguage(selectedLanguage);else{$("app").classList.add("hidden");$("languageScreen").classList.remove("hidden");selectedLanguage=null}}}
 
@@ -846,12 +681,7 @@ function renderProgress(){
  }).join("");
  renderTimerHistory();
 }
-function renderDataList(){
- $("dataList").innerHTML=packs.length?packs.map(p=>`<div class="data-row"><div><b>${p.flag||"🌍"} ${esc(p.title)}</b><div class="data-meta">${esc(p.language_name)} · ${p.cards.length} tarjetas · ID: ${esc(p.pack_id)} · versión ${p.version||1}</div></div><div class="data-actions"><button class="btn small" data-add-pack="${esc(p.pack_id)}">＋ Añadir palabras</button><button class="btn small" data-manage-pack="${esc(p.pack_id)}">✏️ Gestionar palabras</button><button class="btn danger small" data-delete-pack="${esc(p.pack_id)}">Eliminar bloque</button></div></div>`).join(""):'<div class="empty-home">No hay módulos instalados.</div>';
- document.querySelectorAll("[data-add-pack]").forEach(b=>b.onclick=()=>openWordAdder(b.dataset.addPack));
- document.querySelectorAll("[data-manage-pack]").forEach(b=>b.onclick=()=>openCardManager(b.dataset.managePack));
- document.querySelectorAll("[data-delete-pack]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este módulo DATA? El progreso guardado no se borrará automáticamente."))deletePack(b.dataset.deletePack)})
-}
+function renderDataList(){$("dataList").innerHTML=packs.length?packs.map(p=>`<div class="data-row"><div><b>${p.flag||"🌍"} ${p.title}</b><div class="data-meta">${p.language_name} · ${p.cards.length} tarjetas · ID: ${p.pack_id} · versión ${p.version||1}</div></div><button class="btn danger small" data-delete-pack="${p.pack_id}">Eliminar</button></div>`).join(""):'<div class="empty-home">No hay módulos instalados.</div>';document.querySelectorAll("[data-delete-pack]").forEach(b=>b.onclick=()=>{if(confirm("¿Eliminar este módulo DATA? El progreso no se borrará."))deletePack(b.dataset.deletePack)})}
 function renderAll(){renderStats();renderDataList();go("inicio")}
 
 function openSetup(d){pendingDeck=d;$("setupTitle").textContent="Configurar: "+d.label;$("setupModal").classList.add("active")}
@@ -876,9 +706,8 @@ function startDeck(label,cards,mode,pack){leaveCardFocusMode();
  }
  queue.sort(()=>Math.random()-.5);qIndex=0;session={good:0,warn:0,bad:0};
  go("estudiar");$("studyTitle").textContent=label;
- if(direction==="audio-front"||direction==="cloze-front")studyMode="write";
- const directionLabel=direction==="audio-front"?"Solo audio → escribir palabra":direction==="cloze-front"?"Frase en español → completar hueco":direction==="front-back"?"Idioma → español":"Español → idioma";
- $("studySub").textContent=directionLabel+" · "+(studyMode==="write"?"respuesta escrita":"autoevaluación");
+ if(direction==="audio-front")studyMode="write";
+ $("studySub").textContent=(direction==="audio-front"?"Solo audio → escribir palabra":direction==="front-back"?"Idioma → español":"Español → idioma")+" · "+(studyMode==="write"?"respuesta escrita":"autoevaluación");
  $("selfRate").style.display=studyMode==="self"?"grid":"none";
  resetAnswerInterface();$("answerBox").classList.toggle("active",studyMode==="write");
  setMainButton("check","Comprobar");updateCertBanner();showCard()
@@ -891,45 +720,10 @@ function updateCertBanner(){
  else{b.className="cert-banner training";b.textContent="Todas juntas: entrenamiento independiente. Las respuestas cuentan como palabras revisadas, no como nuevas palabras dominadas."}
 }
 function chooseExample(c){
- const ex=c.examples[Math.floor(Math.random()*c.examples.length)]||{};
- const target=ex[c.language_id||selectedLanguage]??ex.target??ex.native??ex.fr??ex.en??c.sentence_front;
- const spanish=ex.es??ex.spanish??c.sentence_back;
- return direction==="front-back"?{front:target,back:spanish}:{front:spanish,back:target}
+ const ex=c.examples[Math.floor(Math.random()*c.examples.length)]||{fr:c.sentence_front,es:c.sentence_back};
+ return direction==="front-back"?{front:ex.fr,back:ex.es}:{front:ex.es,back:ex.fr}
 }
 const front=c=>direction==="front-back"?c.front:c.back,back=c=>direction==="front-back"?c.back:c.front;
-
-function clozeAnswerVariants(c){
- const values=String(c?.front||"").split(/\s*(?:\/|\||;)\s*/g).map(x=>x.trim()).filter(Boolean);
- if((c?.language_id||selectedLanguage)==="en"){
-  for(const value of [...values])if(/^to\s+/i.test(value))values.push(value.replace(/^to\s+/i,"").trim())
- }
- return[...new Set(values)].sort((a,b)=>b.length-a.length)
-}
-function clozeExampleCandidates(c){
- const code=c.language_id||selectedLanguage,items=[];
- const add=(target,spanish)=>{target=String(target||"").trim();spanish=String(spanish||"").trim();if(target&&spanish&&!items.some(x=>x.target===target&&x.spanish===spanish))items.push({target,spanish})};
- add(c.sentence_front,c.sentence_back);
- for(const ex of c.examples||[])add(ex?.[code]??ex?.target??ex?.native??ex?.fr??ex?.en,ex?.es??ex?.spanish);
- return items
-}
-function clozeMatch(sentence,c){
- const source=String(sentence||""),lower=source.toLocaleLowerCase();
- for(const value of clozeAnswerVariants(c)){
-  const index=lower.indexOf(value.toLocaleLowerCase());
-  if(index>=0)return{index,length:value.length,value}
- }
- return null
-}
-function chooseClozeExample(c){
- const candidates=clozeExampleCandidates(c),matching=candidates.filter(x=>clozeMatch(x.target,c));
- const pool=matching.length?matching:candidates;
- return pool[Math.floor(Math.random()*pool.length)]||{target:c.sentence_front||c.front,spanish:c.sentence_back||c.back}
-}
-function renderClozeSentence(sentence,c){
- const source=String(sentence||""),match=clozeMatch(source,c);
- if(!match)return`${esc(source)} <span class="cloze-gap">________</span>`;
- return esc(source.slice(0,match.index))+`<span class="cloze-gap">________</span>`+esc(source.slice(match.index+match.length))
-}
 
 
 function initAutoPronunciation(){
@@ -945,10 +739,6 @@ function updateMobilePrompt(c,ex){
   $("mobilePromptLabel").textContent="Modo auditivo";
   $("mobilePromptWord").textContent="🔊 Escucha y escribe";
   $("mobilePromptExample").textContent="";
- }else if(direction==="cloze-front"){
-  $("mobilePromptLabel").textContent="Completar hueco";
-  $("mobilePromptWord").textContent=ex?.spanish||ex?.front||"";
-  $("mobilePromptExample").textContent=ex?.target||ex?.back||"";
  }else{
   $("mobilePromptLabel").textContent=direction==="front-back"?"Idioma → español":"Español → idioma";
   $("mobilePromptWord").textContent=front(c);
@@ -1073,16 +863,13 @@ function renderMetadata(c){
 function showCard(){
  $("flashcard").style.display="flex";
  const c=queue[qIndex],input=$("writtenAnswer");
- resetAnswerInterface();input.value="";input.disabled=false;input.placeholder=direction==="cloze-front"?"Escribe la palabra que falta…":"Escribe la respuesta…";setMainButton("check","Comprobar");
+ resetAnswerInterface();input.value="";input.disabled=false;setMainButton("check","Comprobar");
  if(!c){finishSession();return}
- const ex=direction==="cloze-front"?chooseClozeExample(c):chooseExample(c);
- $("cardLabel").textContent=direction==="audio-front"?"SOLO AUDIO → ESCRIBIR":direction==="cloze-front"?"ESPAÑOL → COMPLETAR HUECO":direction==="front-back"?"IDIOMA → ESPAÑOL":"ESPAÑOL → IDIOMA";
+ const ex=chooseExample(c);
+ $("cardLabel").textContent=direction==="audio-front"?"SOLO AUDIO → ESCRIBIR":direction==="front-back"?"IDIOMA → ESPAÑOL":"ESPAÑOL → IDIOMA";
  if(direction==="audio-front"){
   $("cardFront").textContent="";
   $("frontExample").innerHTML='<div class="audio-blind-placeholder">🔊 Escucha y escribe lo que oyes</div>';
- }else if(direction==="cloze-front"){
-  $("cardFront").innerHTML=`<div class="cloze-spanish">${esc(ex.spanish)}</div>`;
-  $("frontExample").innerHTML=`<div class="cloze-target">${renderClozeSentence(ex.target,c)}</div>`;
  }else{
   $("cardFront").textContent=front(c);
   $("frontExample").innerHTML=highlight(ex.front,front(c));
@@ -1091,9 +878,6 @@ function showCard(){
  if(direction==="audio-front"){
   $("cardBack").textContent=c.front;
   $("backExample").innerHTML=highlight(c.sentence_front,c.front);
- }else if(direction==="cloze-front"){
-  $("cardBack").innerHTML=`<div class="cloze-answer-word">${esc(c.front)}</div>`;
-  $("backExample").innerHTML=`<div class="cloze-complete">${highlight(ex.target,c.front)}</div>`;
  }else{
   $("cardBack").textContent=back(c);
   $("backExample").innerHTML=highlight(ex.back,back(c));
@@ -1221,8 +1005,7 @@ document.querySelectorAll("[data-score]").forEach(b=>b.onclick=()=>{if(!queue[qI
 
 function checkWrittenAnswer(){
  const c=queue[qIndex];if(!c)return;
- const expected=direction==="cloze-front"?c.front:back(c),a=normalize($("writtenAnswer").value);
- const accepted=(direction==="cloze-front"?clozeAnswerVariants(c):String(expected).split(/\s*\/\s*/)).map(normalize),ok=accepted.includes(a);
+ const expected=back(c),a=normalize($("writtenAnswer").value),accepted=String(expected).split(/\s*\/\s*/).map(normalize),ok=accepted.includes(a);
  applyScore(ok?2:0);$("answerResult").className="answer-result "+(ok?"ok":"no");
  $("answerResult").innerHTML=ok?"✓ Correcto":"✕ Incorrecto<br>Respuesta válida: <strong>"+esc(expected)+"</strong>";
  playAnswerSound(ok);
@@ -1248,7 +1031,7 @@ $("retryBtn").onclick=()=>currentDeck&&startDeck(currentDeck,currentSource,curre
 $("shuffleBtn").onclick=()=>{queue.sort(()=>Math.random()-.5);qIndex=0;showCard()};
 $("cancelSetupBtn").onclick=closeSetup;
 $("beginDeckBtn").onclick=()=>{direction=document.querySelector('input[name="studyDirection"]:checked').value;
- studyMode=(direction==="audio-front"||direction==="cloze-front")?"write":document.querySelector('input[name="studyMode"]:checked').value;
+ studyMode=direction==="audio-front"?"write":document.querySelector('input[name="studyMode"]:checked').value;
  currentTrack=direction==="audio-front"?"listening":"written";const d=pendingDeck;closeSetup();startDeck(d.label,d.cards,d.mode,d.pack)};
 
 for(const id of ["topImportBtn","manageImportBtn"])$(id).onclick=()=>$("dataInput").click();
@@ -1288,7 +1071,7 @@ function toggleTimerUI(e){if(e)e.stopPropagation();const w=$("timerWidget"),c=!w
 $("timerToggleBtn").onclick=toggleTimerUI;$("timerWidget").addEventListener("click",e=>{if($("timerWidget").classList.contains("collapsed")&&e.target.id!=="timerToggleBtn")toggleTimerUI(e)});
 window.LMBridge={
  getPacks:()=>packs,
- replacePacks:async arr=>{const local=JSON.stringify(packs),remote=JSON.stringify(arr||[]);if(local===remote)return;const page=document.querySelector(".section.active")?.id||"inicio";await replaceAllPacks(arr||[]);await loadPacks();refreshAfterDataChange();if(selectedLanguage&&document.getElementById(page))go(page)},
+ replacePacks:async arr=>{const local=JSON.stringify(packs),remote=JSON.stringify(arr||[]);if(local===remote)return;const page=document.querySelector(".section.active")?.id||"inicio";for(const p of arr)await putPack(p);await loadPacks();refreshAfterDataChange();if(selectedLanguage&&document.getElementById(page))go(page)},
  getProgress:lang=>{try{return JSON.parse(localStorage.getItem(`language_master_progress_${lang}_v1`)||"null")}catch(e){return null}},
  setProgress:(lang,data)=>{const current=localStorage.getItem(`language_master_progress_${lang}_v1`),incoming=JSON.stringify(data);if(current===incoming)return;localStorage.setItem(`language_master_progress_${lang}_v1`,incoming);if(selectedLanguage===lang){const page=document.querySelector(".section.active")?.id||"inicio";state=data;migrateState();renderStats();renderDecks();if(page==="progreso")renderProgress();if(document.getElementById(page))go(page)}},
  progressLanguages:()=>Object.keys(localStorage).filter(k=>k.startsWith("language_master_progress_")&&k.endsWith("_v1")).map(k=>k.slice(25,-3)),
@@ -1298,27 +1081,18 @@ window.LMBridge={
 $("timerStartBtn").onclick=startPauseTimer;$("timerStopBtn").onclick=finishTimer;$("timerHistoryBtn").onclick=()=>{if(selectedLanguage){go("progreso");window.scrollTo({top:document.body.scrollHeight,behavior:"smooth"})}else toast("Primero elige un idioma")};
 
 
-/* ---------- GENERADOR AUTOMÁTICO DE BLOQUES ---------- */
+/* ---------- GENERADOR DE BLOQUES ---------- */
 const GENERATOR_PREFS_KEY="language_master_generator_prefs_v1";
-const N8N_GENERATE_URL="https://n8n.srv1863570.hstgr.cloud/webhook/language-master-generar";
 const languageAliases={
  fr:"fr|Francés|Français|🇫🇷",en:"en|Inglés|English|🇬🇧",de:"de|Alemán|Deutsch|🇩🇪",
  it:"it|Italiano|Italiano|🇮🇹",pt:"pt|Portugués|Português|🇵🇹",ca:"ca|Catalán|Català|🏳️",
  nl:"nl|Neerlandés|Nederlands|🇳🇱",ja:"ja|Japonés|日本語|🇯🇵",ko:"ko|Coreano|한국어|🇰🇷",
  zh:"zh|Chino mandarín|中文|🇨🇳",ar:"ar|Árabe|العربية|🌍",ru:"ru|Ruso|Русский|🇷🇺"
 };
-let generatorBusy=false;
-
 function renderThemeInputs(){
  const n=Number($("genCount").value)||1,root=$("genThemes"),old=[...root.querySelectorAll("input")].map(x=>x.value);
  root.innerHTML="";
- for(let i=0;i<n;i++){
-  const input=document.createElement("input");
-  input.className="gen-theme";
-  input.placeholder=`Tema del bloque ${i+1}, por ejemplo: Viajes y aeropuerto`;
-  input.value=old[i]||"";
-  root.appendChild(input)
- }
+ for(let i=0;i<n;i++){const input=document.createElement("input");input.className="gen-theme";input.placeholder=`Tema del bloque ${i+1}, por ejemplo: Viajes y aeropuerto`;input.value=old[i]||"";root.appendChild(input)}
  saveGeneratorPrefs();
 }
 function saveGeneratorPrefs(){
@@ -1328,12 +1102,8 @@ function loadGeneratorPrefs(){
  try{
   const p=JSON.parse(localStorage.getItem(GENERATOR_PREFS_KEY)||"{}");
   if(p.language&&[...$("genLanguage").options].some(o=>o.value===p.language))$("genLanguage").value=p.language;
-  if(p.count)$("genCount").value=p.count;
-  if(p.level)$("genLevel").value=p.level;
-  if(p.start)$("genStartNumber").value=p.start;
-  if(p.extra)$("genExtra").value=p.extra;
-  renderThemeInputs();
-  (p.themes||[]).forEach((v,i)=>{const x=document.querySelectorAll(".gen-theme")[i];if(x)x.value=v})
+  if(p.count)$("genCount").value=p.count;if(p.level)$("genLevel").value=p.level;if(p.start)$("genStartNumber").value=p.start;if(p.extra)$("genExtra").value=p.extra;
+  renderThemeInputs();(p.themes||[]).forEach((v,i)=>{const x=document.querySelectorAll(".gen-theme")[i];if(x)x.value=v})
  }catch(e){renderThemeInputs()}
  toggleCustomLanguage();
 }
@@ -1342,237 +1112,114 @@ function openGenerator(prefillCurrent=true){
  if(prefillCurrent&&selectedLanguage&&languageAliases[selectedLanguage])$("genLanguage").value=languageAliases[selectedLanguage];
  toggleCustomLanguage();renderThemeInputs();$("generatorScreen").classList.add("active");document.body.style.overflow="hidden"
 }
-function closeGenerator(){if(generatorBusy){toast("Espera a que termine la generación");return}$("generatorScreen").classList.remove("active");document.body.style.overflow=""}
+function closeGenerator(){$("generatorScreen").classList.remove("active");document.body.style.overflow=""}
 function getLanguageData(){
- if($("genLanguage").value!=="other"){
-  const [code,name,native,flag]=$("genLanguage").value.split("|");return{code,name,native,flag}
- }
+ if($("genLanguage").value!=="other"){const [code,name,native,flag]=$("genLanguage").value.split("|");return{code,name,native,flag}}
  const parts=$("genCustomLanguage").value.split("|").map(x=>x.trim());
  return{code:parts[1]||"xx",name:parts[0]||"Idioma personalizado",native:parts[2]||parts[0]||"Idioma",flag:parts[3]||"🌍"}
 }
 function slugify(s){return String(s).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,45)||"vocabulario"}
-function generatorLog(line,reset=false){
- const box=$("generatedPrompt");
- if(reset)box.value="";
- box.value+=(box.value?"\n":"")+line;
- box.scrollTop=box.scrollHeight;
-}
-function setGeneratorLive(text,type="busy"){
- const el=$("generatorLive");
- if(!text){el.className="generator-live hidden";el.innerHTML="";return}
- el.className=`generator-live ${type==="error"?"error":type==="done"?"done":""}`;
- el.innerHTML=(type==="busy"?'<span class="generator-spinner"></span>':'')+`<span>${esc(text)}</span>`;
-}
-function setGeneratorBusy(busy){
- generatorBusy=busy;
- $("generatePromptBtn").disabled=busy;
- $("generatePromptBtn").textContent=busy?"Generando bloques…":"Generar e instalar bloques";
- ["genLanguage","genCount","genCustomLanguage","genLevel","genStartNumber","genExtra"].forEach(id=>{const el=$(id);if(el)el.disabled=busy});
- document.querySelectorAll(".gen-theme").forEach(el=>el.disabled=busy);
- $("closeGeneratorBtn").disabled=busy;
-}
-function normalizeTerm(s,langCode=""){
- let key=normalize(String(s||"").replace(/\([^)]*\)/g," "));
- if(langCode==="en")key=key.replace(/^to\s+/,"");
- return key
-}
-function termKeys(s,langCode=""){
- const raw=String(s||"").trim();
- const parts=[raw,...raw.split(/\s*(?:\/|\||;)\s*/g)];
- const keys=new Set();
- for(const part of parts){
-  let key=normalizeTerm(part,langCode);
-  if(key)keys.add(key)
- }
- return[...keys]
-}
-function addForbiddenCard(card,langCode,keySet,labelSet){
- const label=String(card?.front||"").trim();
- if(label)labelSet.add(label);
- for(const key of termKeys(label,langCode))keySet.add(key)
-}
-function stripJsonFences(s){
- return String(s||"").trim().replace(/^\uFEFF/,"").replace(/^```(?:json)?\s*/i,"").replace(/\s*```$/i,"").trim();
-}
-function parseGeneratedResponse(raw){
- let value=stripJsonFences(raw);
- let parsed;
- try{parsed=JSON.parse(value)}catch(e){throw new Error("n8n respondió con un contenido que no es JSON válido")}
- for(let i=0;i<3&&typeof parsed==="string";i++)parsed=JSON.parse(stripJsonFences(parsed));
- if(parsed?.content?.parts?.[0]?.text)parsed=JSON.parse(stripJsonFences(parsed.content.parts[0].text));
- if(parsed?.data&&typeof parsed.data==="object"&&!Array.isArray(parsed.data))parsed=parsed.data;
- return parsed;
-}
-function normalizeGeneratedPack(raw,{lang,theme,blockNumber,level,expectedCount=50}){
- if(!raw||typeof raw!=="object"||Array.isArray(raw))throw new Error("Gemini no devolvió un objeto de módulo");
- const nnn=String(blockNumber).padStart(3,"0"),prefix=`${lang.code.toUpperCase()}_${nnn}`;
- const cards=Array.isArray(raw.cards)?raw.cards:[];
- if(cards.length!==expectedCount)throw new Error(`Gemini devolvió ${cards.length} tarjetas en vez de ${expectedCount}`);
- const pack={
-  ...raw,
-  schema_version:raw.schema_version||"2.0",
-  pack_id:`${lang.code}_${nnn}_${slugify(theme)}`,
-  language_id:lang.code,
-  language_name:lang.name,
-  native_name:lang.native,
-  flag:lang.flag,
-  version:Number(raw.version)||2,
-  type:"vocabulary",
-  category:theme,
-  title:theme,
-  description:raw.description||`${expectedCount} palabras útiles sobre ${theme}, generadas automáticamente con IA.`,
-  source:{...(raw.source||{}),name:"n8n_gemini_language_master",category_order:blockNumber},
-  cards:cards.map((c,i)=>{
-   const ex=Array.isArray(c.examples)?c.examples:[];
-   const normalizedExamples=ex.map(x=>{
-    const target=x?.[lang.code]??x?.target??x?.native??x?.fr??x?.en??x?.de??x?.it??x?.pt??x?.ca??x?.nl??x?.ja??x?.ko??x?.zh??x?.ar??x?.ru??"";
-    return{[lang.code]:String(target||""),es:String(x?.es??x?.spanish??"")}
-   }).filter(x=>x[lang.code]||x.es);
-   const front=String(c.front??c.term??"").trim(),back=String(c.back??c.translation??"").trim();
-   const sentenceFront=String(c.sentence_front??normalizedExamples[0]?.[lang.code]??front).trim();
-   const sentenceBack=String(c.sentence_back??normalizedExamples[0]?.es??back).trim();
-   if(!normalizedExamples.length)normalizedExamples.push({[lang.code]:sentenceFront,es:sentenceBack});
-   normalizedExamples[0]={[lang.code]:sentenceFront,es:sentenceBack};
-   return{
-    ...c,
-    id:`${prefix}_${String(i+1).padStart(3,"0")}`,
-    front,back,
-    sentence_front:sentenceFront,
-    sentence_back:sentenceBack,
-    pronunciation:String(c.pronunciation||""),
-    ipa:String(c.ipa||""),
-    examples:normalizedExamples.slice(0,2),
-    grammar:{type:c.grammar?.type||"expression",gender:c.grammar?.gender??null,plural:c.grammar?.plural??null},
-    learning:{cefr:c.learning?.cefr||level,difficulty:Math.min(5,Math.max(1,Number(c.learning?.difficulty)||3)),frequency:Math.min(5,Math.max(1,Number(c.learning?.frequency)||4))},
-    tags:Array.isArray(c.tags)?c.tags:[slugify(theme)],audio:c.audio??null,notes:String(c.notes||"")
-   }
-  })
- };
- return pack
-}
-function buildNoRepeatInstructions({extra,forbiddenLabels,needed,theme,isRepair}){
- const terms=[...forbiddenLabels].filter(Boolean).sort((a,b)=>a.localeCompare(b,"es",{sensitivity:"base"}));
- return[
-  extra,
-  "REGLA CRÍTICA DE UNICIDAD: ninguna entrada de front puede coincidir con otra del resultado ni con ninguna entrada de la lista prohibida. Considera iguales mayúsculas, minúsculas, tildes, variantes escritas con «to» en inglés y alternativas separadas por «/».",
-  `Genera exactamente ${needed} tarjeta${needed===1?"":"s"} nueva${needed===1?"":"s"} sobre «${theme}». ${isRepair?"Son sustituciones: no vuelvas a generar las tarjetas ya aceptadas.":"Revisa toda la lista antes de responder."}`,
-  `LISTA EXHAUSTIVA DE ENTRADAS PROHIBIDAS (${terms.length}). No uses ninguna ni una variante equivalente:`,
-  JSON.stringify(terms)
- ].filter(Boolean).join("\n\n")
-}
-async function requestGeneratedBlock(payload){
- const body=new URLSearchParams();
- body.set("idiomaCodigo",payload.lang.code);
- body.set("idiomaNombre",payload.lang.name);
- body.set("idiomaNativo",payload.lang.native);
- body.set("bandera",payload.lang.flag);
- body.set("tema",payload.theme);
- body.set("numeroBloque",String(payload.blockNumber));
- body.set("numeroTarjetas",String(payload.cardCount||50));
- body.set("nivel",payload.level);
- body.set("instrucciones",payload.instructions||"");
- body.set("forbiddenTerms",JSON.stringify(payload.forbiddenTerms||[]));
- let response;
- try{
-  response=await fetch(N8N_GENERATE_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8","Accept":"application/json"},body:body.toString()});
- }catch(e){throw new Error("No se pudo conectar con n8n. Comprueba que el workflow esté publicado y que el encabezado CORS esté configurado")}
- const raw=await response.text();
- if(!response.ok)throw new Error(`n8n devolvió el error ${response.status}: ${raw.slice(0,240)}`);
- return parseGeneratedResponse(raw);
-}
-function reviewCandidateCards(pack,forbiddenKeys,langCode){
- const localSeen=new Set(),valid=[],rejected=[];
- for(const card of pack.cards){
-  const keys=termKeys(card.front,langCode);
-  let reason="";
-  if(!keys.length)reason="entrada vacía";
-  else if(keys.some(k=>forbiddenKeys.has(k)))reason="ya existe";
-  else if(keys.some(k=>localSeen.has(k)))reason="repetida en la respuesta";
-  if(reason){
-   rejected.push({front:card.front||"entrada vacía",reason});
-   continue
-  }
-  valid.push(card);
-  for(const key of keys)localSeen.add(key)
- }
- return{valid,rejected}
-}
-async function buildUniquePack({lang,theme,blockNumber,level,extra,baseForbiddenKeys,baseForbiddenLabels}){
- const target=50,accepted=[];
- const workingKeys=new Set(baseForbiddenKeys),workingLabels=new Set(baseForbiddenLabels);
- let template=null,lastRejected=[],calls=0;
- while(accepted.length<target&&calls<4){
-  const needed=target-accepted.length,isRepair=accepted.length>0;
-  const instructions=buildNoRepeatInstructions({extra,forbiddenLabels:workingLabels,needed,theme,isRepair});
-  calls++;
-  if(isRepair)generatorLog(`  Generando solo ${needed} sustitución${needed===1?"":"es"}; se conservan ${accepted.length} tarjetas válidas…`);
-  const raw=await requestGeneratedBlock({lang,theme,blockNumber,level,cardCount:needed,instructions,forbiddenTerms:[...workingLabels]});
-  const candidate=normalizeGeneratedPack(raw,{lang,theme,blockNumber,level,expectedCount:needed});
-  if(!template)template=candidate;
-  const review=reviewCandidateCards(candidate,workingKeys,lang.code);
-  lastRejected=review.rejected;
-  for(const card of review.valid){
-   accepted.push(card);
-   addForbiddenCard(card,lang.code,workingKeys,workingLabels)
-  }
-  if(review.rejected.length){
-   const sample=review.rejected.slice(0,5).map(x=>x.front).join(", ");
-   generatorLog(`  ${review.rejected.length} entrada${review.rejected.length===1?"":"s"} descartada${review.rejected.length===1?"":"s"} (${sample}${review.rejected.length>5?", …":""}).`);
-  }
- }
- if(accepted.length!==target){
-  const sample=lastRejected.slice(0,8).map(x=>x.front).join(", ");
-  throw new Error(`No se pudieron completar 50 entradas únicas para «${theme}» tras generar únicamente las sustituciones necesarias${sample?`: ${sample}`:""}`)
- }
- const finalRaw={...(template||{}),cards:accepted.slice(0,target)};
- return validatePack(normalizeGeneratedPack(finalRaw,{lang,theme,blockNumber,level,expectedCount:target}))
-}
-async function generateAndInstallBlocks(){
- if(generatorBusy)return;
- saveGeneratorPrefs();
- const lang=getLanguageData(),count=Number($("genCount").value)||1,start=Math.max(1,Number($("genStartNumber").value)||1),level=$("genLevel").value;
- const themes=[...document.querySelectorAll(".gen-theme")].map(x=>x.value.trim());
- const extra=$("genExtra").value.trim();
- if($("genLanguage").value==="other"&&(!$("genCustomLanguage").value.includes("|")||lang.code==="xx")){alert("Escribe el idioma personalizado como: Nombre | código | nombre nativo | bandera");return}
- if(themes.length!==count||themes.some(x=>!x)){alert("Completa el tema de todos los bloques antes de generar.");return}
- const plannedIds=themes.map((theme,i)=>`${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}`);
- const replacing=packs.filter(p=>plannedIds.includes(p.pack_id));
- if(replacing.length&&!confirm(`Se sustituirán ${replacing.length} módulo${replacing.length===1?"":"s"} con el mismo ID. El progreso asociado a sus tarjetas se conservará cuando coincidan los IDs. ¿Continuar?`))return;
+function generatePrompt(){
+ const lang=getLanguageData(),count=Number($("genCount").value),start=Math.max(1,Number($("genStartNumber").value)||1),level=$("genLevel").value;
+ const themes=[...document.querySelectorAll(".gen-theme")].map((x,i)=>x.value.trim()||`Tema útil ${i+1}`),extra=$("genExtra").value.trim();
+ const blocks=themes.map((theme,i)=>`- Bloque ${start+i}: «${theme}»; nombre de archivo: ${lang.code}_${String(start+i).padStart(3,"0")}_${slugify(theme)}_DATA_v2.json`).join("\n");
+ const ids=themes.map((theme,i)=>`${lang.code.toUpperCase()}_${String(start+i).padStart(3,"0")}_${slugify(theme).toUpperCase().slice(0,12)}_001`).join(", ");
+ const prompt=`Quiero que generes ${count} archivo${count===1?"":"s"} JSON independiente${count===1?"":"s"} para importarlos directamente en mi aplicación Language Master.
 
- const forbiddenKeys=new Set(),forbiddenLabels=new Set();
- for(const p of packs){
-  if(p.language_id!==lang.code||plannedIds.includes(p.pack_id))continue;
-  for(const c of p.cards||[])addForbiddenCard(c,lang.code,forbiddenKeys,forbiddenLabels)
- }
+IDIOMA OBJETIVO
+- Código: ${lang.code}
+- Nombre en español: ${lang.name}
+- Nombre nativo: ${lang.native}
+- Bandera: ${lang.flag}
+- Las traducciones y explicaciones deben estar en español.
+- Nivel aproximado: ${level}.
 
- setGeneratorBusy(true);
- generatorLog(`Generación iniciada: ${count} bloque${count===1?"":"s"} de 50 tarjetas.\nSe han enviado ${forbiddenLabels.size} entradas ya instaladas a la lista de exclusión desde el primer intento.`,true);
- setGeneratorLive("Conectando con n8n y Gemini…");
- const generated=[];
- try{
-  for(let i=0;i<count;i++){
-   const theme=themes[i],blockNumber=start+i;
-   generatorLog(`\n[${i+1}/${count}] Generando bloque ${String(blockNumber).padStart(3,"0")}: ${theme}`);
-   setGeneratorLive(`Generando ${i+1} de ${count}: ${theme}. Gemini ya conoce todas las entradas prohibidas…`);
-   const pack=await buildUniquePack({
-    lang,theme,blockNumber,level,extra,
-    baseForbiddenKeys:forbiddenKeys,
-    baseForbiddenLabels:forbiddenLabels
-   });
-   await putPack(pack);
-   generated.push(pack);
-   for(const c of pack.cards)addForbiddenCard(c,lang.code,forbiddenKeys,forbiddenLabels);
-   generatorLog(`  ✓ Instalado: ${pack.pack_id} · 50/50 tarjetas únicas`);
-  }
-  await loadPacks();
-  refreshAfterDataChange();
-  window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
-  generatorLog(`\n✓ Proceso terminado. ${generated.length} módulo${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"} sin repeticiones y enviado${generated.length===1?"":"s"} al sistema de sincronización de Firebase.`);
-  setGeneratorLive(`${generated.length} bloque${generated.length===1?"":"s"} generado${generated.length===1?"":"s"} e instalado${generated.length===1?"":"s"} sin repeticiones.`,"done");
-  toast(`${generated.length} bloque${generated.length===1?"":"s"} instalado${generated.length===1?"":"s"}`);
- }catch(e){
-  console.error(e);generatorLog(`\n✕ ERROR: ${e.message}`);setGeneratorLive(e.message,"error");alert("No se pudo completar la generación:\n\n"+e.message)
- }finally{setGeneratorBusy(false)}
+BLOQUES QUE DEBES CREAR
+${blocks}
+
+REQUISITOS DE CONTENIDO
+1. Cada archivo debe contener exactamente 50 tarjetas.
+2. Las 50 entradas deben ser útiles, naturales y claramente relacionadas con el tema indicado.
+3. No repitas ninguna palabra o expresión entre los ${count} bloques.
+4. Prioriza vocabulario real y frecuente apropiado para el nivel ${level}.
+5. Cada tarjeta debe incluir DOS ejemplos naturales y diferentes. Cada frase del idioma objetivo debe contener exactamente la palabra o expresión de "front" de forma visible y natural.
+6. La traducción española de cada ejemplo debe transmitir el mismo significado natural, no una traducción artificial palabra por palabra.
+7. Comprueba ortografía, tildes, género, artículos y uso real antes de entregar los archivos.
+8. No uses frases genéricas repetidas cambiando solamente la palabra.
+${extra?`9. Instrucciones adicionales: ${extra}\n`:""}
+FORMATO OBLIGATORIO
+Cada archivo debe ser JSON válido, codificado en UTF-8 y seguir exactamente esta estructura:
+
+{
+  "schema_version": "2.0",
+  "pack_id": "${lang.code}_${String(start).padStart(3,"0")}_tema_sin_espacios",
+  "language_id": "${lang.code}",
+  "language_name": "${lang.name}",
+  "native_name": "${lang.native}",
+  "flag": "${lang.flag}",
+  "version": 1,
+  "type": "vocabulary",
+  "category": "Nombre exacto del tema",
+  "title": "Nombre exacto del tema",
+  "description": "50 palabras útiles del tema, con dos ejemplos naturales por tarjeta.",
+  "source": {
+    "name": "generated_for_language_master",
+    "category_order": ${start}
+  },
+  "cards": [
+    {
+      "id": "${ids.split(", ")[0]}",
+      "front": "palabra o expresión en ${lang.name}",
+      "back": "traducción principal al español",
+      "sentence_front": "primer ejemplo en ${lang.name}",
+      "sentence_back": "traducción natural del primer ejemplo",
+      "pronunciation": "guía breve y legible de pronunciación o cadena vacía si no puede darse con fiabilidad",
+      "ipa": "transcripción IPA fiable o cadena vacía",
+      "examples": [
+        {"${lang.code}": "primer ejemplo en ${lang.name}", "es": "traducción natural"},
+        {"${lang.code}": "segundo ejemplo en ${lang.name}", "es": "traducción natural"}
+      ],
+      "grammar": {
+        "type": "nom/verbe/adjectif/adverbe/expression u otra categoría adecuada",
+        "gender": "masculin/féminin/null según corresponda",
+        "plural": "forma plural o null"
+      },
+      "learning": {
+        "cefr": "${level}",
+        "difficulty": 1,
+        "frequency": 5
+      },
+      "tags": ["tema", "subtema"],
+      "audio": null,
+      "notes": ""
+    }
+  ]
+}
+
+REGLAS TÉCNICAS IMPORTANTES
+- "pack_id" debe ser único en cada archivo y seguir: ${lang.code}_NNN_tema_en_snake_case.
+- Los ID de tarjetas deben ser globalmente únicos y contener idioma, número de bloque y contador 001-050.
+- Ejemplos de ID válidos: ${ids}.
+- "sentence_front" y "sentence_back" deben ser exactamente el primer elemento de "examples".
+- Para máxima compatibilidad, además de la clave "${lang.code}" dentro de examples, incluye también "fr" cuando el idioma sea francés. En cualquier otro idioma usa solo "${lang.code}" y "es".
+- No añadas comentarios dentro del JSON.
+- Los campos "pronunciation" e "ipa" son opcionales: si no puedes rellenarlos con fiabilidad usa una cadena vacía, nunca inventes.
+- No dejes campos obligatorios vacíos.
+- Valida que cada archivo tenga exactamente 50 objetos dentro de "cards".
+- Entrégame los ${count} archivos como archivos descargables separados, no como un único JSON.
+- Si tu interfaz no permite adjuntar archivos, muestra cada JSON completo en un bloque de código separado, indicando claramente el nombre exacto del archivo.
+- No resumas ni omitas tarjetas. No pongas “continúa” ni puntos suspensivos.
+- Antes de entregar, revisa que todos los JSON sean válidos y que no haya comas finales ni IDs duplicados.`;
+ $("generatedPrompt").value=prompt;saveGeneratorPrefs();toast("Prompt generado")
+}
+async function copyGeneratedPrompt(){
+ if(!$("generatedPrompt").value)generatePrompt();
+ try{await navigator.clipboard.writeText($("generatedPrompt").value);toast("Prompt copiado")}catch(e){$("generatedPrompt").select();document.execCommand("copy");toast("Prompt copiado")}
+}
+function downloadGeneratedPrompt(){
+ if(!$("generatedPrompt").value)generatePrompt();
+ const lang=getLanguageData(),blob=new Blob([$("generatedPrompt").value],{type:"text/plain;charset=utf-8"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=`prompt_${lang.code}_${$("genCount").value}_bloques_language_master.txt`;a.click();URL.revokeObjectURL(a.href)
 }
 $("homeGenerateBtn").onclick=()=>openGenerator(false);
 $("openGeneratorNav").onclick=()=>openGenerator(true);
@@ -1582,407 +1229,341 @@ $("genLanguage").onchange=()=>{toggleCustomLanguage();saveGeneratorPrefs()};
 $("genCount").onchange=renderThemeInputs;
 $("genLevel").onchange=saveGeneratorPrefs;$("genStartNumber").oninput=saveGeneratorPrefs;$("genExtra").oninput=saveGeneratorPrefs;
 $("genThemes").addEventListener("input",saveGeneratorPrefs);
-$("generatePromptBtn").onclick=generateAndInstallBlocks;
+$("generatePromptBtn").onclick=generatePrompt;$("copyPromptBtn").onclick=copyGeneratedPrompt;$("downloadPromptBtn").onclick=downloadGeneratedPrompt;
 $("generatorScreen").addEventListener("click",e=>{if(e.target===$("generatorScreen"))closeGenerator()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&$("generatorScreen").classList.contains("active"))closeGenerator()});
-
 loadGeneratorPrefs();
-
-/* ---------- AÑADIR Y GESTIONAR PALABRAS ---------- */
-const N8N_ADD_WORDS_URL="https://n8n.srv1863570.hstgr.cloud/webhook/557f2f8d-a978-4b5a-9b1d-e02b81b986c7";
-let wordAdderBusy=false,wordRows=[],managedPackId=null,editingPackId=null,editingCardId=null;
-
-function languageDataFromValue(value,customValue=""){
- if(value!=="other"){
-  const [code,name,native,flag]=String(value||"").split("|");
-  return{code:code||"xx",name:name||"Idioma",native:native||name||"Idioma",flag:flag||"🌍"}
- }
- const parts=String(customValue||"").split("|").map(x=>x.trim());
- return{code:parts[1]||"xx",name:parts[0]||"Idioma personalizado",native:parts[2]||parts[0]||"Idioma",flag:parts[3]||"🌍"}
-}
-function initWordLanguageOptions(){
- $("wordLanguage").innerHTML=$("genLanguage").innerHTML;
- for(let i=1;i<=20;i++)$("wordCount").insertAdjacentHTML("beforeend",`<option value="${i}">${i} palabra${i===1?"":"s"}</option>`);
- $("wordCount").value="1"
-}
-function getWordLanguage(){
- return languageDataFromValue($("wordLanguage").value,$("wordCustomLanguage").value)
-}
-function toggleWordCustomLanguage(){
- $("wordCustomLanguageWrap").classList.toggle("hidden",$("wordLanguage").value!=="other")
-}
-function destinationOptions(langCode,selected=""){
- const list=packs.filter(p=>p.language_id===langCode);
- return `<option value="">Elige bloque…</option>${list.map(p=>`<option value="${esc(p.pack_id)}" ${p.pack_id===selected?"selected":""}>${esc(p.title)} (${p.cards.length})</option>`).join("")}<option value="__new__" ${selected==="__new__"?"selected":""}>＋ Crear bloque nuevo…</option>`
-}
-function renderWordRows(count=null,prefillPackId=null){
- const n=count??(Number($("wordCount").value)||1);
- const lang=getWordLanguage();
- const domRows=[...document.querySelectorAll(".word-entry-row")];
- const old=domRows.length?domRows.map(row=>({
-  word:row.querySelector(".word-value")?.value||"",
-  destination:row.querySelector(".word-destination")?.value||"",
-  newTitle:row.querySelector(".new-pack-name")?.value||""
- })):wordRows;
- wordRows=Array.from({length:n},(_,i)=>old[i]||{word:"",destination:prefillPackId||"",newTitle:""});
- const root=$("wordEntryList");root.innerHTML="";
- wordRows.forEach((rowData,index)=>{
-  const row=document.createElement("div");row.className="word-entry-row";row.dataset.index=index;
-  row.innerHTML=`<input class="word-value" placeholder="Palabra ${index+1}" value="${esc(rowData.word)}"><select class="word-destination">${destinationOptions(lang.code,rowData.destination||prefillPackId||"")}</select><input class="new-pack-name ${rowData.destination==="__new__"?"":"hidden"}" placeholder="Nombre del bloque nuevo" value="${esc(rowData.newTitle)}"><button class="word-remove-row" type="button" title="Quitar fila">✕</button>`;
-  root.appendChild(row)
- });
- $("wordCount").value=String(n);
- bindWordRows()
-}
-function bindWordRows(){
- document.querySelectorAll(".word-entry-row").forEach(row=>{
-  const dest=row.querySelector(".word-destination"),newName=row.querySelector(".new-pack-name");
-  dest.onchange=()=>newName.classList.toggle("hidden",dest.value!=="__new__");
-  row.querySelector(".word-remove-row").onclick=()=>{
-   if(document.querySelectorAll(".word-entry-row").length===1){row.querySelector(".word-value").value="";return}
-   row.remove();renumberWordRows()
-  }
- });
-}
-function renumberWordRows(){
- const rows=[...document.querySelectorAll(".word-entry-row")];
- rows.forEach((row,i)=>{row.dataset.index=i;row.querySelector(".word-value").placeholder=`Palabra ${i+1}`});
- $("wordCount").value=String(rows.length);
- wordRows=[]
-}
-function setWordAdderStatus(text,type=""){
- const el=$("wordAdderStatus");el.classList.remove("hidden","error","done");if(type)el.classList.add(type);el.textContent=text
-}
-function setWordAdderBusy(busy){
- wordAdderBusy=busy;
- ["submitWordsBtn","addWordRowBtn","removeWordRowBtn","wordLanguage","wordLevel","wordCount","wordCustomLanguage","applyWordBulkBtn"].forEach(id=>{const e=$(id);if(e)e.disabled=busy});
- document.querySelectorAll("#wordEntryList input,#wordEntryList select,#wordEntryList button").forEach(e=>e.disabled=busy);
- $("closeWordAdderBtn").disabled=busy;
- $("submitWordsBtn").textContent=busy?"Generando metadatos…":"Generar metadatos y añadir"
-}
-function openWordAdder(prefillPackId=null){
- const pack=packs.find(p=>p.pack_id===prefillPackId);
- const selectedInfo=!pack&&selectedLanguage?languages().find(l=>l.id===selectedLanguage):null;
- const source=pack?{id:pack.language_id,name:pack.language_name,native:pack.native_name,flag:pack.flag}:selectedInfo;
- if(source&&languageAliases[source.id]){$("wordLanguage").value=languageAliases[source.id];$("wordCustomLanguage").value=""}
- else if(source){$("wordLanguage").value="other";$("wordCustomLanguage").value=`${source.name||"Idioma"} | ${source.id} | ${source.native||source.name||"Idioma"} | ${source.flag||"🌍"}`}
- toggleWordCustomLanguage();
- $("wordBulkPaste").value="";$("wordAdderStatus").classList.add("hidden");
- wordRows=[];$("wordEntryList").innerHTML="";
- renderWordRows(Number($("wordCount").value)||1,prefillPackId);
- $("wordAdderScreen").classList.add("active");document.body.style.overflow="hidden"
-}
-function closeWordAdder(){if(wordAdderBusy){toast("Espera a que termine");return}$("wordAdderScreen").classList.remove("active");document.body.style.overflow=""}
-function nextCardIndex(pack){
- let max=0;
- for(const c of pack.cards||[]){const m=String(c.id||"").match(/(\d+)$/);if(m)max=Math.max(max,Number(m[1])||0)}
- return Math.max(max+1,(pack.cards||[]).length+1)
-}
-function uniqueCustomPackId(langCode,title,reserved){
- const base=`${langCode}_personalizado_${slugify(title)}`,used=new Set([...packs.map(p=>p.pack_id),...(reserved||[])]);
- if(!used.has(base))return base;
- let i=2;while(used.has(`${base}_${i}`))i++;
- return`${base}_${i}`
-}
-function findDuplicateFront(langCode,front,excludePackId=null,excludeCardId=null){
- const keys=termKeys(front,langCode);
- for(const p of packs){
-  if(p.language_id!==langCode)continue;
-  for(const c of p.cards||[]){
-   if(p.pack_id===excludePackId&&c.id===excludeCardId)continue;
-   if(termKeys(c.front,langCode).some(k=>keys.includes(k)))return{pack:p,card:c}
-  }
- }
- return null
-}
-async function requestWordMetadata({lang,level,theme,words,packId,startIndex}){
- const body=new URLSearchParams();
- body.set("idiomaCodigo",lang.code);body.set("idiomaNombre",lang.name);body.set("idiomaNativo",lang.native);
- body.set("nivel",level);body.set("tema",theme);body.set("palabras",JSON.stringify(words));
- body.set("packId",packId);body.set("indiceInicial",String(startIndex));
- let response;
- try{response=await fetch(N8N_ADD_WORDS_URL,{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8","Accept":"application/json"},body:body.toString()})}
- catch(e){throw new Error("No se pudo conectar con el workflow de añadir palabras")}
- const raw=await response.text();
- if(!response.ok)throw new Error(`n8n devolvió el error ${response.status}: ${raw.slice(0,220)}`);
- const parsed=parseGeneratedResponse(raw);
- if(!parsed||!Array.isArray(parsed.cards))throw new Error("n8n no devolvió el campo cards");
- if(parsed.cards.length!==words.length)throw new Error(`Se pidieron ${words.length} tarjetas y n8n devolvió ${parsed.cards.length}`);
- return parsed.cards
-}
-function normalizeIncomingCard(card,lang,level,theme){
- const examples=Array.isArray(card.examples)?card.examples:[];
- const normalizedExamples=examples.map(ex=>{
-  const target=ex?.[lang.code]??ex?.target??ex?.native??ex?.fr??ex?.en??"";
-  return{[lang.code]:String(target||""),es:String(ex?.es??ex?.spanish??"")}
- }).filter(ex=>ex[lang.code]||ex.es);
- const front=String(card.front||"").trim(),back=String(card.back||"").trim();
- const sentenceFront=String(card.sentence_front||normalizedExamples[0]?.[lang.code]||front).trim();
- const sentenceBack=String(card.sentence_back||normalizedExamples[0]?.es||back).trim();
- if(!normalizedExamples.length)normalizedExamples.push({[lang.code]:sentenceFront,es:sentenceBack});
- return{
-  ...card,front,back,sentence_front:sentenceFront,sentence_back:sentenceBack,
-  pronunciation:String(card.pronunciation||""),ipa:String(card.ipa||""),
-  examples:normalizedExamples.slice(0,2),
-  grammar:{type:card.grammar?.type||"expression",gender:card.grammar?.gender??null,plural:card.grammar?.plural??null},
-  learning:{cefr:card.learning?.cefr||level,difficulty:Math.min(5,Math.max(1,Number(card.learning?.difficulty)||3)),frequency:Math.min(5,Math.max(1,Number(card.learning?.frequency)||4))},
-  tags:Array.isArray(card.tags)&&card.tags.length?card.tags:[theme],audio:card.audio??null,notes:String(card.notes||"")
- }
-}
-function assignFreshIds(pack,cards){
- const used=new Set((pack.cards||[]).map(c=>String(c.id))),result=[];let index=nextCardIndex(pack);
- for(const card of cards){
-  let id;do{id=`${pack.pack_id}_${String(index++).padStart(3,"0")}`}while(used.has(id));
-  used.add(id);result.push({...card,id})
- }
- return result
-}
-async function submitWords(){
- if(wordAdderBusy)return;
- const lang=getWordLanguage(),level=$("wordLevel").value;
- if($("wordLanguage").value==="other"&&(!$("wordCustomLanguage").value.includes("|")||lang.code==="xx")){alert("Escribe el idioma personalizado como: Nombre | código | nombre nativo | bandera");return}
- const rows=[...document.querySelectorAll(".word-entry-row")].map((row,i)=>({
-  index:i+1,word:row.querySelector(".word-value").value.trim(),destination:row.querySelector(".word-destination").value,newTitle:row.querySelector(".new-pack-name").value.trim()
- }));
- if(rows.some(r=>!r.word)){alert("Completa todas las palabras.");return}
- if(rows.some(r=>!r.destination)){alert("Elige el bloque de destino de cada palabra.");return}
- if(rows.some(r=>r.destination==="__new__"&&!r.newTitle)){alert("Escribe el nombre de cada bloque nuevo.");return}
- const batchKeys=new Map();
- for(const r of rows){
-  const key=normalizeTerm(r.word,lang.code);
-  if(batchKeys.has(key)){alert(`La palabra «${r.word}» está repetida en las filas ${batchKeys.get(key)} y ${r.index}.`);return}
-  batchKeys.set(key,r.index);
-  const duplicate=findDuplicateFront(lang.code,r.word);
-  if(duplicate){alert(`«${r.word}» ya existe en el bloque «${duplicate.pack.title}».`);return}
- }
- const reserved=new Set(),newPackMap=new Map(),groups=new Map();
- for(const r of rows){
-  let pack,groupKey;
-  if(r.destination==="__new__"){
-   const titleKey=normalize(r.newTitle);
-   if(!newPackMap.has(titleKey)){
-    const packId=uniqueCustomPackId(lang.code,r.newTitle,reserved);reserved.add(packId);
-    newPackMap.set(titleKey,{pack_id:packId,language_id:lang.code,language_name:lang.name,native_name:lang.native,flag:lang.flag,version:2,type:"vocabulary",category:r.newTitle,title:r.newTitle,description:`Bloque personalizado: ${r.newTitle}`,source:{name:"n8n_gemini_custom_words"},cards:[]})
-   }
-   pack=newPackMap.get(titleKey);groupKey=`new:${titleKey}`
-  }else{
-   pack=packs.find(p=>p.pack_id===r.destination);
-   if(!pack){alert(`No se encontró el bloque de la fila ${r.index}.`);return}
-   groupKey=`existing:${pack.pack_id}`
-  }
-  if(!groups.has(groupKey))groups.set(groupKey,{pack,words:[]});
-  groups.get(groupKey).words.push(r.word)
- }
- setWordAdderBusy(true);setWordAdderStatus(`Preparando ${rows.length} palabra${rows.length===1?"":"s"} en ${groups.size} bloque${groups.size===1?"":"s"}…`);
- try{
-  let done=0;const pendingUpdates=[];
-  for(const {pack,words} of groups.values()){
-   const startIndex=nextCardIndex(pack),theme=pack.title||pack.category||"Personalizado";
-   setWordAdderStatus(`Generando metadatos para ${words.length} palabra${words.length===1?"":"s"} → ${theme}\n${done}/${rows.length} preparadas`);
-   const generated=await requestWordMetadata({lang,level,theme,words,packId:pack.pack_id,startIndex});
-   const normalized=generated.map(c=>normalizeIncomingCard(c,lang,level,theme));
-   for(let i=0;i<normalized.length;i++){
-    if(normalizeTerm(normalized[i].front,lang.code)!==normalizeTerm(words[i],lang.code))throw new Error(`Gemini cambió la palabra «${words[i]}»`)
-   }
-   const withIds=assignFreshIds(pack,normalized),updated=validatePack({...pack,cards:[...(pack.cards||[]),...withIds]});
-   pendingUpdates.push(updated);done+=words.length
-  }
-  setWordAdderStatus(`Metadatos completados. Guardando ${rows.length} palabra${rows.length===1?"":"s"}…`);
-  for(const updated of pendingUpdates)await putPack(updated);
-  await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
-  setWordAdderStatus(`✓ ${rows.length} palabra${rows.length===1?"":"s"} añadida${rows.length===1?"":"s"} correctamente y enviada${rows.length===1?"":"s"} a Firebase.`,"done");
-  toast(`${rows.length} palabra${rows.length===1?"":"s"} añadida${rows.length===1?"":"s"}`)
- }catch(e){console.error(e);setWordAdderStatus(`✕ ERROR: ${e.message}`,"error");alert("No se pudieron añadir las palabras:\n\n"+e.message)}
- finally{setWordAdderBusy(false)}
-}
-function openCardManager(packId=null){
- managedPackId=packId||managedPackId||packs.find(p=>p.language_id===selectedLanguage)?.pack_id||packs[0]?.pack_id||null;
- renderManagerPackOptions();renderManagedCards();
- $("cardManagerScreen").classList.add("active");document.body.style.overflow="hidden"
-}
-function closeCardManager(){$("cardManagerScreen").classList.remove("active");document.body.style.overflow=""}
-function renderManagerPackOptions(){
- const current=managedPackId;
- $("managerPackSelect").innerHTML=packs.map(p=>`<option value="${esc(p.pack_id)}">${p.flag||"🌍"} ${esc(p.title)} · ${p.cards.length}</option>`).join("");
- if(current&&packs.some(p=>p.pack_id===current))$("managerPackSelect").value=current;
- else managedPackId=$("managerPackSelect").value||null
-}
-function renderManagedCards(){
- managedPackId=$("managerPackSelect").value||managedPackId;
- const pack=packs.find(p=>p.pack_id===managedPackId),q=normalize($("managerSearch").value);
- if(!pack){$("managerCardList").innerHTML='<div class="empty-home">No hay bloques instalados.</div>';$("managerSummary").textContent="";return}
- const cards=(pack.cards||[]).filter(c=>!q||normalize(`${c.front} ${c.back}`).includes(q));
- $("managerSummary").textContent=`${cards.length} visibles de ${pack.cards.length}`;
- $("managerCardList").innerHTML=cards.length?cards.map(c=>`<div class="manager-row"><input type="checkbox" class="manager-card-check" value="${esc(c.id)}"><div class="manager-row-main"><b>${esc(c.front)}</b><small>${esc(c.grammar?.type||"")}${c.learning?.cefr?" · "+esc(c.learning.cefr):""}</small></div><div class="manager-row-back"><b>${esc(c.back)}</b><small>${esc(c.sentence_front||"")}</small></div><div class="manager-row-actions"><button class="btn small" data-edit-card="${esc(c.id)}">Editar</button><button class="btn danger small" data-delete-card="${esc(c.id)}">Eliminar</button></div></div>`).join(""):'<div class="empty-home">No hay palabras que coincidan.</div>';
- document.querySelectorAll("[data-edit-card]").forEach(b=>b.onclick=()=>openCardEditor(managedPackId,b.dataset.editCard));
- document.querySelectorAll("[data-delete-card]").forEach(b=>b.onclick=()=>deleteCardsFromPack(managedPackId,[b.dataset.deleteCard]))
-}
-function clearCardProgress(langId,packId,cardIds){
- const ids=new Set(cardIds),key=`language_master_progress_${langId}_v1`;
- let st;try{st=JSON.parse(localStorage.getItem(key)||"null")}catch(e){st=null}
- if(!st)return;
- st.cards=st.cards||{};for(const id of ids){delete st.cards[`${packId}::${id}`];delete st.cards[id]}
- if(st.all?.[packId]){for(const id of ids)delete st.all[packId].cards?.[id];st.all[packId].certified=false;st.all[packId].certifiedAt=null}
- if(st.listening?.cards)for(const id of ids){delete st.listening.cards[`${packId}::${id}`];delete st.listening.cards[id]}
- if(st.listening?.all?.[packId]){for(const id of ids)delete st.listening.all[packId].cards?.[id];st.listening.all[packId].certified=false;st.listening.all[packId].certifiedAt=null}
- localStorage.setItem(key,JSON.stringify(st));
- if(selectedLanguage===langId)state=st;
- window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"progress",language:langId}}))
-}
-async function deleteCardsFromPack(packId,cardIds){
- const pack=packs.find(p=>p.pack_id===packId);if(!pack)return;
- const ids=[...new Set(cardIds)].filter(id=>pack.cards.some(c=>c.id===id));if(!ids.length)return;
- if(!confirm(`¿Eliminar ${ids.length} palabra${ids.length===1?"":"s"} de «${pack.title}»?`))return;
- if(ids.length===pack.cards.length){
-  if(!confirm("Has seleccionado todas las palabras. Se eliminará el bloque completo. ¿Continuar?"))return;
-  clearCardProgress(pack.language_id,pack.pack_id,ids);await deletePack(pack.pack_id);managedPackId=packs[0]?.pack_id||null;renderManagerPackOptions();renderManagedCards();return
- }
- const updated={...pack,cards:pack.cards.filter(c=>!ids.includes(c.id))};
- clearCardProgress(pack.language_id,pack.pack_id,ids);await putPack(updated);await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
- renderManagerPackOptions();$("managerPackSelect").value=packId;managedPackId=packId;renderManagedCards();toast("Palabras eliminadas")
-}
-function exampleTarget(card,index,langId){
- const ex=card.examples?.[index]||{};return ex[langId]??ex.target??ex.native??ex.fr??ex.en??""
-}
-function openCardEditor(packId,cardId){
- const pack=packs.find(p=>p.pack_id===packId),card=pack?.cards.find(c=>c.id===cardId);if(!pack||!card)return;
- editingPackId=packId;editingCardId=cardId;$("cardEditorPackLabel").textContent=pack.title;
- $("editFront").value=card.front||"";$("editBack").value=card.back||"";$("editSentenceFront").value=card.sentence_front||"";$("editSentenceBack").value=card.sentence_back||"";
- $("editPronunciation").value=card.pronunciation||"";$("editIpa").value=card.ipa||"";$("editGrammarType").value=card.grammar?.type||"";$("editGender").value=card.grammar?.gender??"";$("editPlural").value=card.grammar?.plural??"";
- $("editCefr").value=[...$("editCefr").options].some(o=>o.value===card.learning?.cefr)?card.learning.cefr:"Mixto y progresivo";
- $("editDifficulty").value=card.learning?.difficulty||3;$("editFrequency").value=card.learning?.frequency||4;$("editTags").value=(card.tags||[]).join(", ");
- $("editExample1Target").value=exampleTarget(card,0,pack.language_id)||card.sentence_front||"";$("editExample1Es").value=card.examples?.[0]?.es||card.sentence_back||"";
- $("editExample2Target").value=exampleTarget(card,1,pack.language_id);$("editExample2Es").value=card.examples?.[1]?.es||"";$("editNotes").value=card.notes||"";$("editResetProgress").checked=true;
- $("cardEditorBack").classList.add("active")
-}
-function closeCardEditor(){$("cardEditorBack").classList.remove("active");editingPackId=null;editingCardId=null}
-function cardFromEditor(original,pack){
- const front=$("editFront").value.trim(),back=$("editBack").value.trim(),sf=$("editSentenceFront").value.trim(),sb=$("editSentenceBack").value.trim();
- if(!front||!back||!sf||!sb)throw new Error("Completa palabra, traducción y ambas frases");
- const duplicate=findDuplicateFront(pack.language_id,front,pack.pack_id,original.id);
- if(duplicate)throw new Error(`«${front}» ya existe en el bloque «${duplicate.pack.title}»`);
- const examples=[];
- const e1t=$("editExample1Target").value.trim(),e1s=$("editExample1Es").value.trim(),e2t=$("editExample2Target").value.trim(),e2s=$("editExample2Es").value.trim();
- if(e1t||e1s)examples.push({[pack.language_id]:e1t||sf,es:e1s||sb});
- if(e2t||e2s)examples.push({[pack.language_id]:e2t,es:e2s});
- if(!examples.length)examples.push({[pack.language_id]:sf,es:sb});
- return{...original,front,back,sentence_front:sf,sentence_back:sb,pronunciation:$("editPronunciation").value.trim(),ipa:$("editIpa").value.trim(),examples,
-  grammar:{type:$("editGrammarType").value.trim()||"expression",gender:$("editGender").value.trim()||null,plural:$("editPlural").value.trim()||null},
-  learning:{cefr:$("editCefr").value,difficulty:Math.min(5,Math.max(1,Number($("editDifficulty").value)||3)),frequency:Math.min(5,Math.max(1,Number($("editFrequency").value)||4))},
-  tags:$("editTags").value.split(",").map(x=>x.trim()).filter(Boolean),audio:original.audio??null,notes:$("editNotes").value.trim()}
-}
-async function saveCardEditor(){
- const pack=packs.find(p=>p.pack_id===editingPackId),original=pack?.cards.find(c=>c.id===editingCardId);if(!pack||!original)return;
- try{
-  const updatedCard=cardFromEditor(original,pack),frontChanged=normalizeTerm(updatedCard.front,pack.language_id)!==normalizeTerm(original.front,pack.language_id);
-  const updated={...pack,cards:pack.cards.map(c=>c.id===original.id?updatedCard:c)};
-  if(frontChanged&&$("editResetProgress").checked)clearCardProgress(pack.language_id,pack.pack_id,[original.id]);
-  await putPack(validatePack(updated));await loadPacks();refreshAfterDataChange();window.dispatchEvent(new CustomEvent("lm-local-change",{detail:{kind:"packs"}}));
-  const keepPack=pack.pack_id;closeCardEditor();renderManagerPackOptions();$("managerPackSelect").value=keepPack;managedPackId=keepPack;renderManagedCards();toast("Tarjeta actualizada")
- }catch(e){alert(e.message)}
-}
-async function regenerateEditingCard(){
- const pack=packs.find(p=>p.pack_id===editingPackId),original=pack?.cards.find(c=>c.id===editingCardId),front=$("editFront").value.trim();if(!pack||!original||!front)return;
- const duplicate=findDuplicateFront(pack.language_id,front,pack.pack_id,original.id);if(duplicate){alert(`«${front}» ya existe en «${duplicate.pack.title}».`);return}
- const btn=$("regenerateCardBtn");btn.disabled=true;btn.textContent="Generando…";
- try{
-  const lang={code:pack.language_id,name:pack.language_name,native:pack.native_name,flag:pack.flag};
-  const cards=await requestWordMetadata({lang,level:$("editCefr").value,theme:pack.title,words:[front],packId:pack.pack_id,startIndex:nextCardIndex(pack)});
-  const c=normalizeIncomingCard(cards[0],lang,$("editCefr").value,pack.title);
-  $("editBack").value=c.back;$("editSentenceFront").value=c.sentence_front;$("editSentenceBack").value=c.sentence_back;$("editPronunciation").value=c.pronunciation;$("editIpa").value=c.ipa;
-  $("editGrammarType").value=c.grammar.type;$("editGender").value=c.grammar.gender??"";$("editPlural").value=c.grammar.plural??"";$("editDifficulty").value=c.learning.difficulty;$("editFrequency").value=c.learning.frequency;$("editTags").value=(c.tags||[]).join(", ");
-  $("editExample1Target").value=exampleTarget(c,0,pack.language_id);$("editExample1Es").value=c.examples?.[0]?.es||"";$("editExample2Target").value=exampleTarget(c,1,pack.language_id);$("editExample2Es").value=c.examples?.[1]?.es||"";$("editNotes").value=c.notes||"";
-  toast("Metadatos regenerados. Pulsa Guardar cambios.")
- }catch(e){alert("No se pudieron regenerar los metadatos:\n\n"+e.message)}
- finally{btn.disabled=false;btn.textContent="✨ Regenerar metadatos con IA"}
-}
-function initWordTools(){
- initWordLanguageOptions();renderWordRows(1);
- $("homeAddWordsBtn").onclick=()=>openWordAdder();$("openWordAdderNav").onclick=()=>openWordAdder();$("topAddWordsBtn").onclick=()=>openWordAdder();$("dataAddWordsBtn").onclick=()=>openWordAdder();
- $("openCardManagerNav").onclick=()=>openCardManager();$("dataManageWordsBtn").onclick=()=>openCardManager();
- $("closeWordAdderBtn").onclick=closeWordAdder;$("closeCardManagerBtn").onclick=closeCardManager;
- $("wordLanguage").onchange=()=>{toggleWordCustomLanguage();const words=[...document.querySelectorAll(".word-value")].map(x=>x.value);wordRows=words.map(word=>({word,destination:"",newTitle:""}));$("wordEntryList").innerHTML="";renderWordRows(Number($("wordCount").value)||1)};
- $("wordCount").onchange=()=>renderWordRows(Number($("wordCount").value)||1);
- $("addWordRowBtn").onclick=()=>renderWordRows(Math.min(20,document.querySelectorAll(".word-entry-row").length+1));
- $("removeWordRowBtn").onclick=()=>renderWordRows(Math.max(1,document.querySelectorAll(".word-entry-row").length-1));
- $("applyWordBulkBtn").onclick=()=>{const words=$("wordBulkPaste").value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,20);if(!words.length)return;renderWordRows(words.length);document.querySelectorAll(".word-value").forEach((x,i)=>x.value=words[i]||"")};
- $("submitWordsBtn").onclick=submitWords;
- $("managerPackSelect").onchange=()=>{managedPackId=$("managerPackSelect").value;renderManagedCards()};$("managerSearch").oninput=renderManagedCards;
- $("managerAddWordsBtn").onclick=()=>{const id=$("managerPackSelect").value;closeCardManager();openWordAdder(id)};
- $("managerSelectAllBtn").onclick=()=>document.querySelectorAll(".manager-card-check").forEach(c=>c.checked=true);
- $("managerDeleteSelectedBtn").onclick=()=>deleteCardsFromPack(managedPackId,[...document.querySelectorAll(".manager-card-check:checked")].map(c=>c.value));
- $("closeCardEditorBtn").onclick=closeCardEditor;$("cancelCardEditorBtn").onclick=closeCardEditor;$("saveCardEditorBtn").onclick=saveCardEditor;$("regenerateCardBtn").onclick=regenerateEditingCard;
- $("deleteEditingCardBtn").onclick=async()=>{const p=editingPackId,c=editingCardId;closeCardEditor();await deleteCardsFromPack(p,[c])};
- $("wordAdderScreen").addEventListener("click",e=>{if(e.target===$("wordAdderScreen"))closeWordAdder()});
- $("cardManagerScreen").addEventListener("click",e=>{if(e.target===$("cardManagerScreen"))closeCardManager()});
- $("cardEditorBack").addEventListener("click",e=>{if(e.target===$("cardEditorBack"))closeCardEditor()});
- document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("cardEditorBack").classList.contains("active"))closeCardEditor();else if($("wordAdderScreen").classList.contains("active"))closeWordAdder();else if($("cardManagerScreen").classList.contains("active"))closeCardManager()})
-}
-initWordTools();
 
 (async()=>{initAutoPronunciation();initAnswerSounds();loadTimerUI();loadTimer();renderTimer();if(timer.running)timerInterval=setInterval(renderTimer,500);await loadPacks();renderLanguageScreen();renderDataList();renderTimerHistory()})();
 
 </script>
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import{getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,getRedirectResult,onAuthStateChanged,signOut,setPersistence,browserLocalPersistence}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-import{getFirestore,doc,setDoc,collection,getDocs,onSnapshot}from"https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-const cfg={apiKey:"AIzaSyDEWokiLIvAZmz78vFQ9pczW2eruUU6hWE",authDomain:"language-master-ad3eb.firebaseapp.com",projectId:"language-master-ad3eb",storageBucket:"language-master-ad3eb.firebasestorage.app",messagingSenderId:"657765473612",appId:"1:657765473612:web:7c2633b43d0cef6dc083e9",measurementId:"G-V6WK0RXQE6"};
-const app=initializeApp(cfg),auth=getAuth(app),db=getFirestore(app),provider=new GoogleAuthProvider();await setPersistence(auth,browserLocalPersistence);let user=null,unsubs=[],busy=false,timerId=null;const $=id=>document.getElementById(id),mobile=()=>/iPhone|iPad|iPod|Android/i.test(navigator.userAgent);function status(c,t){$("syncDot").className="sync-dot "+c;$("syncText").textContent=t}async function login(){const msg=$("loginMessage");msg.textContent="Abriendo Google…";try{await signInWithPopup(auth,provider);msg.textContent=""}catch(e){console.error(e);if(e.code==="auth/popup-blocked"){msg.textContent="Safari ha bloqueado la ventana. Permite ventanas emergentes para esta web y vuelve a pulsar."}else if(e.code==="auth/popup-closed-by-user"){msg.textContent="Se cerró la ventana antes de completar el acceso."}else if(e.code==="auth/unauthorized-domain"){msg.textContent="Falta autorizar adrianmespana.github.io en Firebase Authentication."}else{msg.textContent="No se pudo iniciar sesión: "+e.message}}}$("googleLoginBtn").onclick=login;$("logoutBtn").onclick=()=>signOut(auth);
-const root=()=>collection(db,"users",user.uid,"sync"),ref=id=>doc(db,"users",user.uid,"sync",id);
-let lastSeen=0;
-const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
-async function pushAll(){
- if(!user)return;
- status("busy","Guardando…");
- const langs=window.LMBridge.progressLanguages(),progress={};
- for(const l of langs)progress[l]=window.LMBridge.getProgress(l);
- const updatedAt=Date.now();lastSeen=updatedAt;
- await setDoc(ref("state"),{packs:window.LMBridge.getPacks(),progress,timer:window.LMBridge.getTimer(),settings:window.LMBridge.getSettings(),updatedAt});
- status("ok","Guardado en la nube");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged,
+  signOut, setPersistence, browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, onSnapshot, runTransaction
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const cfg = {
+  apiKey: "AIzaSyDEWokiLIvAZmz78vFQ9pczW2eruUU6hWE",
+  authDomain: "language-master-ad3eb.firebaseapp.com",
+  projectId: "language-master-ad3eb",
+  storageBucket: "language-master-ad3eb.firebasestorage.app",
+  messagingSenderId: "657765473612",
+  appId: "1:657765473612:web:7c2633b43d0cef6dc083e9",
+  measurementId: "G-V6WK0RXQE6"
+};
+
+const app = initializeApp(cfg);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
+await setPersistence(auth, browserLocalPersistence);
+
+let user = null;
+let unsubscribe = null;
+let applyingRemote = false;
+let syncTimer = null;
+let lastCloudUpdate = 0;
+let initialized = false;
+
+const $ = id => document.getElementById(id);
+const stateRef = () => doc(db, "users", user.uid, "sync", "state");
+
+function setStatus(kind, text) {
+  $("syncDot").className = "sync-dot " + kind;
+  $("syncText").textContent = text;
 }
-async function applyRemote(d,initial=false){
- if(!d)return;
- const remoteTime=d.updatedAt||0;
- if(!initial&&remoteTime<=lastSeen)return;
- lastSeen=Math.max(lastSeen,remoteTime);
- const localPacks=window.LMBridge.getPacks();
- if(d.packs&& !same(d.packs,localPacks))await window.LMBridge.replacePacks(d.packs);
- if(d.progress){
-  for(const[l,p]of Object.entries(d.progress)){
-   const local=window.LMBridge.getProgress(l);
-   if(!same(local,p))window.LMBridge.setProgress(l,p);
+
+async function login() {
+  const msg = $("loginMessage");
+  msg.textContent = "Abriendo Google…";
+  try {
+    await signInWithPopup(auth, provider);
+    msg.textContent = "";
+  } catch (e) {
+    console.error(e);
+    if (e.code === "auth/popup-blocked") {
+      msg.textContent = "El navegador ha bloqueado la ventana de Google. Permite ventanas emergentes y vuelve a intentarlo.";
+    } else if (e.code === "auth/popup-closed-by-user") {
+      msg.textContent = "La ventana se cerró antes de completar el acceso.";
+    } else if (e.code === "auth/unauthorized-domain") {
+      msg.textContent = "Falta autorizar adrianmespana.github.io en Firebase Authentication.";
+    } else {
+      msg.textContent = "No se pudo iniciar sesión: " + e.message;
+    }
   }
- }
- if(d.timer&&!same(window.LMBridge.getTimer(),d.timer))window.LMBridge.setTimer(d.timer);
- if(d.settings&&!same(window.LMBridge.getSettings(),d.settings))window.LMBridge.setSettings(d.settings);
 }
-async function firstMerge(){
- status("busy","Combinando datos…");
- const snap=await getDocs(root()),d=snap.docs.find(x=>x.id==="state")?.data();
- if(d){
-  lastSeen=d.updatedAt||0;
-  if(d.packs?.length&&!window.LMBridge.getPacks().length)await window.LMBridge.replacePacks(d.packs);
-  if(d.progress)for(const[l,p]of Object.entries(d.progress))if(!window.LMBridge.getProgress(l))window.LMBridge.setProgress(l,p);
-  if(d.timer&&!(window.LMBridge.getTimer().history||[]).length)window.LMBridge.setTimer(d.timer);
-  if(d.settings&&!Object.keys(window.LMBridge.getSettings()||{}).length)window.LMBridge.setSettings(d.settings);
- }
- await pushAll();
+
+$("googleLoginBtn").onclick = login;
+$("logoutBtn").onclick = () => signOut(auth);
+
+const clone = value => value == null ? value : JSON.parse(JSON.stringify(value));
+
+function numMax(a, b) {
+  return Math.max(Number(a) || 0, Number(b) || 0);
 }
-function listen(){
- unsubs.forEach(f=>f());
- unsubs=[onSnapshot(ref("state"),async s=>{
-  if(!s.exists()||busy)return;
-  const d=s.data();
-  if((d.updatedAt||0)<=lastSeen)return;
-  busy=true;
-  try{status("busy","Recibiendo cambios…");await applyRemote(d);status("ok","Sincronizado")}
-  catch(e){status("err","Error al sincronizar");console.error(e)}
-  finally{busy=false}
- })];
+
+function mergeCardState(a = {}, b = {}, mini = false) {
+  if (mini) {
+    return {
+      miniStreak: numMax(a.miniStreak, b.miniStreak),
+      miniMastered: Boolean(a.miniMastered || b.miniMastered),
+      attempts: numMax(a.attempts, b.attempts),
+      fails: numMax(a.fails, b.fails),
+      last: numMax(a.last, b.last)
+    };
+  }
+  return {
+    streak: numMax(a.streak, b.streak),
+    mastered: Boolean(a.mastered || b.mastered),
+    attempts: numMax(a.attempts, b.attempts),
+    fails: numMax(a.fails, b.fails),
+    last: numMax(a.last, b.last)
+  };
 }
-window.addEventListener("lm-local-change",()=>{if(!user||busy)return;clearTimeout(timerId);timerId=setTimeout(pushAll,900)});
-$("forceSyncBtn").onclick=async()=>{if(!user)return;status("busy","Sincronizando…");const s=await getDocs(root()),d=s.docs.find(x=>x.id==="state")?.data();if(d&& (d.updatedAt||0)>lastSeen)await applyRemote(d);else await pushAll();status("ok","Sincronizado")};
-onAuthStateChanged(auth,async u=>{user=u;if(!u){unsubs.forEach(f=>f());$("loginScreen").classList.remove("hidden");$("languageScreen").classList.add("hidden");$("app").classList.add("hidden");return}$("loginScreen").classList.add("hidden");$("languageScreen").classList.remove("hidden");$("cloudUser").classList.remove("hidden");$("userName").textContent=u.displayName||u.email;$("userPhoto").src=u.photoURL||"";await firstMerge();listen()});
+
+function mergeCardMap(a = {}, b = {}, mini = false) {
+  const result = {};
+  for (const key of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
+    result[key] = mergeCardState(a?.[key], b?.[key], mini);
+  }
+  return result;
+}
+
+function mergePackAll(a = {}, b = {}) {
+  return {
+    cards: mergeCardMap(a.cards || {}, b.cards || {}, false),
+    certified: Boolean(a.certified || b.certified),
+    certifiedAt: numMax(a.certifiedAt, b.certifiedAt) || null,
+    certificationAttempts: numMax(a.certificationAttempts, b.certificationAttempts),
+    reviewed: numMax(a.reviewed, b.reviewed)
+  };
+}
+
+function mergePackAllMap(a = {}, b = {}) {
+  const result = {};
+  for (const key of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
+    result[key] = mergePackAll(a?.[key], b?.[key]);
+  }
+  return result;
+}
+
+function mergeLanguageProgress(a = {}, b = {}) {
+  return {
+    cards: mergeCardMap(a.cards || {}, b.cards || {}, true),
+    all: mergePackAllMap(a.all || {}, b.all || {}),
+    listening: {
+      cards: mergeCardMap(a.listening?.cards || {}, b.listening?.cards || {}, true),
+      all: mergePackAllMap(a.listening?.all || {}, b.listening?.all || {})
+    },
+    attempts: numMax(a.attempts, b.attempts),
+    good: numMax(a.good, b.good),
+    warn: numMax(a.warn, b.warn),
+    bad: numMax(a.bad, b.bad)
+  };
+}
+
+function mergeProgressMap(a = {}, b = {}) {
+  const result = {};
+  for (const lang of new Set([...Object.keys(a || {}), ...Object.keys(b || {})])) {
+    result[lang] = mergeLanguageProgress(a?.[lang], b?.[lang]);
+  }
+  return result;
+}
+
+function mergePacks(a = [], b = []) {
+  const map = new Map();
+  for (const pack of [...(a || []), ...(b || [])]) {
+    if (!pack?.pack_id) continue;
+    const previous = map.get(pack.pack_id);
+    if (!previous || Number(pack.version || 0) >= Number(previous.version || 0)) {
+      map.set(pack.pack_id, clone(pack));
+    }
+  }
+  return [...map.values()];
+}
+
+function timerEntryKey(x = {}) {
+  return [
+    Number(x.date) || 0,
+    Number(x.seconds) || 0,
+    Number(x.mastered) || 0,
+    Number(x.reviewed) || 0
+  ].join("|");
+}
+
+function mergeTimer(a = {}, b = {}) {
+  const historyMap = new Map();
+  for (const item of [...(a.history || []), ...(b.history || [])]) {
+    historyMap.set(timerEntryKey(item), clone(item));
+  }
+  const history = [...historyMap.values()]
+    .sort((x, y) => (Number(y.date) || 0) - (Number(x.date) || 0))
+    .slice(0, 500);
+
+  return {
+    running: false,
+    startedAt: 0,
+    elapsedBefore: numMax(a.elapsedBefore, b.elapsedBefore),
+    mastered: numMax(a.mastered, b.mastered),
+    reviewed: numMax(a.reviewed, b.reviewed),
+    history
+  };
+}
+
+function mergeSettings(a = {}, b = {}) {
+  return { ...(a || {}), ...(b || {}) };
+}
+
+function mergeWholeState(cloud = {}, local = {}) {
+  return {
+    packs: mergePacks(cloud.packs || [], local.packs || []),
+    progress: mergeProgressMap(cloud.progress || {}, local.progress || {}),
+    timer: mergeTimer(cloud.timer || {}, local.timer || {}),
+    settings: mergeSettings(cloud.settings || {}, local.settings || {}),
+    updatedAt: Date.now()
+  };
+}
+
+function readLocalState() {
+  const progress = {};
+  for (const lang of window.LMBridge.progressLanguages()) {
+    const value = window.LMBridge.getProgress(lang);
+    if (value) progress[lang] = value;
+  }
+  return {
+    packs: window.LMBridge.getPacks(),
+    progress,
+    timer: window.LMBridge.getTimer(),
+    settings: window.LMBridge.getSettings()
+  };
+}
+
+async function applyState(data) {
+  if (!data) return;
+  applyingRemote = true;
+  try {
+    if (Array.isArray(data.packs)) {
+      await window.LMBridge.replacePacks(data.packs);
+    }
+    for (const [lang, progress] of Object.entries(data.progress || {})) {
+      window.LMBridge.setProgress(lang, progress);
+    }
+    if (data.timer) window.LMBridge.setTimer(data.timer);
+    if (data.settings) window.LMBridge.setSettings(data.settings);
+    lastCloudUpdate = Number(data.updatedAt) || lastCloudUpdate;
+  } finally {
+    applyingRemote = false;
+  }
+}
+
+async function mergeAndUpload() {
+  if (!user) return;
+  setStatus("busy", "Fusionando y guardando…");
+
+  const local = readLocalState();
+  const ref = stateRef();
+
+  const merged = await runTransaction(db, async transaction => {
+    const snapshot = await transaction.get(ref);
+    const cloud = snapshot.exists() ? snapshot.data() : {};
+    const result = mergeWholeState(cloud, local);
+    transaction.set(ref, result);
+    return result;
+  });
+
+  await applyState(merged);
+  setStatus("ok", "Todo sincronizado");
+}
+
+async function downloadCloudAuthoritative() {
+  if (!user) return;
+  const snapshot = await getDoc(stateRef());
+  if (!snapshot.exists()) {
+    await mergeAndUpload();
+    return;
+  }
+  await applyState(snapshot.data());
+  setStatus("ok", "Todo sincronizado");
+}
+
+function startListener() {
+  if (unsubscribe) unsubscribe();
+  unsubscribe = onSnapshot(stateRef(), async snapshot => {
+    if (!snapshot.exists() || applyingRemote || !initialized) return;
+    const data = snapshot.data();
+    const remoteTime = Number(data.updatedAt) || 0;
+    if (remoteTime <= lastCloudUpdate) return;
+
+    try {
+      setStatus("busy", "Recibiendo cambios…");
+      await applyState(data);
+      setStatus("ok", "Todo sincronizado");
+    } catch (e) {
+      console.error(e);
+      setStatus("err", "Error al recibir cambios");
+    }
+  });
+}
+
+window.addEventListener("lm-local-change", () => {
+  if (!user || applyingRemote || !initialized) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(async () => {
+    try {
+      await mergeAndUpload();
+    } catch (e) {
+      console.error(e);
+      setStatus("err", "No se pudo guardar");
+    }
+  }, 700);
+});
+
+$("forceSyncBtn").onclick = async () => {
+  if (!user) return;
+  try {
+    await mergeAndUpload();
+  } catch (e) {
+    console.error(e);
+    setStatus("err", "No se pudo sincronizar");
+  }
+};
+
+onAuthStateChanged(auth, async currentUser => {
+  user = currentUser;
+  initialized = false;
+
+  if (!currentUser) {
+    if (unsubscribe) unsubscribe();
+    unsubscribe = null;
+    $("loginScreen").classList.remove("hidden");
+    $("languageScreen").classList.add("hidden");
+    $("app").classList.add("hidden");
+    $("cloudUser").classList.add("hidden");
+    return;
+  }
+
+  $("loginScreen").classList.add("hidden");
+  $("languageScreen").classList.remove("hidden");
+  $("cloudUser").classList.remove("hidden");
+  $("userName").textContent = currentUser.displayName || currentUser.email;
+  $("userPhoto").src = currentUser.photoURL || "";
+
+  try {
+    setStatus("busy", "Unificando todos tus dispositivos…");
+    await mergeAndUpload();
+    initialized = true;
+    startListener();
+    setStatus("ok", "Todo sincronizado");
+  } catch (e) {
+    console.error(e);
+    setStatus("err", "Error al iniciar sincronización");
+  }
+});
 </script></body>
 </html>
